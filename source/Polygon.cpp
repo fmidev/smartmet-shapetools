@@ -265,8 +265,8 @@ Point Polygon::someInsidePoint(void) const
 		  // We limit the scales to 0.2-0.8 to guarantee numerical stability
 		  // For example a1=0.999x is known to have caused trouble
 
-		  double a1 = 0.2+(0.8-0.2)*random()/(RAND_MAX+1.0);
-		  double a2 = 0.2+(0.8-0.2)*random()/(RAND_MAX+1.0);
+		  double a1 = 0.2+(0.8-0.2)*rand()/(RAND_MAX+1.0);
+		  double a2 = 0.2+(0.8-0.2)*rand()/(RAND_MAX+1.0);
 
 		  const double x = x1 + a1*(x2-x1)+(1-a1)*a2*(x3-x1);
 		  const double y = y1 + a1*(y2-y1)+(1-a1)*a2*(y3-y1);
