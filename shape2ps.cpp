@@ -1,6 +1,11 @@
 // ======================================================================
 /*!
- * \mainpage shape2ps - a program to render shapefiles into PostScript
+ * \file shape2ps.cpp
+ * \brief A program to render shapefiles into PostScript
+ */
+// ======================================================================
+/*!
+ * \page shape2ps shape2ps
  *
  * shape2ps takes as input a single filename containing rendering
  * directives. All rendering directive lines are by default considered

@@ -1,7 +1,7 @@
 // ======================================================================
 /*!
- * \file Points.cpp
- * \brief Implementation details for Points class
+ * \file Polyline.cpp
+ * \brief Implementation details for Polyline class
  */
 // ======================================================================
 

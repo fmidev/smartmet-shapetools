@@ -28,6 +28,7 @@
 #include <map>
 #include <vector>
 
+//! Nodes is a collection of uniquely numbered points
 class Nodes
 {
 public:

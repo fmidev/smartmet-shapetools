@@ -1,6 +1,7 @@
+HTML = shapetools
 PROG = shape2ps triangle2shape shape2triangle amalgamate
 
-CC = g++-3.1.1
+CC = g++
 CFLAGS = -DUNIX -O0 -g -Wall
 LDFLAGS = -s
 ARFLAGS = -r

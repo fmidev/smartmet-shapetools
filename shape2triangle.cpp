@@ -1,6 +1,11 @@
 // ======================================================================
 /*!
- * \mainpage shape2triangle - a program to convert shapefiles into PSLG format
+ * \file shape2triangle.cpp
+ * \brief A program to convert shapefiles into PSLG format
+ */
+// ======================================================================
+/*!
+ * \page shape2triangle shape2triangle
  *
  * shap2triangle taks as input a filename identifying a set of ESRI
  * shapefiles, and outputs respective PSLG files to be used with

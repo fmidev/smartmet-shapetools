@@ -1,6 +1,11 @@
 // ======================================================================
 /*!
- * \mainpage triangle2shape - a program to convert PSLG to shapefiles
+ * \file triangle2shape.cpp
+ * \brief A program to convert PSLG to shapefiles
+ */
+// ======================================================================
+/*!
+ * \page triangle2shape triangle2shape
  *
  * triangle2shape takes as input a name indentifying a set of PSLG files
  * (.node and .poly) and builds closed polygons from them, which are

@@ -1,6 +1,11 @@
 // ======================================================================
 /*!
- * \mainpage amalgamate - a program to amalgamate PSLG files
+ * \file amalgamate.cpp
+ * \brief A program to amalgamate PSLG files
+ */
+// ======================================================================
+/*!
+ * \page amalgamate amalgamate
  *
  * triangle2shape takes as input a name indentifying a set of PSLG files
  * (.node .poly and .ele), a limiting distance for the edges of the
