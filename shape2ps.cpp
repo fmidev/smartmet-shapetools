@@ -106,10 +106,76 @@
   #include <sstream>
 #endif
 
+#include "boost/lexical_cast.hpp"
+
 // For reading a projection specification
 extern void * CreateSaveBase(unsigned long classID);
 
+using namespace boost;
 using namespace std;
+
+struct BezierSettings
+{
+  BezierSettings(const string & theName, const string theMode, double theSmoothness, double theMaxError)
+	: name(theName), mode(theMode), smoothness(theSmoothness), maxerror(theMaxError)
+  { }
+
+  bool operator==(const BezierSettings & theOther) const
+  {
+	return (mode == theOther.mode &&
+			smoothness == theOther.smoothness &&
+			maxerror == theOther.maxerror);
+  }
+
+  bool operator<(const BezierSettings & theOther) const
+  {
+	if(mode != theOther.mode) return (mode < theOther.mode);
+	if(smoothness != theOther.smoothness) return (smoothness < theOther.smoothness);
+	return (maxerror < theOther.maxerror);
+  }
+
+  string name;
+  string mode;
+  double smoothness;
+  double maxerror;
+};
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Global replace within a string
+ *
+ * \param theString The string in which to replace
+ * \param theMatch The original string
+ * \param theReplacement The replacement string
+ */
+// ----------------------------------------------------------------------
+
+void replace(string & theString,
+			 const string & theMatch,
+			 const string & theReplacement)
+{
+  string::size_type pos;
+
+  while( (pos = theString.find(theMatch)) != string::npos)
+	{
+	  theString.replace(pos,theMatch.size(),theReplacement);
+	}
+}
+
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Create unique name for a contour
+ *
+ * \param theIndex The unique ordinal of the contour
+ * \return The unique name
+ */
+// ----------------------------------------------------------------------
+
+string ContourName(unsigned long theIndex)
+{
+  return ("% shape2ps: path " + lexical_cast<string>(theIndex) + " place holder");
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -407,6 +473,13 @@ int domain(int argc, const char * argv[])
   double theBezierSmoothness = 0.5;
   double theBezierMaxError = 1.0;
 
+  // The calculated contours before Bezier fitting, and set of all
+  // different combinatins of Bezier parameters used in the script
+
+  typedef list<pair<BezierSettings,Imagine::NFmiPath> > Contours;
+  Contours theContours;
+  set<BezierSettings> theContourSettings;
+
   // No clipping margin given yet
   double theClipMargin = 0.0;
 
@@ -423,7 +496,8 @@ int domain(int argc, const char * argv[])
 
   // Do the deed
   string token;
-  string buffer;
+  ostringstream buffer;
+
   while(script >> token)
 	{
 	  // ------------------------------------------------------------
@@ -438,7 +512,7 @@ int domain(int argc, const char * argv[])
 	  else if(token == "%")
 		{
 		  getline(script,token);
-		  buffer += '%' + token + '\n';
+		  buffer << '%' << token << endl;
 		}
 
 	  // ------------------------------------------------------------
@@ -542,31 +616,32 @@ int domain(int argc, const char * argv[])
 
 		  // Output the header, then the buffer, then the beginning of body
 
-		  cout << "%!PS-Adobe-3.0 EPSF-3.0" << endl
-			   << "%%Creator: shape2ps" << endl
-			   << "%%Pages: 1" << endl
-			   << "%%BoundingBox: "
-			   << theArea->Left() << " "
-			   << theArea->Top() << " "
-			   << theArea->Right() << " "
-			   << theArea->Bottom() << endl
-			   << "%%EndComments" << endl
-			   << "%%BeginProcSet: shape2ps" << endl
-			   << "save /mysave exch def" << endl
-			   << "/mydict 1000 dict def" << endl
-			   << "mydict begin" << endl
-			   << "/e2{2 index exec}def" << endl
-			   << "/e3{3 index exec}def" << endl
-			   << buffer << endl
-			   << "end" << endl
-			   << "%%EndProcSet" << endl
-			   << "%%EndProlog" << endl
-			   << "%%Page: 1 1" << endl
-			   << "%%BeginPageSetup" << endl
-			   << "mydict begin" << endl
-			   << "%%EndPageSetup" << endl;
+		  string tmp = buffer.str();
+		  buffer.clear();
 
-		  buffer = "";
+		  buffer << "%!PS-Adobe-3.0 EPSF-3.0" << endl
+				 << "%%Creator: shape2ps" << endl
+				 << "%%Pages: 1" << endl
+				 << "%%BoundingBox: "
+				 << theArea->Left() << " "
+				 << theArea->Top() << " "
+				 << theArea->Right() << " "
+				 << theArea->Bottom() << endl
+				 << "%%EndComments" << endl
+				 << "%%BeginProcSet: shape2ps" << endl
+				 << "save /mysave exch def" << endl
+				 << "/mydict 1000 dict def" << endl
+				 << "mydict begin" << endl
+				 << "/e2{2 index exec}def" << endl
+				 << "/e3{3 index exec}def" << endl
+				 << tmp << endl
+				 << "end" << endl
+				 << "%%EndProcSet" << endl
+				 << "%%EndProlog" << endl
+				 << "%%Page: 1 1" << endl
+				 << "%%BeginPageSetup" << endl
+				 << "mydict begin" << endl
+				 << "%%EndPageSetup" << endl;
 
 		}
 
@@ -582,10 +657,10 @@ int domain(int argc, const char * argv[])
 		  double x,y;
 		  script >> x >> y;
 		  NFmiPoint pt = theArea->ToXY(NFmiPoint(x,y));
-		  buffer += static_cast<char*>(NFmiValueString(pt.X()));
-		  buffer += ' ';
-		  buffer += static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())));
-		  buffer += ' ';
+		  buffer << static_cast<char*>(NFmiValueString(pt.X()))
+				 << ' '
+				 << static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())))
+				 << ' ';
 		}
 
 	  // ------------------------------------------------------------
@@ -605,10 +680,10 @@ int domain(int argc, const char * argv[])
 			throw runtime_error("Location "+placename+" is not in the database");
 
 		  NFmiPoint pt = theArea->ToXY(lonlat);
-		  buffer += static_cast<char*>(NFmiValueString(pt.X()));
-		  buffer += ' ';
-		  buffer += static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())));
-		  buffer += ' ';
+		  buffer << static_cast<char*>(NFmiValueString(pt.X()))
+				 << ' '
+				 << static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())))
+				 << ' ';
 		}
 
 	  // ------------------------------------------------------------
@@ -621,7 +696,7 @@ int domain(int argc, const char * argv[])
 			throw runtime_error("system command does not work in the header");
 
 		  getline(script,token);
-		  cout << "% " << token << endl;
+		  buffer << "% " << token << endl;
 		  system(token.c_str());
 		}
 
@@ -640,11 +715,11 @@ int domain(int argc, const char * argv[])
 		  string shapefile;
 		  script >> shapefile;
 
-		  buffer += "% ";
-		  buffer += token;
-		  buffer += ' ';
-		  buffer += shapefile;
-		  buffer += '\n';
+		  buffer << "% ";
+		  buffer << token;
+		  buffer << ' ';
+		  buffer << shapefile;
+		  buffer << endl;
 			
 
 		  // Read the shape, project and get as path
@@ -655,17 +730,17 @@ int domain(int argc, const char * argv[])
 			  Imagine::NFmiPath path = geo.Path();
 
 			  if(token=="shape")
-				buffer += pathtostring(path,
+				buffer << pathtostring(path,
 									   *theArea,
 									   theClipMargin,
 									   moveto,lineto,closepath);
 			  else
-				buffer += pathtostring(path,
+				buffer << pathtostring(path,
 									   *theArea,
 									   theClipMargin,
 									   "e3","e2");
 			  if(token == "exec")
-				buffer += "pop pop\n";
+				buffer << "pop pop" << endl;
 			  
 			}
 		  catch(std::exception & e)
@@ -699,11 +774,11 @@ int domain(int argc, const char * argv[])
 		  string gshhsfile;
 		  script >> gshhsfile;
 
-		  buffer += "% ";
-		  buffer += token;
-		  buffer += ' ';
-		  buffer += gshhsfile;
-		  buffer += '\n';
+		  buffer << "% "
+				 << token
+				 << ' '
+				 << gshhsfile
+				 << endl;
 			
 		  // Read the gshhs, project and get as path
 		  try
@@ -717,7 +792,7 @@ int domain(int argc, const char * argv[])
 			  
 			  path.Project(theArea.get());
 
-			  buffer += pathtostring(path,*theArea,theClipMargin,moveto,lineto,closepath);
+			  buffer << pathtostring(path,*theArea,theClipMargin,moveto,lineto,closepath);
 			  
 			}
 		  catch(std::exception & e)
@@ -880,17 +955,24 @@ int domain(int argc, const char * argv[])
 
 		  Imagine::NFmiPath path = tree.Path();
 
-		  if(theBezierMode == "cardinal")
-			path = Imagine::NFmiCardinalBezierFit::Fit(path,theBezierSmoothness);
-		  else if(theBezierMode == "approximate")
-			path = Imagine::NFmiApproximateBezierFit::Fit(path,theBezierMaxError);
+		  // We don't bother to store non-smoothed contours at all
+		  if(theBezierMode == "none")
+			{
+			  buffer << pathtostring(path,
+									 theMovetoCommand,
+									 theLinetoCommand,
+									 theCurvetoCommand,
+									 theClosepathCommand);
+			}
+		  else
+			{
+			  const string name = ContourName(theContours.size()+1);
+			  BezierSettings bset(name,theBezierMode, theBezierSmoothness, theBezierMaxError);
+			  theContourSettings.insert(bset);
+			  theContours.push_back(make_pair(bset,path));
+			  buffer << name << endl;
+			}
 
-		  buffer += pathtostring(path,
-								 theMovetoCommand,
-								 theLinetoCommand,
-								 theCurvetoCommand,
-								 theClosepathCommand);
-		  
 		}
 
 	  // ------------------------------------------------------------
@@ -899,16 +981,9 @@ int domain(int argc, const char * argv[])
 
 	  else
 		{
-		  buffer += token;
+		  buffer << token;
 		  getline(script,token);
-		  buffer += token + '\n';
-		}
-
-	  // If in body, there is no need to cache anymore
-	  if(body && !buffer.empty())
-		{
-		  cout << buffer;
-		  buffer = "";
+		  buffer << token << endl;
 		}
 
 	}
@@ -921,7 +996,57 @@ int domain(int argc, const char * argv[])
 	  return 1;
 	}
 
-  cout << "end" << endl
+  // Fill in the contours
+
+  string output = buffer.str();
+
+  if(!theContours.empty())
+	{
+	  for(set<BezierSettings>::const_iterator sit = theContourSettings.begin();
+		  sit != theContourSettings.end();
+		  ++sit)
+		{
+		  list<string> names;
+		  Imagine::NFmiBezierTools::NFmiPaths paths;
+		  for(Contours::const_iterator it = theContours.begin();
+			  it != theContours.end();
+			  ++it)
+			{
+			  if(*sit == it->first)
+				{
+				  paths.push_back(it->second);
+				  names.push_back(it->first.name);
+				}
+			}
+
+		  Imagine::NFmiBezierTools::NFmiPaths outpaths;
+		  if(sit->mode == "cardinal")
+			outpaths = Imagine::NFmiCardinalBezierFit::Fit(paths,sit->smoothness);
+		  else if(sit->mode == "approximate")
+			outpaths = Imagine::NFmiApproximateBezierFit::Fit(paths,sit->maxerror);
+		  else
+			throw runtime_error("Unknown Bezier mode "+sit->mode+" while fitting contours");
+
+		  list<string>::const_iterator nit = names.begin();
+		  Imagine::NFmiBezierTools::NFmiPaths::const_iterator it = outpaths.begin();
+		  for( ; nit!=names.end() && it!=outpaths.end(); ++nit, ++it)
+			{
+			  const string name = *nit;
+			  const string path = pathtostring(*it,
+											   theMovetoCommand,
+											   theLinetoCommand,
+											   theCurvetoCommand,
+											   theClosepathCommand);
+			  replace(output,name,path);
+			  
+			}
+
+
+		}
+	}
+
+  cout << output
+	   << "end" << endl
 	   << "%%Trailer" << endl
 	   << "mysave restore" << endl
 	   << "%%EOF" << endl;
