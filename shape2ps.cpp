@@ -363,6 +363,7 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 // ----------------------------------------------------------------------
 
 string pathtostring(const Imagine::NFmiPath & thePath,
+					const NFmiArea & theArea,
 					const string & theMoveto,
 					const string & theLineto,
 					const string & theCurveto,
@@ -377,8 +378,10 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 
   for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; ++iter)
 	{
-	  const string x = NFmiValueString(iter->X()).CharPtr();
-	  const string y = NFmiValueString(iter->Y()).CharPtr();
+	  const double X = iter->X();
+	  const double Y = theArea.Bottom()-(iter->Y()-theArea.Top());
+	  const string x = NFmiValueString(X).CharPtr();
+	  const string y = NFmiValueString(Y).CharPtr();
 
 	  out += (x + ' ' + y + ' ');
 
@@ -489,8 +492,8 @@ int domain(int argc, const char * argv[])
 
   // Prepare the location finder for "location" token
 
-  string coordfile = NFmiSettings::instance().value("qdpoint::coordinates_file","default.txt");
-  string coordpath = NFmiSettings::instance().value("qdpoint::coordinates_path",".");
+  string coordfile = NFmiSettings::Optional<string>("qdpoint::coordinates_file","default.txt");
+  string coordpath = NFmiSettings::Optional<string>("qdpoint::coordinates_path",".");
 
   NFmiLocationFinder locfinder;
   locfinder.AddFile(FileComplete(coordfile,coordpath), false);
@@ -981,6 +984,7 @@ int domain(int argc, const char * argv[])
 		  if(theBezierMode == "none")
 			{
 			  buffer << pathtostring(path,
+									 *theArea,
 									 theMovetoCommand,
 									 theLinetoCommand,
 									 theCurvetoCommand,
@@ -1055,6 +1059,7 @@ int domain(int argc, const char * argv[])
 			{
 			  const string name = *nit;
 			  const string path = pathtostring(*it,
+											   *theArea,
 											   theMovetoCommand,
 											   theLinetoCommand,
 											   theCurvetoCommand,
