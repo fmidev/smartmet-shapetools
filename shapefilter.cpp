@@ -378,7 +378,7 @@ int domain(int argc, const char * argv[])
 	cout << "Reading input shapefile '"+options.input_shape+"'" << endl;
 
   NFmiEsriShape inputshape;
-  if(!inputshape.Read(options.input_shape,false))
+  if(!inputshape.Read(options.input_shape,true))
 	throw runtime_error("Failed to read shape '"+options.input_shape+"'");
 
   // Process the shapefile
