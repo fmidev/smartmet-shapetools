@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
 		  linenum++;
 		  cout << shapenum << '\t'
 			   << linenum << '\t'
-			   << fixed
+			   << static_cast<int>(ios::fixed)
 			   << it->X() << '\t'
 			   << it->Y() << endl;
 		}
