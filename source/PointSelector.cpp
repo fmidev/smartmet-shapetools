@@ -97,6 +97,8 @@ private:
 public:
   Pimple(const NFmiArea & theArea);
   bool add(int theID, double theValue, double theLon, double theLat);
+  bool empty() const;
+  size_type size() const;
   const_iterator begin() const;
   const_iterator end() const;
 
@@ -123,6 +125,29 @@ PointSelector::Pimple::Pimple(const NFmiArea & theArea)
 {
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Pimple empty() test
+ */
+// ----------------------------------------------------------------------
+
+bool PointSelector::Pimple::empty() const
+{
+  reduce();
+  return itsResults.empty();
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Pimple size() method
+ */
+// ----------------------------------------------------------------------
+
+PointSelector::size_type PointSelector::Pimple::size() const
+{
+  reduce();
+  return itsResults.size();
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -305,6 +330,28 @@ bool PointSelector::add(int theID,
 						double theLat)
 {
   return itsPimple->add(theID, theValue, theLon, theLat);
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Test if the number of selected points is zero
+ */
+// ----------------------------------------------------------------------
+
+bool PointSelector::empty() const
+{
+  return itsPimple->empty();
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Return the number of selected points
+ */
+// ----------------------------------------------------------------------
+
+PointSelector::size_type PointSelector::size() const
+{
+  return itsPimple->size();
 }
 
 // ----------------------------------------------------------------------

@@ -19,6 +19,7 @@ public:
 
   typedef std::list<int> IndexList;
   typedef IndexList::const_iterator const_iterator;
+  typedef IndexList::size_type size_type;
 
 public:
 
@@ -30,6 +31,9 @@ public:
 
   bool add(int theID, double theValue, double theLon, double theLat);
   
+  bool empty() const;
+  size_type size() const;
+
   const_iterator begin() const;
   const_iterator end() const;
   
