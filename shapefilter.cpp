@@ -42,6 +42,7 @@ struct OptionsList
   string input_shape;
   string output_shape;
   string filter_field;
+  string filter_boundingbox;
   bool verbose;
   bool filter_odd_count;
   bool filter_even_count;
@@ -64,6 +65,7 @@ void usage()
 	   << "   -e\tKeep only even numbered edges (national borders etc)" << endl
 	   << "   -o\tKeep only odd numbered egdes (coastlines etc)" << endl
 	   << "   -f [name=value]\tKeep only elements with required field value" << endl
+	   << "   -b [x1,y1,x2,y2]\tBounding box for elements to be kept" << endl
 	   << endl;
 }
 
@@ -80,13 +82,14 @@ void parse_command_line(int argc, const char * argv[])
   options.verbose = false;
   options.input_shape = "";
   options.output_shape = "";
+  options.filter_boundingbox = "";
   options.filter_field = "";
   options.filter_odd_count = false;
   options.filter_even_count = false;
 
   // Parse
   
-  NFmiCmdLine cmdline(argc,argv,"oehvf!");
+  NFmiCmdLine cmdline(argc,argv,"oehvf!b!");
 
   if(cmdline.Status().IsError())
 	throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
@@ -124,6 +127,12 @@ void parse_command_line(int argc, const char * argv[])
 	{
 	  ++filtercount;
 	  options.filter_field = cmdline.OptionValue('f');
+	}
+
+  if(cmdline.isOption('b'))
+	{
+	  ++filtercount;
+	  options.filter_boundingbox = cmdline.OptionValue('b');
 	}
 
   if(filtercount > 1)
@@ -473,6 +482,86 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Filter the shape based on a bounding box
+ */
+// ----------------------------------------------------------------------
+
+const NFmiEsriShape * filter_boundingbox(const NFmiEsriShape & theShape)
+{
+  if(options.verbose)
+	cout << "Filtering based on bounding box..." << endl;
+
+  // Parse the bounding box
+
+  const list<string> words = NFmiStringTools::SplitWords(options.filter_boundingbox);
+  if(words.size() != 4)
+	throw runtime_error("Bounding box must consist of 4 values");
+  
+  list<string>::const_iterator wit = words.begin();
+  const double x1 = NFmiStringTools::Convert<double>(*wit);
+  const double y1 = NFmiStringTools::Convert<double>(*(++wit));
+  const double x2 = NFmiStringTools::Convert<double>(*(++wit));
+  const double y2 = NFmiStringTools::Convert<double>(*(++wit));
+
+  // Check bounding box validity
+
+  if(x1>=x2 || y1>=y2)
+	throw runtime_error("Bounding box is empty");
+
+  if(x1<-180 || x1>180 || x2<-180 || x2>180 ||
+	 y1<-90 || y1>90 || y2<-90 || y2>90)
+	throw runtime_error("The bounding box exceeds geographic coordinate limits");
+
+  // Start the result shape
+
+  NFmiEsriShape * shape = new NFmiEsriShape(theShape.Type());
+
+  // Copy the attribute type information
+  for(NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
+	  ait != theShape.Attributes().end();
+	  ++ait)
+	{
+	  shape->Add(new NFmiEsriAttributeName(**ait));
+	}
+
+
+  // Copy the elements which overlap the bounding box
+
+  for(NFmiEsriShape::const_iterator it = theShape.Elements().begin();
+	  it != theShape.Elements().end();
+	  ++it)
+	{
+	  // Skip empty elements
+	  if(*it == 0)
+		continue;
+
+	  // Establish bounding box of the element
+	  NFmiEsriBox box;
+	  (*it)->Update(box);
+
+	  // Establish whether element is outside the desired box
+	  bool outside = false;
+	  outside |= (box.Xmin() > x2);
+	  outside |= (box.Xmax() < x1);
+	  outside |= (box.Ymin() > y2);
+	  outside |= (box.Ymax() < y1);
+
+	  // If elements overlaps bbox, add it to the result
+	  if(!outside)
+		{
+		  NFmiEsriElement * tmp = (*it)->Clone().release();
+		  shape->Add(tmp);
+		}
+	}
+
+  return shape;
+
+
+}
+
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Filter the shape
  */
 // ----------------------------------------------------------------------
@@ -485,6 +574,8 @@ const NFmiEsriShape * filter_shape(const NFmiEsriShape & theShape)
 	return filter_even_count(theShape);
   if(options.filter_odd_count)
   	return filter_odd_count(theShape);
+  if(!options.filter_boundingbox.empty())
+	return filter_boundingbox(theShape);
 
   return &theShape;
 }
