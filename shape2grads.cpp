@@ -107,6 +107,19 @@ void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
 	  if(pos1==pos2)
 		break;
 
+	  // Must not cross the meridian during one segment?
+
+	  const double x = thePoints[pos1].X();
+	  for(unsigned int i=pos1+1; i<=pos2; i++)
+		{
+		  if( (x<0 && thePoints[i].X() >= 0) ||
+			  (x>=0 && thePoints[i].X() < 0) )
+			{
+			  pos2 = max(pos1,i-1);
+			  break;
+			}
+		}
+
 	  // Byte 0:
 	  cout << static_cast<unsigned char>(1);
 	  // Byte 1:
@@ -119,8 +132,12 @@ void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
 		  print_lon(thePoints[i].X());
 		  print_lat(thePoints[i].Y());
 		}
-	  // Note! no +1, we start from where we left off!
-	  pos1 = pos2;
+	  // Note! no +1, we start from where we left off,
+	  // unless we crossed the meridian with one single point!
+	  if(pos2!=pos1)
+		pos1 = pos2;
+	  else
+		pos1++;
 	}
 }
 
