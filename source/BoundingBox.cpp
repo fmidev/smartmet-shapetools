@@ -64,7 +64,7 @@ namespace BoundingBox
 	theMaxLon = theMinLon;
 	theMaxLat = theMinLat;
 	
-	const unsigned int divisions = 100;
+	const unsigned int divisions = 500;
 	
 	// Go through the top edge
 	
