@@ -500,6 +500,7 @@ int domain(int argc, const char * argv[])
 
   while(script >> token)
 	{
+
 	  // ------------------------------------------------------------
 	  // Handle script comments
 	  // ------------------------------------------------------------
@@ -617,7 +618,7 @@ int domain(int argc, const char * argv[])
 		  // Output the header, then the buffer, then the beginning of body
 
 		  string tmp = buffer.str();
-		  buffer.clear();
+		  buffer.str("");
 
 		  buffer << "%!PS-Adobe-3.0 EPSF-3.0" << endl
 				 << "%%Creator: shape2ps" << endl
