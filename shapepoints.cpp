@@ -20,6 +20,8 @@
  * <dd>Print usage information</dd>
  * <dt>-f [fieldname]</dt>
  * <dd>The field name of the numeric field used for sorting the points (default is TYPE)</dd>
+ * <dt>-n</dt>
+ * <dd>Negate the fields to obtain ascending sort</dd>
  * <dt>-p [projection]</dt>
  * <dd>Projection specification translating latlon to XY-coordinates (no default)</dd>
  * <dt>-d [distance]</dt>
@@ -68,11 +70,12 @@ void usage()
 	   << "\t-D [dist]\tMinimum distance to border (0)" << endl
 	   << "\t-p [desc]\tProjection description" << endl
 	   << "\t-f [name]\tData field used for sorting the points (TYPE)" << endl
+	   << "\t-n\t\tNegate the field value to obtain ascending sort" << endl
 	   << endl
 	   << "Typical usage:" << endl
 	   << endl
 	   << "\tAREA=stereographic,25:6,51.3,49,70.2:400,-1" << endl
-	   << "\tshapepoints -p $AREA -d 20 ESRI/europe/places myplaces" << endl
+	   << "\tshapepoints -p $AREA -d 20 -n ESRI/europe/places myplaces" << endl
 	   << endl;
 }
 
@@ -85,6 +88,7 @@ void usage()
 struct Options
 {
   bool verbose;
+  bool negate;
   double mindistance;
   double minborderdistance;
   string projection;
@@ -94,6 +98,7 @@ struct Options
 
   Options()
 	: verbose(false)
+	, negate(false)
 	, mindistance(10)
 	, minborderdistance(0)
 	, projection()
@@ -120,7 +125,7 @@ bool parse_command_line(int argc, const char * argv[])
 {
   using namespace NFmiStringTools;
 
-  NFmiCmdLine cmdline(argc,argv,"vhd!D!f!p!");
+  NFmiCmdLine cmdline(argc,argv,"vhnd!D!f!p!");
   
   if(cmdline.Status().IsError())
 	throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
@@ -147,6 +152,8 @@ bool parse_command_line(int argc, const char * argv[])
 	options.projection = cmdline.OptionValue('p');
   if(cmdline.isOption('f'))
 	options.fieldname = cmdline.OptionValue('f');
+  if(cmdline.isOption('n'))
+	options.negate = true;
 
   // Final checks
 
@@ -309,7 +316,7 @@ int domain(int argc, const char * argv[])
   // Setup the selector
 
   auto_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
-  PointSelector selector(*area);
+  PointSelector selector(*area,options.negate);
   selector.minDistance(options.mindistance);
   selector.boundingBox(area->Left() + options.minborderdistance,
 					   area->Top() + options.minborderdistance,
