@@ -22,6 +22,7 @@
 
 #include "NFmiGeoShape.h"
 #include "NFmiPath.h"
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -59,7 +60,7 @@ int main(int argc, char * argv[])
 		  linenum++;
 		  cout << shapenum << '\t'
 			   << linenum << '\t'
-			   << static_cast<int>(ios::fixed)
+			   << std::setiosflags(std::ios::fixed)
 			   << it->X() << '\t'
 			   << it->Y() << endl;
 		}
