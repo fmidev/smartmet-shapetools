@@ -623,10 +623,10 @@ int domain(int argc, const char * argv[])
 				 << "%%Creator: shape2ps" << endl
 				 << "%%Pages: 1" << endl
 				 << "%%BoundingBox: "
-				 << theArea->Left() << " "
-				 << theArea->Top() << " "
-				 << theArea->Right() << " "
-				 << theArea->Bottom() << endl
+				 << static_cast<int>(theArea->Left()) << " "
+				 << static_cast<int>(theArea->Top()) << " "
+				 << static_cast<int>(theArea->Right()) << " "
+				 << static_cast<int>(theArea->Bottom()) << endl
 				 << "%%EndComments" << endl
 				 << "%%BeginProcSet: shape2ps" << endl
 				 << "save /mysave exch def" << endl
