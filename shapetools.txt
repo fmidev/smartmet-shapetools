@@ -3,6 +3,11 @@
 
 \mainpage shapetools - A collection of ESRI shapefile tools.
 
+\section dumping Dumping shapefile contents
+
+\ref shapedump is a program that dumps the coordinates in the given
+shapefile to the screen.
+
 \section rendering Rendering shapefiles
 
 \ref shape2ps is a program that takes as input a file containing
