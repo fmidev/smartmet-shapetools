@@ -75,9 +75,9 @@ string Polyline::path(const string & moveto,
 		output += closepath;
 	  else
 		{
-		  output += NFmiValueString(itsPoints[i].x());
+		  output += NFmiValueString(itsPoints[i].x()).CharPtr();
 		  output += ' ';
-		  output += NFmiValueString(itsPoints[i].y());
+		  output += NFmiValueString(itsPoints[i].y()).CharPtr();
 		  output += ' ';
 		  output += (i==0 ? moveto : lineto);
 		}
