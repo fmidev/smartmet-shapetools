@@ -32,7 +32,7 @@ using namespace std;
 
 long Nodes::add(const Point & pt, long theId)
 {
-  unsigned long idx = itsData.insert(make_pair(pt,make_pair(itsData.size()+1,id))).first->second.first;
+  unsigned long idx = itsData.insert(make_pair(pt,make_pair(itsData.size()+1,theId))).first->second.first;
   if(idx>itsOrderedData.size())
 	itsOrderedData.push_back(pt);
   return idx;
