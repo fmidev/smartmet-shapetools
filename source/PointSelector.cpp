@@ -90,12 +90,13 @@ public:
 private:
   typedef multimap<double,PointData,greater<double> > Candidates;
   const NFmiArea & itsArea;
+  const bool itsNegateFlag;
   mutable bool itsReduced;
   mutable Candidates itsCandidates;
   mutable IndexList itsResults;
   void reduce() const;
 public:
-  Pimple(const NFmiArea & theArea);
+  Pimple(const NFmiArea & theArea, bool theNegateFlag);
   bool add(int theID, double theValue, double theLon, double theLat);
   bool empty() const;
   size_type size() const;
@@ -109,16 +110,18 @@ public:
  * \brief Pimple constructor
  *
  * \param theArea The reference projection area
+ * \param theNegateFlag True, if shape field values are to be negated
  */
 // ----------------------------------------------------------------------
 
-PointSelector::Pimple::Pimple(const NFmiArea & theArea)
+PointSelector::Pimple::Pimple(const NFmiArea & theArea, bool theNegateFlag)
   : itsMinDistance(10)
   , itsX1(theArea.Left())
   , itsY1(theArea.Top())
   , itsX2(theArea.Right())
   , itsY2(theArea.Bottom())
   , itsArea(theArea)
+  , itsNegateFlag(theNegateFlag)
   , itsReduced(true)		// empty selector is in reduced state
   , itsCandidates()
   , itsResults()
@@ -203,7 +206,10 @@ bool PointSelector::Pimple::add(int theID,
   // Add the point to the candidates
   
   PointData pd(theID,xy.X(),xy.Y());
-  itsCandidates.insert(make_pair(theValue,pd));
+  if(itsNegateFlag)
+	itsCandidates.insert(make_pair(-theValue,pd));
+  else
+	itsCandidates.insert(make_pair(theValue,pd));
 
   return true;
 }
@@ -262,11 +268,12 @@ PointSelector::~PointSelector()
  * \brief Constructor
  *
  * \param theArea The relevant projection area
+ * \param theNegateFlag True, if ascending sort is desired
  */
 // ----------------------------------------------------------------------
 
-PointSelector::PointSelector(const NFmiArea & theArea)
-  : itsPimple(new Pimple(theArea))
+PointSelector::PointSelector(const NFmiArea & theArea, bool theNegateFlag)
+  : itsPimple(new Pimple(theArea,theNegateFlag))
 {
 }
 

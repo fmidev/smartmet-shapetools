@@ -24,7 +24,7 @@ public:
 public:
 
   ~PointSelector();
-  PointSelector(const NFmiArea & theArea);
+  PointSelector(const NFmiArea & theArea, bool theNegateFlag = false);
 
   void minDistance(double theDistance);
   void boundingBox(double theX1, double theY1, double theX2, double theY2);
