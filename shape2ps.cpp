@@ -39,7 +39,8 @@
  * timemode utc
  * time +1 12
  * newpath
- * contourmoves moveto lineto closepath
+ * bezier approximate 10
+ * contourcommands moveto lineto curveto closepath
  * contourline 10 stroke
  * contourline 15 stroke
  * contourline 20 stroke
@@ -62,8 +63,12 @@
  * - parameter <name> Set the active querydata parameter
  * - timemode <local|utc>
  * - time <days> <hour>
+ * - contourcommands <moveto> <lineto> <curveto> <closepath>
  * - contourline <value>
  * - contourfill <lolimit> <hilimit>
+ * - bezier none
+ * - bezier cardinal <0-1>
+ * - bezier approximate <maxerror>
  */
 // ======================================================================
 
@@ -71,6 +76,8 @@
 // internal
 #include "Polyline.h"
 // imagine
+#include "NFmiCardinalBezierFit.h"
+#include "NFmiApproximateBezierFit.h"
 #include "NFmiContourTree.h"
 #include "NFmiGeoShape.h"
 #include "NFmiGshhsTools.h"
@@ -250,9 +257,9 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 {
   const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
   const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
-			
+  
   string out;
-
+  
   Polyline polyline;
   for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 	{
@@ -265,7 +272,7 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 		polyline.add(X,Y);
 	  else
 		throw runtime_error("Only moveto and lineto commands are supported in paths");
-				  
+	  
 	  // Advance to next point. If end or moveto, flush previous polyline out
 	  ++iter;
 	  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
@@ -277,6 +284,56 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 			
 			out += polyline.path(theMoveto,theLineto,theClosepath);
 		  polyline.clear();
+		}
+	}
+  
+  return out;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Convert path to PostScript path
+ */
+// ----------------------------------------------------------------------
+
+string pathtostring(const Imagine::NFmiPath & thePath,
+					const string & theMoveto,
+					const string & theLineto,
+					const string & theCurveto,
+					const string & theClosepath)
+{
+  const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
+  const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
+  
+  string out;
+
+  unsigned int cubic_count = 0;
+
+  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; ++iter)
+	{
+	  const string x = NFmiValueString(iter->X()).CharPtr();
+	  const string y = NFmiValueString(iter->Y()).CharPtr();
+
+	  out += (x + ' ' + y + ' ');
+
+	  switch(iter->Oper())
+		{
+		case Imagine::kFmiMoveTo:
+		  out += (theMoveto + '\n');
+		  cubic_count = 0;
+		  break;
+		case Imagine::kFmiLineTo:
+		case Imagine::kFmiGhostLineTo:
+		  out += (theLineto + '\n');
+		  cubic_count = 0;
+		  break;
+		case Imagine::kFmiCubicTo:
+		  ++cubic_count;
+		  if(cubic_count % 3 == 0)
+			out += (theCurveto + '\n');
+		  break;
+		case Imagine::kFmiConicTo:
+		  throw runtime_error("Conic segments not supported");
 		}
 	}
 
@@ -342,8 +399,14 @@ int domain(int argc, const char * argv[])
 
   string theMovetoCommand = "moveto";
   string theLinetoCommand = "lineto";
+  string theCurvetoCommand = "curveto";
   string theClosepathCommand = "closepath";
   
+  // Bezier smoothing
+  string theBezierMode = "none";
+  double theBezierSmoothness = 0.5;
+  double theBezierMaxError = 1.0;
+
   // No clipping margin given yet
   double theClipMargin = 0.0;
 
@@ -614,6 +677,8 @@ int domain(int argc, const char * argv[])
 			  msg += lineto + ' ';
 			  msg += closepath + ' ';
 			  msg += shapefile;
+			  msg += " : ";
+			  msg += e.what();
 			  throw runtime_error(msg);
 			}
 		  
@@ -721,15 +786,33 @@ int domain(int argc, const char * argv[])
 		  if(theHour<0 || theHour>24)
 			throw runtime_error("Second argument of time-command must be in range 0-23");
 		}
+
+	  // ------------------------------------------------------------
+	  // Handle the bezier command
+	  // ------------------------------------------------------------
+
+	  else if(token == "bezier")
+		{
+		  script >> theBezierMode;
+		  if(theBezierMode == "none")
+			;
+		  else if(theBezierMode == "cardinal")
+			script >> theBezierSmoothness;
+		  else if(theBezierMode == "approximate")
+			script >> theBezierMaxError;
+		  else
+			throw runtime_error("Bezier mode "+theBezierMode+" is not recognized");
+		}
 	  
 	  // ------------------------------------------------------------
-	  // Handle the contourcommands <moveto> <lineto> <closepath> command
+	  // Handle the contourcommands <moveto> <lineto>  <curveto> <closepath> command
 	  // ------------------------------------------------------------
 
 	  else if(token == "contourcommands")
 		{
 		  script >> theMovetoCommand
 				 >> theLinetoCommand
+				 >> theCurvetoCommand
 				 >> theClosepathCommand;
 		}
 
@@ -797,8 +880,16 @@ int domain(int argc, const char * argv[])
 
 		  Imagine::NFmiPath path = tree.Path();
 
-		  buffer += pathtostring(path,*theArea,theClipMargin,
-								 theMovetoCommand,theLinetoCommand,theClosepathCommand);
+		  if(theBezierMode == "cardinal")
+			path = Imagine::NFmiCardinalBezierFit::Fit(path,theBezierSmoothness);
+		  else if(theBezierMode == "approximate")
+			path = Imagine::NFmiApproximateBezierFit::Fit(path,theBezierMaxError);
+
+		  buffer += pathtostring(path,
+								 theMovetoCommand,
+								 theLinetoCommand,
+								 theCurvetoCommand,
+								 theClosepathCommand);
 		  
 		}
 
