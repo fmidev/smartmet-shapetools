@@ -116,7 +116,7 @@ PointSelector::Pimple::Pimple(const NFmiArea & theArea)
   : itsMinDistance(10)
   , itsX1(theArea.Left())
   , itsY1(theArea.Top())
-  , itsX2(theArea.Width())
+  , itsX2(theArea.Right())
   , itsY2(theArea.Bottom())
   , itsArea(theArea)
   , itsReduced(true)		// empty selector is in reduced state
