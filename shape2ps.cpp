@@ -30,6 +30,24 @@
  * where X is calculated so that aspect ratio is preserved in the set
  * projection.
  *
+ * To render querydata contours one can use code like
+ * \code
+ * area 10 NFmiLatLonArea ...
+ * body
+ * querydata /data/pal/querydata/pal/skandinavia/pinta
+ * parameter Temperature
+ * timemode utc
+ * time +1 12
+ * newpath
+ * contourmoves moveto lineto closepath
+ * contourline 10 stroke
+ * contourline 15 stroke
+ * contourline 20 stroke
+ * contourline 25 stroke
+ * contourline 30 stroke
+ * contourfill -10 10 fill
+ * \endcode
+ *
  * The list of special commands is
  * - area ... to set the projection
  * - body to indicate the start of the PostScript body
@@ -40,6 +58,12 @@
  * - location <place> to output projected x and y
  * - system .... to execute the remaining line in the shell
  * - projectioncenter <lon> <lat> <scale>
+ * - querydata <name> Set the active querydata
+ * - parameter <name> Set the active querydata parameter
+ * - timemode <local|utc>
+ * - time <days> <hour>
+ * - contourline <value>
+ * - contourfill <lolimit> <hilimit>
  */
 // ======================================================================
 
@@ -47,19 +71,24 @@
 // internal
 #include "Polyline.h"
 // imagine
+#include "NFmiContourTree.h"
 #include "NFmiGeoShape.h"
 #include "NFmiGshhsTools.h"
 // newbase
 #include "NFmiArea.h"
 #include "NFmiCmdLine.h"
+#include "NFmiEnumConverter.h"
 #include "NFmiFileSystem.h"
 #include "NFmiLocationFinder.h"
+#include "NFmiParameterName.h"
 #include "NFmiPath.h"
 #include "NFmiPreProcessor.h"
 #include "NFmiSettings.h"
+#include "NFmiStreamQueryData.h"
 #include "NFmiValueString.h"
 // system
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <memory>
@@ -74,6 +103,45 @@
 extern void * CreateSaveBase(unsigned long classID);
 
 using namespace std;
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Convert local time to UTC time using current TZ
+ *
+ * \param theLocalTime The local time
+ * \return The UTC time
+ *
+ * \note This was stolen from textgen library TimeTools namespace
+ */
+// ----------------------------------------------------------------------
+
+NFmiTime toutctime(const NFmiTime & theLocalTime)
+{
+  ::tm tlocal;
+  tlocal.tm_sec   = theLocalTime.GetSec();
+  tlocal.tm_min   = theLocalTime.GetMin();
+  tlocal.tm_hour  = theLocalTime.GetHour();
+  tlocal.tm_mday  = theLocalTime.GetDay();
+  tlocal.tm_mon   = theLocalTime.GetMonth()-1;
+  tlocal.tm_year  = theLocalTime.GetYear()-1900;
+  tlocal.tm_wday  = -1;
+  tlocal.tm_yday  = -1;
+  tlocal.tm_isdst = -1;
+  
+  ::time_t tsec = mktime(&tlocal);
+  
+  ::tm * tutc = ::gmtime(&tsec);
+  
+  NFmiTime out(tutc->tm_year + 1900,
+			   tutc->tm_mon + 1,
+			   tutc->tm_mday,
+			   tutc->tm_hour,
+			   tutc->tm_min,
+			   tutc->tm_sec);
+  
+  return out;
+}
+
 
 // ----------------------------------------------------------------------
 /*!
@@ -168,26 +236,69 @@ void FindBBox(const NFmiArea & theArea,
 }
 
 // ----------------------------------------------------------------------
-// The main program
+/*!
+ * \brief Convert path to PostScript path
+ */
 // ----------------------------------------------------------------------
-int main(int argc, const char * argv[])
+
+string pathtostring(const Imagine::NFmiPath & thePath,
+					const NFmiArea & theArea,
+					double theClipMargin,
+					const string & theMoveto,
+					const string & theLineto,
+					const string & theClosepath = "")
+{
+  const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
+  const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
+			
+  string out;
+
+  Polyline polyline;
+  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
+	{
+	  double X = (*iter).X();
+	  double Y = theArea.Bottom()-((*iter).Y()-theArea.Top());
+	  
+	  if((*iter).Oper()==Imagine::kFmiMoveTo ||
+		 (*iter).Oper()==Imagine::kFmiLineTo ||
+		 (*iter).Oper()==Imagine::kFmiGhostLineTo )
+		polyline.add(X,Y);
+	  else
+		throw runtime_error("Only moveto and lineto commands are supported in paths");
+				  
+	  // Advance to next point. If end or moveto, flush previous polyline out
+	  ++iter;
+	  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
+		{
+		  polyline.clip(theArea.Left(), theArea.Top(),
+						theArea.Right(), theArea.Bottom(),
+						theClipMargin);
+		  if(!polyline.empty())
+			
+			out += polyline.path(theMoveto,theLineto,theClosepath);
+		  polyline.clear();
+		}
+	}
+
+  return out;
+}
+
+
+// ----------------------------------------------------------------------
+// The main driver
+// ----------------------------------------------------------------------
+
+int domain(int argc, const char * argv[])
 {
   bool verbose = false;
 
   NFmiCmdLine cmdline(argc,argv,"v");
 
   if(cmdline.NumberofParameters() != 1)
-	{
-	  cerr << "Usage: " << argv[0] << " [options] [filename]" << endl;
-	  return 1;
-	}
+	throw runtime_error("Usage: shape2ps [options] <filename>");
 
   if(cmdline.Status().IsError())
-	{
-	  cerr << "Error: Invalid command line" << endl
-		   << "\t --> " << cmdline.Status().ErrorLog().CharPtr() << endl;
-	  return 1;
-	}
+	throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if(cmdline.isOption('v'))
     verbose = true;
@@ -200,13 +311,8 @@ int main(int argc, const char * argv[])
   NFmiPreProcessor processor(strip_pound);
   processor.SetIncluding("include","","");
   if(!processor.ReadAndStripFile(scriptfile))
-	{
-	  cerr << "Error: Could not open '"
-		   << scriptfile
-		   << "' for reading"
-		   << endl;
-	  return 1;
-	}
+	throw runtime_error("Error: Could not open '"+scriptfile+"' for reading");
+
   string text = processor.GetString();
 #ifdef OLDGCC
   istrstream script(text.c_str());
@@ -217,6 +323,27 @@ int main(int argc, const char * argv[])
   // The area specification is not given yet
   auto_ptr<NFmiArea> theArea;
 
+  // The querydata is not given yet
+  string theQueryDataName;
+  NFmiStreamQueryData theQueryData;
+
+  // The querydata parameter is not given yet
+  string theParameterName;
+  FmiParameterName theParameter = kFmiBadParameter;
+
+  // The time mode is by default local time
+  bool theLocalTimeMode = true;
+
+  // The time offset has not been given yet
+  int theDay = -1;
+  int theHour = -1;
+
+  // Contouring movement command names
+
+  string theMovetoCommand = "moveto";
+  string theLinetoCommand = "lineto";
+  string theClosepathCommand = "closepath";
+  
   // No clipping margin given yet
   double theClipMargin = 0.0;
 
@@ -263,20 +390,15 @@ int main(int argc, const char * argv[])
 	  else if(token == "area")
 		{
 		  if(theArea.get())
-			{
-			  cerr << "Error: Area already given" << endl;
-			  return 1;
-			}
+			throw runtime_error("Area given twice");
+
 		  unsigned long classID;
 		  string className;
 		  script >> classID >> className;
 		  theArea.reset(static_cast<NFmiArea *>(CreateSaveBase(classID)));
 		  if(!theArea.get())
-			{
-			  cerr << "Error: Unrecognized area in the script:" << endl
-				   << classID << " " << className << endl;
-			  return 1;
-			}
+			throw runtime_error("Unrecognized area in the script");
+
 		  script >> *theArea;
 
 		  // Now handle XY limits
@@ -287,10 +409,7 @@ int main(int argc, const char * argv[])
 		  double y2 = theArea->Bottom();
 
 		  if(x2-x1==1 && y2-y1==1)
-			{
-			  cerr << "Error: No decent XY-area given in projection" << endl;
-			  return 1;
-			}
+			throw runtime_error("Error: No decent XY-area given in projection");
 		  // Recalculate x-range from y-range if necessary
 		  if(x2-x1==1)
 			{
@@ -314,10 +433,7 @@ int main(int argc, const char * argv[])
 	  else if(token == "projectioncenter")
 		{
 		  if(!theArea.get())
-			{
-			  cerr << "projectioncenter must be used after a projection has been specified" << endl;
-			  return 1;
-			}
+			throw runtime_error("projectioncenter must be used after a projection has been specified");
 
 		  float lon, lat, scale;
 		  script >> lon >> lat >> scale;
@@ -354,16 +470,11 @@ int main(int argc, const char * argv[])
 	  else if(token == "body")
 		{
 		  if(body)
-			{
-			  cerr << "Error: body command given twice in script" << endl;
-			  return 1;
-			}
-		  if(!theArea.get())
-			{
-			  cerr << "Error: No area specified before body" << endl;
-			  return 1;
-			}
+			throw runtime_error("body command given twice in script");
 
+		  if(!theArea.get())
+			throw runtime_error("No area specified before body");
+		  
 		  body = true;
 
 		  // Output the header, then the buffer, then the beginning of body
@@ -403,10 +514,8 @@ int main(int argc, const char * argv[])
 	  else if(token == "project")
 		{
 		  if(!theArea.get())
-			{
-			  cerr << "Error: Using project before area" << endl;
-			  return 1;
-			}
+			throw runtime_error("Using project before area");
+
 		  double x,y;
 		  script >> x >> y;
 		  NFmiPoint pt = theArea->ToXY(NFmiPoint(x,y));
@@ -423,10 +532,8 @@ int main(int argc, const char * argv[])
 	  else if(token == "location")
 		{
 		  if(!theArea.get())
-			{
-			  cerr << "Error: Using location before area" << endl;
-			  return 1;
-			}
+			throw runtime_error("Using location before area");
+
 		  string placename;
 		  script >> placename;
 
@@ -448,10 +555,8 @@ int main(int argc, const char * argv[])
 	  else if(token == "system")
 		{
 		  if(!body)
-			{
-			  cerr << "Error: system does not work in the header" << endl;
-			  return 1;
-			}
+			throw runtime_error("system command does not work in the header");
+
 		  getline(script,token);
 		  cout << "% " << token << endl;
 		  system(token.c_str());
@@ -463,10 +568,7 @@ int main(int argc, const char * argv[])
 	  else if(token == "shape" || token=="exec")
 		{
 		  if(!body)
-			{
-			  cerr << "Error: Cannot have " << token << " command in header" << endl;
-			  return 1;
-			}
+			throw runtime_error("Cannot have "+token+" command in header");
 		  
 		  string moveto, lineto, closepath;
 		  if(token == "shape")
@@ -488,55 +590,31 @@ int main(int argc, const char * argv[])
 			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
 			  geo.ProjectXY(*theArea);
 			  Imagine::NFmiPath path = geo.Path();
-			  
-			  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-			  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
-			  
-			  Polyline polyline;
-			  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
-				{
-				  double X = (*iter).X();
-				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
-				  
-				  if((*iter).Oper()==Imagine::kFmiMoveTo || (*iter).Oper()==Imagine::kFmiLineTo)
-					polyline.add(X,Y);
-				  else
-					{
-					  cerr << "Error: Only moveto and lineto are supported in shapes" << endl;
-					  return 1;
-					}
-				  
-				  // Advance to next point. If end or moveto, flush previous polyline out
-				  ++iter;
-				  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
-					{
-					  polyline.clip(theArea->Left(), theArea->Top(),
-									theArea->Right(), theArea->Bottom(),
-									theClipMargin);
-					  if(!polyline.empty())
-						if(token=="shape")
-						  buffer += polyline.path(moveto,lineto,closepath);
-						else
-						  buffer += polyline.path("e3","e2");
-					  polyline.clear();
-					}
-				}
-			  
+
+			  if(token=="shape")
+				buffer += pathtostring(path,
+									   *theArea,
+									   theClipMargin,
+									   moveto,lineto,closepath);
+			  else
+				buffer += pathtostring(path,
+									   *theArea,
+									   theClipMargin,
+									   "e3","e2");
 			  if(token == "exec")
 				buffer += "pop pop\n";
 			  
 			}
 		  catch(std::exception & e)
 			{
-			  cerr << "Error: shape2ps failed" << endl;
-			  if(token == "shape")
-				cerr << "at command shape "
-					 << moveto << ' '
-					 << lineto << ' '
-					 << closepath << ' '
-					 << shapefile << endl;
-			  cerr << " --> " << e.what() << endl;
-			  return 1;
+			  if(token!="shape")
+				throw e;
+			  string msg = "Failed at command shape ";
+			  msg += moveto + ' ';
+			  msg += lineto + ' ';
+			  msg += closepath + ' ';
+			  msg += shapefile;
+			  throw runtime_error(msg);
 			}
 		  
 		}
@@ -548,10 +626,7 @@ int main(int argc, const char * argv[])
 	  else if(token == "gshhs")
 		{
 		  if(!body)
-			{
-			  cerr << "Error: Cannot have " << token << " command in header" << endl;
-			  return 1;
-			}
+			throw runtime_error("Cannot have "+token+" command in header");
 		  
 		  string moveto, lineto, closepath;
 		  script >> moveto >> lineto >> closepath;
@@ -576,54 +651,161 @@ int main(int argc, const char * argv[])
 																		 maxlon,maxlat);
 			  
 			  path.Project(theArea.get());
-			  
-			  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-			  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
-			  
-			  Polyline polyline;
-			  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
-				{
-				  double X = (*iter).X();
-				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
-				  
-				  if((*iter).Oper()==Imagine::kFmiMoveTo || (*iter).Oper()==Imagine::kFmiLineTo)
-					polyline.add(X,Y);
-				  else
-					{
-					  cerr << "Error: Only moveto and lineto are supported in shapes" << endl;
-					  return 1;
-					}
-				  
-				  // Advance to next point. If end or moveto, flush previous polyline out
-				  ++iter;
-				  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
-					{
-					  polyline.clip(theArea->Left(), theArea->Top(),
-									theArea->Right(), theArea->Bottom(),
-									theClipMargin);
-					  if(!polyline.empty())
-						buffer += polyline.path(moveto,lineto,closepath);
-					  polyline.clear();
-					}
-				}
+
+			  buffer += pathtostring(path,*theArea,theClipMargin,moveto,lineto,closepath);
 			  
 			}
 		  catch(std::exception & e)
 			{
-			  cerr << "Error: shape2ps failed at command gshhs "
-				   << moveto << ' '
-				   << lineto << ' '
-				   << closepath << ' '
-				   << gshhsfile << endl;
-			  cerr << " --> " << e.what() << endl;
-			  return 1;
+			  string msg = "Failed at command gshhs ";
+			  msg += moveto + ' ';
+			  msg += lineto + ' ';
+			  msg += closepath + ' ';
+			  msg += gshhsfile;
+			  msg += " due to ";
+			  msg += e.what();
+			  throw runtime_error(e.what());
 			}
+		  
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the querydata <filename> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "querydata")
+		{
+		  script >> theQueryDataName;
+		  if(!theQueryData.ReadLatestData(theQueryDataName))
+			throw runtime_error("Failed to read querydata from "+theQueryDataName);
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the parameter <name> command
+	  // ----------------------------------------------------------------------
+
+	  else if(token == "parameter")
+		{
+		  script >> theParameterName;
+		  NFmiEnumConverter converter;
+		  theParameter = FmiParameterName(converter.ToEnum(theParameterName));
+		  if(theParameter == kFmiBadParameter)
+			throw runtime_error("Parameter name "+theParameterName+" is not recognized by newbase");
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the timemode <local|utc> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "timemode")
+		{
+		  string name;
+		  script >> name;
+		  if(name == "local")
+			theLocalTimeMode = true;
+		  else if(name == "utc")
+			theLocalTimeMode = false;
+		  else
+			throw runtime_error("Unrecognized time mode "+name+", the name must be 'local' or 'utc'");
+		}
+  
+	  // ------------------------------------------------------------
+	  // Handle the time <day> <hour> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "time")
+		{
+		  script >> theDay >> theHour;
+		  if(theDay < 0)
+			throw runtime_error("First argument of time-command must be nonnegative");
+		  if(theHour<0 || theHour>24)
+			throw runtime_error("Second argument of time-command must be in range 0-23");
+		}
+	  
+	  // ------------------------------------------------------------
+	  // Handle the contourcommands <moveto> <lineto> <closepath> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "contourcommands")
+		{
+		  script >> theMovetoCommand
+				 >> theLinetoCommand
+				 >> theClosepathCommand;
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the contourline <value> command
+	  // Handle the contourfill <lolimit> <hilimit> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "contourline" || token == "contourfill")
+		{
+		  if(!body)
+			throw runtime_error(token+" command is not allowed in the header");
+		  
+		  NFmiFastQueryInfo * q = theQueryData.QueryInfoIter();
+		  if(q == 0)
+			throw runtime_error("querydata must be specified before using any contouring commands");
+		  
+		  if(theParameter == kFmiBadParameter)
+			throw runtime_error("parameter must be specified before using any contouring commands");
+		  
+		  if(!q->Param(theParameter))
+			throw runtime_error("parameter "+theParameterName+" is not available in "+theQueryDataName);
+
+		  if(theDay < 0 || theHour<0)
+			throw runtime_error("time must be specified before using any contouring commands");
+
+		  // Try to set the proper time on
+
+		  NFmiTime t;
+		  t.ChangeByDays(theDay);
+		  t.SetMin(0);
+		  t.SetSec(0);
+		  t.SetHour(theHour);
+		  if(theLocalTimeMode)
+			t = toutctime(t);
+
+		  float lolimit, hilimit;
+		  if(token == "contourline")
+			{
+			  script >> lolimit;
+			  hilimit = kFloatMissing;
+			}
+		  else
+			{
+			  script >> lolimit >> hilimit;
+			  if(lolimit!=kFloatMissing &&
+				 hilimit!=kFloatMissing &&
+				 lolimit >= hilimit)
+				throw runtime_error("contourfill first argument must be smaller than second argument");
+			}
+
+		  // Get the data to be contoured
+
+		  NFmiDataMatrix<float> values;
+		  NFmiDataMatrix<NFmiPoint> coords;
+
+		  q->Values(values,t);
+		  q->LocationsXY(coords,*theArea);
+
+		  Imagine::NFmiContourTree tree(lolimit,hilimit);
+		  if(token == "contourline")
+			tree.LinesOnly(true);
+
+		  tree.Contour(coords,values,Imagine::NFmiContourTree::kFmiContourLinear);
+
+		  Imagine::NFmiPath path = tree.Path();
+
+		  buffer += pathtostring(path,*theArea,theClipMargin,
+								 theMovetoCommand,theLinetoCommand,theClosepathCommand);
 		  
 		}
 
 	  // ------------------------------------------------------------
 	  // Handle a regular PostScript token line
 	  // ------------------------------------------------------------
+
 	  else
 		{
 		  buffer += token;
@@ -652,6 +834,26 @@ int main(int argc, const char * argv[])
 	   << "%%Trailer" << endl
 	   << "mysave restore" << endl
 	   << "%%EOF" << endl;
+
+  return 0;
+}
+
+// ----------------------------------------------------------------------
+// Main program.
+// ----------------------------------------------------------------------
+
+int main(int argc, const char* argv[])
+{
+  try
+	{
+	  return domain(argc, argv);
+	}
+  catch(const runtime_error & e)
+	{
+	  cerr << "Error: shape2ps failed due to" << endl
+		   << "--> " << e.what() << endl;
+	  return 1;
+	}
 }
 
 // ======================================================================
