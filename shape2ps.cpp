@@ -458,6 +458,7 @@ int domain(int argc, const char * argv[])
   bool theLocalTimeMode = true;
 
   // The time offset has not been given yet
+  string theTimeOrigin = "now";
   int theDay = -1;
   int theHour = -1;
 
@@ -856,7 +857,11 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "time")
 		{
-		  script >> theDay >> theHour;
+		  script >> theTimeOrigin >> theDay >> theHour;
+		  if(theTimeOrigin != "now" &&
+			 theTimeOrigin != "origintime" &&
+			 theTimeOrigin != "firsttime")
+			throw runtime_error("Time mode "+theTimeOrigin+" is not recognized");
 		  if(theDay < 0)
 			throw runtime_error("First argument of time-command must be nonnegative");
 		  if(theHour<0 || theHour>24)
@@ -918,12 +923,28 @@ int domain(int argc, const char * argv[])
 		  // Try to set the proper time on
 
 		  NFmiTime t;
-		  t.ChangeByDays(theDay);
 		  t.SetMin(0);
 		  t.SetSec(0);
-		  t.SetHour(theHour);
-		  if(theLocalTimeMode)
-			t = toutctime(t);
+		  if(theTimeOrigin == "now")
+			{
+			  t.ChangeByDays(theDay);
+			  t.SetHour(theHour);
+			  if(theLocalTimeMode)
+				t = toutctime(t);
+			}
+		  if(theTimeOrigin == "origintime")
+			{
+			  t = q->OriginTime();
+			  t.ChangeByDays(theDay);
+			  t.ChangeByHours(theHour);
+			}
+		  else if(theTimeOrigin == "firsttime")
+			{
+			  q->FirstTime();
+			  t = q->ValidTime();
+			  t.ChangeByDays(theDay);
+			  t.ChangeByHours(theHour);
+			}
 
 		  float lolimit, hilimit;
 		  if(token == "contourline")
