@@ -147,20 +147,20 @@ int main(int argc, char * argv[])
 
 	for(NFmiPathData::const_iterator iter=begin; iter!=end; )
 	  {
-		bool flush = false;
+		bool doflush = false;
 		// Huom! Jostain syystä g++ kääntää väärin (iter++==end), pakko tehdä näin
 		if(iter->Oper()==kFmiMoveTo)
-		  flush = true;
+		  doflush = true;
 		else if(++iter==end)
 		  {
 			--iter;
 			poly.add(Point(iter->X(),iter->Y()));
-			flush = true;
+			doflush = true;
 		  }
 		else
 		  --iter;
 		
-		if(flush && !poly.empty())
+		if(doflush && !poly.empty())
 		  {
 			if(arealimit<=0 || poly.geoarea() >= arealimit)
 			  {
