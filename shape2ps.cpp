@@ -35,6 +35,7 @@
  * - shape <moveto> <lineto> <shapefile> to render a shapefile
  * - {moveto} {lineto} exec <shapefile> to execute given commands for a shape
  * - project <x> <y> to output projected x and y
+ * - location <place> to output projected x and y
  * - system .... to execute the remaining line in the shell
  * - projectionscenter <lon> <lat> <scale>
  */
@@ -43,13 +44,16 @@
 
 // internal
 #include "Polyline.h"
-// external
-#include "NFmiFileSystem.h"
+// imagine
+#include "NFmiGeoShape.h"
+// newbase
 #include "NFmiArea.h"
-#include "NFmiValueString.h"
+#include "NFmiFileSystem.h"
+#include "NFmiLocationFinder.h"
 #include "NFmiPath.h"
 #include "NFmiPreProcessor.h"
-#include "NFmiGeoShape.h"
+#include "NFmiSettings.h"
+#include "NFmiValueString.h"
 // system
 #include <cstdlib>
 #include <iostream>
@@ -108,6 +112,14 @@ int main(int argc, char * argv[])
 
   // Not in the body yet
   bool body = false;
+
+  // Prepare the location finder for "location" token
+
+  string coordfile = NFmiSettings::instance().value("qdpoint::coordinates_file","default.txt");
+  string coordpath = NFmiSettings::instance().value("qdpoint::coordinates_path",".");
+
+  NFmiLocationFinder locfinder;
+  locfinder.AddFile(FileComplete(coordfile,coordpath), false);
 
   // Do the deed
   string token;
@@ -280,6 +292,31 @@ int main(int argc, char * argv[])
 		  double x,y;
 		  script >> x >> y;
 		  NFmiPoint pt = theArea->ToXY(NFmiPoint(x,y));
+		  buffer += NFmiValueString(pt.X());
+		  buffer += ' ';
+		  buffer += NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top()));
+		  buffer += ' ';
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle a location command
+	  // ------------------------------------------------------------
+
+	  else if(token == "location")
+		{
+		  if(!theArea.get())
+			{
+			  cerr << "Error: Using location before area" << endl;
+			  return 1;
+			}
+		  string placename;
+		  script >> placename;
+
+		  NFmiPoint lonlat = locfinder.Find(placename);
+		  if(locfinder.LastSearchFailed())
+			throw runtime_error("Location "+placename+" is not in the database");
+
+		  NFmiPoint pt = theArea->ToXY(lonlat);
 		  buffer += NFmiValueString(pt.X());
 		  buffer += ' ';
 		  buffer += NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top()));
