@@ -63,6 +63,7 @@
  * - parameter <name> Set the active querydata parameter
  * - timemode <local|utc>
  * - time <days> <hour>
+ * - smoother <name> <factor> <radius>
  * - contourcommands <moveto> <lineto> <curveto> <closepath>
  * - contourline <value>
  * - contourfill <lolimit> <hilimit>
@@ -94,6 +95,7 @@
 #include "NFmiPreProcessor.h"
 #include "NFmiSettings.h"
 #include "NFmiSaveBaseFactory.h"
+#include "NFmiSmoother.h"
 #include "NFmiStreamQueryData.h"
 #include "NFmiValueString.h"
 // system
@@ -475,6 +477,12 @@ int domain(int argc, const char * argv[])
   string theBezierMode = "none";
   double theBezierSmoothness = 0.5;
   double theBezierMaxError = 1.0;
+
+  // Smoothing
+
+  string theSmoother = "None";
+  double theSmootherRadius = 10;
+  int theSmootherFactor = 5;
 
   // The calculated contours before Bezier fitting, and set of all
   // different combinatins of Bezier parameters used in the script
@@ -888,6 +896,19 @@ int domain(int argc, const char * argv[])
 		  else
 			throw runtime_error("Bezier mode "+theBezierMode+" is not recognized");
 		}
+
+	  // ------------------------------------------------------------
+	  // Handle the smoother command
+	  // ------------------------------------------------------------
+
+	  else if(token == "smoother")
+		{
+		  script >> theSmoother;
+		  if(theSmoother != "None")
+			script >> theSmootherFactor >> theSmootherRadius;
+		  if(NFmiSmoother::SmootherValue(theSmoother) == NFmiSmoother::kFmiSmootherMissing)
+			throw runtime_error("Smoother mode "+theSmoother+" is not recognized");
+		}
 	  
 	  // ------------------------------------------------------------
 	  // Handle the contourcommands <moveto> <lineto>  <curveto> <closepath> command
@@ -972,6 +993,12 @@ int domain(int argc, const char * argv[])
 
 		  q->Values(values,t);
 		  q->LocationsXY(coords,*theArea);
+
+		  if(theSmoother != "None")
+			{
+			  NFmiSmoother smoother(theSmoother,theSmootherFactor,theSmootherRadius);
+			  values = smoother.Smoothen(coords,values);
+			}
 
 		  Imagine::NFmiContourTree tree(lolimit,hilimit);
 		  if(token == "contourline")
