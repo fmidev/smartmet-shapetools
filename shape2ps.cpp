@@ -328,45 +328,61 @@ int main(int argc, char * argv[])
 			
 
 		  // Read the shape, project and get as path
-		  NFmiGeoShape geo(shapefile,kFmiGeoShapeEsri);
-		  geo.ProjectXY(*theArea);
-		  NFmiPath path = geo.Path();
-
-		  const NFmiPathData::const_iterator begin = path.Elements().begin();
-		  const NFmiPathData::const_iterator end = path.Elements().end();
-		  
-		  Polyline polyline;
-		  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+		  try
 			{
-			  double X = iter->X();
-			  double Y = theArea->Bottom()-(iter->Y()-theArea->Top());
-
-			  if(iter->Oper()==kFmiMoveTo || iter->Oper()==kFmiLineTo)
-				polyline.add(X,Y);
-			  else
+			  NFmiGeoShape geo(shapefile,kFmiGeoShapeEsri);
+			  geo.ProjectXY(*theArea);
+			  NFmiPath path = geo.Path();
+			  
+			  const NFmiPathData::const_iterator begin = path.Elements().begin();
+			  const NFmiPathData::const_iterator end = path.Elements().end();
+			  
+			  Polyline polyline;
+			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
 				{
-				  cerr << "Error: Only moveto and lineto are supported in shapes" << endl;
-				  return 1;
+				  double X = iter->X();
+				  double Y = theArea->Bottom()-(iter->Y()-theArea->Top());
+				  
+				  if(iter->Oper()==kFmiMoveTo || iter->Oper()==kFmiLineTo)
+					polyline.add(X,Y);
+				  else
+					{
+					  cerr << "Error: Only moveto and lineto are supported in shapes" << endl;
+					  return 1;
+					}
+				  
+				  // Advance to next point. If end or moveto, flush previous polyline out
+				  ++iter;
+				  if(!polyline.empty() && (iter==end || iter->Oper()==kFmiMoveTo))
+					{
+					  polyline.clip(theArea->Left(), theArea->Top(),
+									theArea->Right(), theArea->Bottom(),
+									theClipMargin);
+					  if(!polyline.empty())
+						if(token=="shape")
+						  buffer += polyline.path(moveto,lineto,closepath);
+						else
+						  buffer += polyline.path("e3","e2");
+					  polyline.clear();
+					}
 				}
-
-			  // Advance to next point. If end or moveto, flush previous polyline out
-			  ++iter;
-			  if(!polyline.empty() && (iter==end || iter->Oper()==kFmiMoveTo))
-				{
-				  polyline.clip(theArea->Left(), theArea->Top(),
-								theArea->Right(), theArea->Bottom(),
-								theClipMargin);
-				  if(!polyline.empty())
-					if(token=="shape")
-					  buffer += polyline.path(moveto,lineto,closepath);
-					else
-					  buffer += polyline.path("e3","e2");
-				  polyline.clear();
-				}
+			  
+			  if(token == "exec")
+				buffer += "pop pop\n";
+			  
 			}
-
-		  if(token == "exec")
-			buffer += "pop pop\n";
+		  catch(std::exception & e)
+			{
+			  cerr << "Error: shape2ps failed" << endl;
+			  if(token == "shape")
+				cerr << "at command shape "
+					 << moveto << ' '
+					 << lineto << ' '
+					 << closepath << ' '
+					 << shapefile << endl;
+			  cerr << " --> " << e.what() << endl;
+			  return 1;
+			}
 		  
 		}
 
