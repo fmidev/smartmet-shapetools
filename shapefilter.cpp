@@ -41,6 +41,7 @@ struct OptionsList
 {
   string input_shape;
   string output_shape;
+  string filter_field;
   bool verbose;
   bool filter_odd_count;
   bool filter_even_count;
@@ -62,6 +63,7 @@ void usage()
 	   << "Available options are:" << endl
 	   << "   -e\tKeep only even numbered edges (national borders etc)" << endl
 	   << "   -o\tKeep only odd numbered egdes (coastlines etc)" << endl
+	   << "   -f [name=value]\tKeep only elements with required field value" << endl
 	   << endl;
 }
 
@@ -78,12 +80,13 @@ void parse_command_line(int argc, const char * argv[])
   options.verbose = false;
   options.input_shape = "";
   options.output_shape = "";
+  options.filter_field = "";
   options.filter_odd_count = false;
   options.filter_even_count = false;
 
   // Parse
   
-  NFmiCmdLine cmdline(argc,argv,"oehv");
+  NFmiCmdLine cmdline(argc,argv,"oehvf!");
 
   if(cmdline.Status().IsError())
 	throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
@@ -100,17 +103,31 @@ void parse_command_line(int argc, const char * argv[])
   options.input_shape = cmdline.Parameter(1);
   options.output_shape = cmdline.Parameter(2);
 
+  unsigned int filtercount = 0;
+
   if(cmdline.isOption('v'))
 	options.verbose = true;
 
   if(cmdline.isOption('o'))
-	options.filter_odd_count = true;
+	{
+	  ++filtercount;
+	  options.filter_odd_count = true;
+	}
 
   if(cmdline.isOption('e'))
-	options.filter_even_count = true;
+	{
+	  ++filtercount;
+	  options.filter_even_count = true;
+	}
 
-  if(options.filter_even_count && options.filter_odd_count)
-	throw runtime_error("Cannot use options -o and -e simultaneously");
+  if(cmdline.isOption('f'))
+	{
+	  ++filtercount;
+	  options.filter_field = cmdline.OptionValue('f');
+	}
+
+  if(filtercount > 1)
+	throw runtime_error("Only one filtering method allowed at a time");
 
   if(options.input_shape == options.output_shape)
 	throw runtime_error("Input and output names are equal");
@@ -342,12 +359,105 @@ const NFmiEsriShape * filter_odd_count(const NFmiEsriShape & theShape)
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Filter the shape based on a field value
+ */
+// ----------------------------------------------------------------------
+
+const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
+{
+  if(options.verbose)
+	cout << "Filtering based on field value..." << endl;
+
+  // Parse the relevant option
+
+  list<string> words = NFmiStringTools::SplitWords(options.filter_field,'=');
+  if(words.size() != 2)
+	throw runtime_error("Invalid syntax for filter field option '"+options.filter_field+"'");
+  const string fieldname = words.front();
+  const string fieldvalue = words.back();
+
+  // Fetch the attribute name
+
+  const NFmiEsriAttributeName * name = theShape.AttributeName(fieldname);
+  if(name==0)
+	throw runtime_error("The shape does not have a field named '"+fieldname+"'");
+  // Preparse the desired field value
+
+  const NFmiEsriAttributeType atype = name->Type();
+
+  string svalue;
+  int    ivalue;
+  double dvalue;
+
+  if(options.verbose)
+	{
+	  cout << "Required field name is " << fieldname << endl
+		   << "Required field value is " << fieldvalue << endl; 
+	}
+
+  switch(atype)
+	{
+	case kFmiEsriString:
+	  svalue = fieldvalue;
+	  break;
+	case kFmiEsriInteger:
+	  ivalue = NFmiStringTools::Convert<int>(fieldvalue);
+	  break;
+	case kFmiEsriDouble:
+	  dvalue = NFmiStringTools::Convert<double>(fieldvalue);
+	  break;
+	default:
+	  throw runtime_error("The field '"+fieldname+"' is of unknown type");
+	}
+
+  NFmiEsriShape * shape = new NFmiEsriShape(theShape.Type());
+  for(NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
+	  ait != theShape.Attributes().end();
+	  ++ait)
+	{
+	  shape->Add(new NFmiEsriAttributeName(**ait));
+	}
+
+
+  for(NFmiEsriShape::const_iterator it = theShape.Elements().begin();
+	  it != theShape.Elements().end();
+	  ++it)
+	{
+	  // Skip empty elements
+	  if(*it == 0)
+		continue;
+
+	  // Check if the value is correct
+
+	  bool ok = false;
+	  if(atype == kFmiEsriString)
+		ok = (svalue == (*it)->GetString(fieldname));
+	  else if(atype == kFmiEsriInteger)
+		ok = (ivalue == (*it)->GetInteger(fieldname));
+	  else
+		ok = (dvalue == (*it)->GetDouble(fieldname));
+
+	  if(!ok)
+		continue;
+
+	  NFmiEsriElement * tmp = (*it)->Clone().release();
+	  shape->Add(tmp);
+	}
+
+  return shape;
+
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Filter the shape
  */
 // ----------------------------------------------------------------------
 
 const NFmiEsriShape * filter_shape(const NFmiEsriShape & theShape)
 {
+  if(!options.filter_field.empty())
+	return filter_field(theShape);
   if(options.filter_even_count)
 	return filter_even_count(theShape);
   if(options.filter_odd_count)
