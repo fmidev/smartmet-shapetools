@@ -13,6 +13,12 @@ attribute data in XML-kind form. Not to be used in routines
 without consulting Mika, the output is not really in accordance
 with official XML guidelines.
 
+\section points Selecting evenly spaced points from shapefiles
+
+shapepoints is used to reduce the number of points in the
+input shapefile by using distance criteria to remove
+less polulated points which are too close to a larger one.
+
 \section rendering Rendering shapefiles
 
 \ref shape2ps is a program that takes as input a file containing
