@@ -69,6 +69,7 @@
  * - bezier none
  * - bezier cardinal <0-1>
  * - bezier approximate <maxerror>
+ * - bezier tight <maxerror>
  */
 // ======================================================================
 
@@ -78,6 +79,7 @@
 // imagine
 #include "NFmiCardinalBezierFit.h"
 #include "NFmiApproximateBezierFit.h"
+#include "NFmiTightBezierFit.h"
 #include "NFmiContourTree.h"
 #include "NFmiGeoShape.h"
 #include "NFmiGshhsTools.h"
@@ -879,6 +881,8 @@ int domain(int argc, const char * argv[])
 			script >> theBezierSmoothness;
 		  else if(theBezierMode == "approximate")
 			script >> theBezierMaxError;
+		  else if(theBezierMode == "tight")
+			script >> theBezierMaxError;
 		  else
 			throw runtime_error("Bezier mode "+theBezierMode+" is not recognized");
 		}
@@ -1046,6 +1050,8 @@ int domain(int argc, const char * argv[])
 			outpaths = Imagine::NFmiCardinalBezierFit::Fit(paths,sit->smoothness);
 		  else if(sit->mode == "approximate")
 			outpaths = Imagine::NFmiApproximateBezierFit::Fit(paths,sit->maxerror);
+		  else if(sit->mode == "tight")
+			outpaths = Imagine::NFmiTightBezierFit::Fit(paths,sit->maxerror);
 		  else
 			throw runtime_error("Unknown Bezier mode "+sit->mode+" while fitting contours");
 
@@ -1088,10 +1094,15 @@ int main(int argc, const char* argv[])
 	{
 	  return domain(argc, argv);
 	}
-  catch(const runtime_error & e)
+  catch(runtime_error & e)
 	{
 	  cerr << "Error: shape2ps failed due to" << endl
 		   << "--> " << e.what() << endl;
+	  return 1;
+	}
+  catch(...)
+	{
+	  cerr << "Error: shape2ps failed due to an unknown exception" << endl;
 	  return 1;
 	}
 }
