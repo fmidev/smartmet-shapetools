@@ -1,5 +1,5 @@
 HTML = shapetools
-PROG = shape2grads grads2shape gradsdump \
+PROG = shape2grads grads2shape gradsdump gshhs2grads \
 	shape2ps shape2xml \
 	triangle2shape shape2triangle amalgamate \
 	shapedump
