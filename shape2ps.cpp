@@ -57,6 +57,7 @@
  * - shape <moveto> <lineto> <closepath> <shapefile> to render a shapefile
  * - gshhs <moveto> <lineto> <closepath> <gshhsfile> to render a shoreline
  * - {moveto} {lineto} exec <shapefile> to execute given commands for vertices
+ * - {} qdexec <querydata> to execute given commands for grid points
  * - project <x> <y> to output projected x and y
  * - location <place> to output projected x and y
  * - system .... to execute the remaining line in the shell
@@ -760,6 +761,39 @@ int domain(int argc, const char * argv[])
 		}
 
 	  // ------------------------------------------------------------
+	  // Handle the qdexec command
+	  // ------------------------------------------------------------
+
+	  else if(token == "qdexec")
+		{
+		  if(!body)
+			throw runtime_error("Cannot have "+token+" command in header");
+
+		  if(!theArea.get())
+			throw runtime_error("Using qdexec before projection specified");
+
+		  string queryfile;
+		  script >> queryfile;
+		  buffer << "% " << token << ' ' << queryfile << endl;
+
+		  NFmiStreamQueryData qd;
+		  qd.ReadLatestData(queryfile);
+		  NFmiFastQueryInfo * qi = qd.QueryInfoIter();
+		  qi->First();
+
+		  for(qi->ResetLocation(); qi->NextLocation(); )
+			{
+			  const NFmiPoint lonlat = qi->LatLon();
+			  const NFmiPoint pt = theArea->ToXY(lonlat);
+			  buffer << static_cast<char*>(NFmiValueString(pt.X()))
+					 << ' '
+					 << static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())))
+					 << " e2" << endl;
+			}
+		  buffer << "pop" << endl;
+		}
+
+	  // ------------------------------------------------------------
 	  // Handle the gshhs command
 	  // ------------------------------------------------------------
 
@@ -915,6 +949,90 @@ int domain(int argc, const char * argv[])
 				 >> theCurvetoCommand
 				 >> theClosepathCommand;
 		}
+
+	  // ----------------------------------------------------------------------
+	  // Handle the windarrows <dx> <dy> command
+	  // ----------------------------------------------------------------------
+
+	  else if(token == "windarrows")
+		{
+		  if(!body)
+			throw runtime_error(token+" command is not allowed in the header");
+
+		  int dx,dy;
+		  script >> dx >> dy;
+
+		  NFmiFastQueryInfo * q = theQueryData.QueryInfoIter();
+		  if(q == 0)
+			throw runtime_error("querydata must be specified before using any windarrows commands");
+		  
+		  if(!q->Param(kFmiWindDirection))
+			throw runtime_error("parameter WindDirection is not available in "+theQueryDataName);
+		  
+		  if(theDay < 0 || theHour<0)
+			throw runtime_error("time must be specified before using any contouring commands");
+
+		  // Try to set the proper time on
+		  
+		  NFmiTime t;
+		  t.SetMin(0);
+		  t.SetSec(0);
+		  if(theTimeOrigin == "now")
+			{
+			  t.ChangeByDays(theDay);
+			  t.SetHour(theHour);
+			  if(theLocalTimeMode)
+				t = toutctime(t);
+			}
+		  if(theTimeOrigin == "origintime")
+			{
+			  t = q->OriginTime();
+			  t.ChangeByDays(theDay);
+			  t.ChangeByHours(theHour);
+			}
+		  else if(theTimeOrigin == "firsttime")
+			{
+			  q->FirstTime();
+			  t = q->ValidTime();
+			  t.ChangeByDays(theDay);
+			  t.ChangeByHours(theHour);
+			}
+
+		  // Get the data to be contoured
+		  
+		  if(coords.get() == 0)
+			{
+			  coords.reset(new NFmiDataMatrix<NFmiPoint>);
+			  q->LocationsXY(*coords,*theArea);
+			}
+
+		  values.reset();
+		  if(values.get() == 0)
+			{
+			  values.reset(new NFmiDataMatrix<float>);
+			  q->Values(*values,t);
+			}
+
+		  // Loop through the data and render arrows
+
+		  for(unsigned int j=0; j<values->NY(); j += dy)
+			for(unsigned int i=0; i<values->NX(); i += dx)
+			  {
+				float wdir = (*values)[i][j];
+				NFmiPoint xy = (*coords)[i][j];
+
+				double x = xy.X();
+				double y = theArea->Bottom()-(xy.Y()-theArea->Top());
+
+				if(x > theArea->Left() && x < theArea->Right() ||
+				   y > theArea->Top() && y < theArea->Bottom())
+				  {
+					buffer << wdir << ' ' << x << ' ' << y << ' ' << " windarrow" << endl;
+				  }
+
+			  }
+		}
+
 
 	  // ------------------------------------------------------------
 	  // Handle the contourline <value> command
