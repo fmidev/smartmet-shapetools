@@ -33,12 +33,13 @@
  * The list of special commands is
  * - area ... to set the projection
  * - body to indicate the start of the PostScript body
- * - shape <moveto> <lineto> <shapefile> to render a shapefile
- * - {moveto} {lineto} exec <shapefile> to execute given commands for a shape
+ * - shape <moveto> <lineto> <closepath> <shapefile> to render a shapefile
+ * - gshhs <moveto> <lineto> <closepath> <gshhsfile> to render a shoreline
+ * - {moveto} {lineto} exec <shapefile> to execute given commands for vertices
  * - project <x> <y> to output projected x and y
  * - location <place> to output projected x and y
  * - system .... to execute the remaining line in the shell
- * - projectionscenter <lon> <lat> <scale>
+ * - projectioncenter <lon> <lat> <scale>
  */
 // ======================================================================
 
