@@ -505,6 +505,13 @@ int domain(int argc, const char * argv[])
   NFmiLocationFinder locfinder;
   locfinder.AddFile(FileComplete(coordfile,coordpath), false);
 
+  // We try to cache the matrices for best speed.
+  // Some tokens will invalidate the matrices
+
+
+  auto_ptr<NFmiDataMatrix<float> > values;
+  auto_ptr<NFmiDataMatrix<NFmiPoint> > coords;
+
   // Do the deed
   string token;
   ostringstream buffer;
@@ -538,6 +545,9 @@ int domain(int argc, const char * argv[])
 	  // ------------------------------------------------------------
 	  else if(token == "area")
 		{
+		  // Invalidate coordinate matrix
+		  coords.reset(0);
+
 		  if(theArea.get())
 			throw runtime_error("Area given twice");
 
@@ -581,6 +591,8 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "projectioncenter")
 		{
+		  coords.reset(0);
+
 		  if(!theArea.get())
 			throw runtime_error("projectioncenter must be used after a projection has been specified");
 
@@ -827,6 +839,8 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "querydata")
 		{
+		  coords.reset(0);
+		  values.reset(0);
 		  script >> theQueryDataName;
 		  if(!theQueryData.ReadLatestData(theQueryDataName))
 			throw runtime_error("Failed to read querydata from "+theQueryDataName);
@@ -838,6 +852,7 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "parameter")
 		{
+		  values.reset(0);
 		  script >> theParameterName;
 		  NFmiEnumConverter converter;
 		  theParameter = FmiParameterName(converter.ToEnum(theParameterName));
@@ -851,6 +866,7 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "timemode")
 		{
+		  values.reset(0);
 		  string name;
 		  script >> name;
 		  if(name == "local")
@@ -867,6 +883,7 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "time")
 		{
+		  values.reset(0);
 		  script >> theTimeOrigin >> theDay >> theHour;
 		  if(theTimeOrigin != "now" &&
 			 theTimeOrigin != "origintime" &&
@@ -903,6 +920,7 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "smoother")
 		{
+		  values.reset(0);
 		  script >> theSmoother;
 		  if(theSmoother != "None")
 			script >> theSmootherFactor >> theSmootherRadius;
@@ -988,23 +1006,29 @@ int domain(int argc, const char * argv[])
 
 		  // Get the data to be contoured
 
-		  NFmiDataMatrix<float> values;
-		  NFmiDataMatrix<NFmiPoint> coords;
-
-		  q->Values(values,t);
-		  q->LocationsXY(coords,*theArea);
-
-		  if(theSmoother != "None")
+		  if(coords.get() == 0)
 			{
-			  NFmiSmoother smoother(theSmoother,theSmootherFactor,theSmootherRadius);
-			  values = smoother.Smoothen(coords,values);
+			  coords.reset(new NFmiDataMatrix<NFmiPoint>);
+			  q->LocationsXY(*coords,*theArea);
+			}
+
+		  if(values.get() == 0)
+			{
+			  values.reset(new NFmiDataMatrix<float>);
+			  q->Values(*values,t);
+
+			  if(theSmoother != "None")
+				{
+				  NFmiSmoother smoother(theSmoother,theSmootherFactor,theSmootherRadius);
+				  *values = smoother.Smoothen(*coords,*values);
+				}
 			}
 
 		  Imagine::NFmiContourTree tree(lolimit,hilimit);
 		  if(token == "contourline")
 			tree.LinesOnly(true);
 
-		  tree.Contour(coords,values,Imagine::NFmiContourTree::kFmiContourLinear);
+		  tree.Contour(*coords,*values,Imagine::NFmiContourTree::kFmiContourLinear);
 
 		  Imagine::NFmiPath path = tree.Path();
 
