@@ -51,7 +51,6 @@ using namespace std;
 void print_double(double theValue)
 {
   int value = static_cast<int>(theValue*1e4+0.5);
-
   cout << static_cast<unsigned char>( (value >> 16) & 0xFF);
   cout << static_cast<unsigned char>( (value >> 8) & 0xFF);
   cout << static_cast<unsigned char>( (value >> 0) & 0xFF);
@@ -66,10 +65,8 @@ void print_double(double theValue)
 void print_lon(double theLon)
 {
   // Make sure value is in range [0-360[
-  while(theLon < 0)
+  if(theLon < 0)
 	theLon += 360;
-  while(theLon >= 360)
-	theLon -= 360;
   print_double(theLon);
 }
 
@@ -81,12 +78,8 @@ void print_lon(double theLon)
 
 void print_lat(double theLat)
 {
-  // Make sure value is in range [0-180[
-  while(theLat < 0)
-	theLat += 180;
-  while(theLat >= 180)
-	theLat -= 180;
-  print_double(theLat);
+  // Make sure value is in shifted range [0-180[
+  print_double(theLat+90);
 }
 
 // ----------------------------------------------------------------------
@@ -176,7 +169,7 @@ int domain(int argc, const char * argv[])
 		case Imagine::kFmiMoveTo:
 		  tograds(level,buffer);
 		  buffer.clear();
-		  break;
+		  // fallthrough
 		case Imagine::kFmiLineTo:
 		  buffer.push_back(NFmiPoint((*it).X(),(*it).Y()));
 		  break;
@@ -186,6 +179,7 @@ int domain(int argc, const char * argv[])
 		  throw runtime_error("The shapefile contains Bezier curve segments");
 		}
 	}
+  tograds(level,buffer);
 
   return 0;
 }
