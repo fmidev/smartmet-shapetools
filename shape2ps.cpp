@@ -17,7 +17,7 @@
  * A very simple example file would be
  *
  * \code
- * area 10 NFmiLatLonArea ...
+ * projection stereographic,20,90,60:6,51.3,49,70.2:400,400
  * body
  * 3 setlinewidth
  * 1 1 0 setrgbcolor
@@ -50,7 +50,9 @@
  * \endcode
  *
  * The list of special commands is
- * - area ... to set the projection
+ * - projection ... to set the projection
+ * - area ... to set the projection as an object
+ * - projectioncenter <lon> <lat> <scale>
  * - body to indicate the start of the PostScript body
  * - shape <moveto> <lineto> <closepath> <shapefile> to render a shapefile
  * - gshhs <moveto> <lineto> <closepath> <gshhsfile> to render a shoreline
@@ -58,7 +60,6 @@
  * - project <x> <y> to output projected x and y
  * - location <place> to output projected x and y
  * - system .... to execute the remaining line in the shell
- * - projectioncenter <lon> <lat> <scale>
  * - querydata <name> Set the active querydata
  * - parameter <name> Set the active querydata parameter
  * - timemode <local|utc>
@@ -86,6 +87,7 @@
 #include "NFmiGshhsTools.h"
 // newbase
 #include "NFmiArea.h"
+#include "NFmiAreaFactory.h"
 #include "NFmiCmdLine.h"
 #include "NFmiEnumConverter.h"
 #include "NFmiFileSystem.h"
@@ -545,6 +547,8 @@ int domain(int argc, const char * argv[])
 	  // ------------------------------------------------------------
 	  else if(token == "area")
 		{
+		  cerr << "Warning: The area command is deprecated, use projection command instead" << endl;
+
 		  // Invalidate coordinate matrix
 		  coords.reset(0);
 
@@ -591,6 +595,8 @@ int domain(int argc, const char * argv[])
 
 	  else if(token == "projectioncenter")
 		{
+		  cerr << "Warning: The projectioncenter command is deprecated, use projection command instead" << endl;
+
 		  coords.reset(0);
 
 		  if(!theArea.get())
@@ -618,11 +624,59 @@ int domain(int argc, const char * argv[])
 
 		  if(verbose)
 			{
-			  cerr << "Calculated new projection corners" << endl
-				   << "  BottomLeft = " << bottomleft
-				   << "  TopRight = " << topright;
+			  cerr << "Calculated new area to be" << endl
+				   << *theArea
+				   << endl;
 			}
 
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the projection command
+	  // ------------------------------------------------------------
+
+	  else if(token == "projection")
+		{
+		  // Invalidate coordinate matrix
+		  coords.reset(0);
+
+		  if(theArea.get())
+			throw runtime_error("Projection given twice");
+
+		  string specs;
+		  script >> specs;
+		  theArea.reset(NFmiAreaFactory::Create(specs).release());
+
+		  // Now handle XY limits
+
+		  double x1 = theArea->Left();
+		  double x2 = theArea->Right();
+		  double y1 = theArea->Top();
+		  double y2 = theArea->Bottom();
+
+		  if(x2-x1==1 && y2-y1==1)
+			throw runtime_error("Error: No decent XY-area given in projection");
+		  // Recalculate x-range from y-range if necessary
+		  if(x2-x1==1)
+			{
+			  x1 = 0;
+			  x2 = (y2-y1)*theArea->WorldXYAspectRatio();
+			  theArea->SetXYArea(NFmiRect(x1,y2,x2,y1));
+			}
+		  // Recalculate y-range from x-range if necessary
+		  if(y2-y1==1)
+			{
+			  y1 = 0;
+			  y2 = (x2-x1)/theArea->WorldXYAspectRatio();
+			  theArea->SetXYArea(NFmiRect(x1,y2,x2,y1));
+			}
+
+		  if(verbose)
+			{
+			  cerr << "The new projection is" << endl
+				   << *theArea
+				   << endl;
+			}
 		}
 	  
 	  // ------------------------------------------------------------
