@@ -72,7 +72,8 @@ double read_lon(istream & in)
 double read_lat(istream & in)
 {
   int value = read_int(in);
-  return (value/1e4 - 90);
+  double lat = value/1e4 - 90;
+  return lat;
 }
 
 // ----------------------------------------------------------------------
