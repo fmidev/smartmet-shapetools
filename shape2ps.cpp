@@ -50,6 +50,7 @@
 #include "NFmiGshhsTools.h"
 // newbase
 #include "NFmiArea.h"
+#include "NFmiCmdLine.h"
 #include "NFmiFileSystem.h"
 #include "NFmiLocationFinder.h"
 #include "NFmiPath.h"
@@ -168,15 +169,29 @@ void FindBBox(const NFmiArea & theArea,
 // ----------------------------------------------------------------------
 // The main program
 // ----------------------------------------------------------------------
-int main(int argc, char * argv[])
+int main(int argc, const char * argv[])
 {
-  // Read the command line arguments
-  if(argc!=2)
+  bool verbose = false;
+
+  NFmiCmdLine cmdline(argc,argv,"v");
+
+  if(cmdline.NumberofParameters() != 1)
 	{
-	  cerr << "Usage: " << argv[0] << " [filename]" << endl;
+	  cerr << "Usage: " << argv[0] << " [options] [filename]" << endl;
 	  return 1;
 	}
-  string scriptfile = argv[1];
+
+  if(cmdline.Status().IsError())
+	{
+	  cerr << "Error: Invalid command line" << endl
+		   << "\t --> " << cmdline.Status().ErrorLog().CharPtr() << endl;
+	  return 1;
+	}
+
+  if(cmdline.isOption('v'))
+    verbose = true;
+
+  string scriptfile = cmdline.Parameter(1);
 
   // Open the script file
 
@@ -322,6 +337,14 @@ int main(int argc, char * argv[])
 		  NFmiPoint bottomleft = theArea->WorldXYToLatLon(bl);
 		  NFmiPoint topright = theArea->WorldXYToLatLon(tr);
 		  theArea.reset(theArea->NewArea(bottomleft, topright));
+
+		  if(verbose)
+			{
+			  cerr << "Calculated new projection corners" << endl
+				   << "  BottomLeft = " << bottomleft
+				   << "  TopRight = " << topright;
+			}
+
 		}
 	  
 	  // ------------------------------------------------------------
