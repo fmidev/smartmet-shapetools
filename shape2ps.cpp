@@ -364,13 +364,19 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 
 string pathtostring(const Imagine::NFmiPath & thePath,
 					const NFmiArea & theArea,
+					double theClipMargin,
 					const string & theMoveto,
 					const string & theLineto,
 					const string & theCurveto,
 					const string & theClosepath)
 {
-  const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
-  const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
+
+  Imagine::NFmiPath path = thePath.Clip(theArea.Left(), theArea.Top(),
+										theArea.Right(), theArea.Bottom(),
+										theClipMargin);
+
+  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
   
   string out;
 
@@ -985,6 +991,7 @@ int domain(int argc, const char * argv[])
 			{
 			  buffer << pathtostring(path,
 									 *theArea,
+									 theClipMargin,
 									 theMovetoCommand,
 									 theLinetoCommand,
 									 theCurvetoCommand,
@@ -1060,6 +1067,7 @@ int domain(int argc, const char * argv[])
 			  const string name = *nit;
 			  const string path = pathtostring(*it,
 											   *theArea,
+											   theClipMargin,
 											   theMovetoCommand,
 											   theLinetoCommand,
 											   theCurvetoCommand,
