@@ -93,7 +93,7 @@ string Polyline::path(const string & moveto,
  */
 // ----------------------------------------------------------------------
 
-void Polyline::clip(double x1, double y1, double x2, double y2, double margin)
+void Polyline::clip(double theX1, double theY1, double theX2, double theY2, double margin)
 {
   if(empty())
 	return;
@@ -116,7 +116,7 @@ void Polyline::clip(double x1, double y1, double x2, double y2, double margin)
 		newpts.push_back(itsPoints[i]);
 	  else
 		{
-		  this_quadrant = quadrant(itsPoints[i].x(),itsPoints[i].y(),x1,y1,x2,y2,margin);
+		  this_quadrant = quadrant(itsPoints[i].x(),itsPoints[i].y(),theX1,theY1,theX2,theY2,margin);
 		  if(this_quadrant==central_quadrant)
 			newpts.push_back(itsPoints[i]);
 		  else if(this_quadrant != last_quadrant)
@@ -139,7 +139,7 @@ void Polyline::clip(double x1, double y1, double x2, double y2, double margin)
   // replace old points with clipped ones
 
   if(newpts.size()<=1 ||
-	 !intersects(minx,miny,maxx,maxy,x1-margin,y1-margin,x2+margin,y2+margin))
+	 !intersects(minx,miny,maxx,maxy,theX1-margin,theY1-margin,theX2+margin,theY2+margin))
 	itsPoints.clear();
   else
 	itsPoints = newpts;

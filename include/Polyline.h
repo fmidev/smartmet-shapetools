@@ -53,7 +53,7 @@ public:
   void add(const Point & thePoint) { itsPoints.push_back(thePoint); }
 
   //! Clip the polyline with the given rectangle
-  void clip(double x1, double y1, double x2, double y2, double margin=0);
+  void clip(double theX1, double theY1, double theX2, double theY2, double margin=0);
 
   //! Clip the polyline with the given bounding box
   void clip(const Point & lowleft, const Point & topright, double margin=0)
