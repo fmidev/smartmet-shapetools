@@ -3,7 +3,7 @@ PROG = shapefilter \
 	shape2grads grads2shape gradsdump gshhs2grads gshhs2shape \
 	shape2ps shape2xml shapedump \
 	triangle2shape shape2triangle amalgamate \
-	etopo2shape
+	etopo2shape lights2shape
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
