@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
 		long node, id;
 		double x,y;
 		in >> node >> x >> y >> id;
-		(void) inodes.add(Point(x,y),id);
+		static_cast<void>(inodes.add(Point(x,y),id));
 	  }
 	if(in.fail())
 	  {
@@ -283,7 +283,7 @@ int main(int argc, char * argv[])
 		const Polygon::DataType::const_iterator pbegin = iter->data().begin();
 		const Polygon::DataType::const_iterator pend = iter->data().end();
 		for(Polygon::DataType::const_iterator piter=pbegin; piter!=pend; ++piter)
-		  (void) nodes.add(*piter,idx);
+		  static_cast<void>(nodes.add(*piter,idx));
 	  }
   }
   cout << "Counted " << nodes.data().size() << " nodes" << endl;

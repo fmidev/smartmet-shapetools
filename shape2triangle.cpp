@@ -40,7 +40,7 @@ using namespace std;
 // ----------------------------------------------------------------------
 // The main program
 // ----------------------------------------------------------------------
-int main(int argc, char * argv[])
+int main(int argc, const char * argv[])
 {
   // Read the command line arguments
   if(argc!=4)
@@ -107,7 +107,7 @@ int main(int argc, char * argv[])
 		const Polygon::DataType::const_iterator pbegin = iter->data().begin();
 		const Polygon::DataType::const_iterator pend = iter->data().end();
 		for(Polygon::DataType::const_iterator piter=pbegin; piter!=pend; ++piter)
-		  (void) nodes.add(*piter,idx);
+		  static_cast<void>(nodes.add(*piter,idx));
 	  }
   }
   cout << "Counted " << nodes.data().size() << " nodes" << endl;
