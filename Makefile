@@ -1,5 +1,5 @@
 HTML = shapetools
-PROG = shapefilter \
+PROG = shapefilter shapeproject \
 	shapepoints \
 	shape2grads grads2shape gradsdump gshhs2grads gshhs2shape \
 	shape2ps shape2xml shapedump \
