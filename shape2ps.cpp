@@ -115,6 +115,9 @@
 using namespace boost;
 using namespace std;
 
+// Clamp PostScript path elements to within this range
+const double clamp_limit = 10000;
+
 struct BezierSettings
 {
   BezierSettings(const string & theName, const string theMode, double theSmoothness, double theMaxError)
@@ -240,6 +243,11 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 	  double X = (*iter).X();
 	  double Y = theArea.Bottom()-((*iter).Y()-theArea.Top());
 	  
+	  X = std::min(X,clamp_limit);
+	  Y = std::min(Y,clamp_limit);
+	  X = std::max(X,-clamp_limit);
+	  Y = std::max(Y,-clamp_limit);
+
 	  if((*iter).Oper()==Imagine::kFmiMoveTo ||
 		 (*iter).Oper()==Imagine::kFmiLineTo ||
 		 (*iter).Oper()==Imagine::kFmiGhostLineTo )
@@ -292,8 +300,13 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 
   for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; ++iter)
 	{
-	  const double X = iter->X();
-	  const double Y = theArea.Bottom()-(iter->Y()-theArea.Top());
+	  double X = iter->X();
+	  double Y = theArea.Bottom()-(iter->Y()-theArea.Top());
+
+	  X = std::min(X,clamp_limit);
+	  Y = std::min(Y,clamp_limit);
+	  X = std::max(X,-clamp_limit);
+	  Y = std::max(Y,-clamp_limit);
 
 	  out << X
 		  << ' '
