@@ -8,6 +8,8 @@
 #include "Polyline.h"
 #include "NFmiValueString.h"
 
+#include <sstream>
+
 using namespace std;
 
 // ======================================================================
@@ -66,24 +68,24 @@ string Polyline::path(const string & moveto,
 					  const string & lineto,
 					  const string & closepath) const
 {
-  string output = "";
+  ostringstream out;
   unsigned int n = size()-1;
   bool isclosed = (size()>1 && itsPoints[0]==itsPoints[n]);
   for(unsigned int i=0; i<=n; i++)
 	{
 	  if(isclosed && i==n && !closepath.empty())
-		output += closepath;
+		out << closepath;
 	  else
 		{
-		  output += NFmiValueString(itsPoints[i].x()).CharPtr();
-		  output += ' ';
-		  output += NFmiValueString(itsPoints[i].y()).CharPtr();
-		  output += ' ';
-		  output += (i==0 ? moveto : lineto);
+		  out << itsPoints[i].x()
+			  << ' '
+			  << itsPoints[i].y()
+			  << ' '
+			  << (i==0 ? moveto : lineto);
 		}
-	  output += '\n';
+	  out << endl;
 	}
-  return output;
+  return out.str();
 }
 
 // ----------------------------------------------------------------------
