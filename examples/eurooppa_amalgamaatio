@@ -1,0 +1,23 @@
+#!/bin/sh -x
+
+# Convert shape to PSLG, removing all islands smaller than 5km2
+
+shape2triangle 5 DCW/Europe/ponet eurooppa
+
+# Triangulate it
+
+triangle -pcAI eurooppa
+
+# Accept distances smaller than 4km for amalgamation, and
+# remove all islands which remain smaller than 100km2
+
+amalgamate 4 100 eurooppa eurooppa.1
+
+# Convert back to a shapefile, no area limit
+
+triangle2shape 0 eurooppa.1 eurooppashape
+
+# Optionally one may visualize the results
+
+# triangleshow eurooppa
+
