@@ -39,7 +39,7 @@ public:
   Nodes(void) { }
 
   //! Add a point, returning the ordinal of the point
-  long add(const Point & pt, long id=0);
+  long add(const Point & pt, long theId=0);
 
   //! Return the ordinal of the given point
   unsigned long number(const Point & pt) const;
