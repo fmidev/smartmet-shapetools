@@ -27,54 +27,14 @@
 #include "NFmiCmdLine.h"
 #include "NFmiStringTools.h"
 
+// self
+#include "GradsTools.h"
+
 // system
-#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 using namespace std;
-
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Read a 3-byte integer from the input stream
- */
-// ----------------------------------------------------------------------
-
-int read_int(istream & in)
-{
-  unsigned char ch1, ch2, ch3;
-  in >> noskipws >> ch1 >> ch2 >> ch3;
-  return ((ch1<<16) | (ch2<<8) | ch3);
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Read a longitude from the input stream
- */
-// ----------------------------------------------------------------------
-
-double read_lon(istream & in)
-{
-  int value = read_int(in);
-  double lon = (value/1e4);
-  if(lon >= 180) lon -= 360;
-  return lon;
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Read a latitude from the input stream
- */
-// ----------------------------------------------------------------------
-
-double read_lat(istream & in)
-{
-  int value = read_int(in);
-  double lat = value/1e4 - 90;
-  return lat;
-}
 
 // ----------------------------------------------------------------------
 /*!
@@ -124,8 +84,8 @@ int domain(int argc, const char * argv[])
 			new Imagine::NFmiEsriPolyLine(counter);
 		  for(unsigned int i=0; i<record_points; i++)
 			{
-			  double lon = read_lon(in);
-			  double lat = read_lat(in);
+			  double lon = GradsTools::read_lon(in);
+			  double lat = GradsTools::read_lat(in);
 			  line->Add(Imagine::NFmiEsriPoint(lon,lat));
 			}
 		  shp.Add(line);
@@ -136,10 +96,10 @@ int domain(int argc, const char * argv[])
 		  unsigned char ch1,ch2,ch3,ch4;
 		  in >> noskipws >> ch1 >> ch2 >> ch3 >> ch4;
 		  int length = ( (ch1<<24) | (ch2<<16) | (ch3<<8) | ch4);
-		  double lon1 = read_lon(in);
-		  double lat1 = read_lat(in);
-		  double lon2 = read_lon(in);
-		  double lat2 = read_lat(in);
+		  double lon1 = GradsTools::read_lon(in);
+		  double lat1 = GradsTools::read_lat(in);
+		  double lon2 = GradsTools::read_lon(in);
+		  double lat2 = GradsTools::read_lat(in);
 		  
 		  cout << "Skipping skip record with bbox: "
 			   << lon1 << ',' << lat1 << " ... "

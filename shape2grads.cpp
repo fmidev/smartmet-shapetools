@@ -35,111 +35,15 @@
 #include "NFmiCmdLine.h"
 #include "NFmiStringTools.h"
 
+// self
+#include "GradsTools.h"
+
 // system
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
 using namespace std;
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Print coodinate as 3-byte integer
- */
-// ----------------------------------------------------------------------
-
-void print_double(double theValue)
-{
-  int value = static_cast<int>(theValue*1e4+0.5);
-  cout << static_cast<unsigned char>( (value >> 16) & 0xFF);
-  cout << static_cast<unsigned char>( (value >> 8) & 0xFF);
-  cout << static_cast<unsigned char>( (value >> 0) & 0xFF);
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Print longitude
- */
-// ----------------------------------------------------------------------
-
-void print_lon(double theLon)
-{
-  // Make sure value is in range [0-360[
-  if(theLon < 0)
-	theLon += 360;
-  print_double(theLon);
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Print latitude
- */
-// ----------------------------------------------------------------------
-
-void print_lat(double theLat)
-{
-  // Make sure value is in shifted range [0-180[
-  print_double(theLat+90);
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Print out a sequence of lineto commands
- *
- * Each record header consists of
- *
- *  - Byte 0: 1
- *  - Byte 1: The type of the record
- *  - Byte 2: Number of points in the record
- *  - Bytes 3-N: Pairs of lon-lat values
- */
-// ----------------------------------------------------------------------
-
-void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
-{
-  if(thePoints.empty())
-	return;
-
-  unsigned int pos1=0;
-  while(pos1 < thePoints.size())
-	{
-	  unsigned int pos2 = min(pos1+254,thePoints.size()-1);
-	  if(pos1==pos2)
-		break;
-
-	  // Must not cross the meridian during one segment?
-
-	  const double x = thePoints[pos1].X();
-	  for(unsigned int i=pos1+1; i<=pos2; i++)
-		{
-		  if( (x<0 && thePoints[i].X() >= 0) ||
-			  (x>=0 && thePoints[i].X() < 0) )
-			{
-			  pos2 = max(pos1,i-1);
-			  break;
-			}
-		}
-
-	  // Byte 0:
-	  cout << static_cast<unsigned char>(1);
-	  // Byte 1:
-	  cout << static_cast<unsigned char>(theLevel);
-	  // Byte 2:
-	  cout << static_cast<unsigned char>(pos2-pos1+1);
-	  // The coordinates
-	  for(unsigned int i=pos1; i<=pos2; i++)
-		{
-		  print_lon(thePoints[i].X());
-		  print_lat(thePoints[i].Y());
-		}
-	  // Note! no +1, we start from where we left off,
-	  // unless we crossed the meridian with one single point!
-	  if(pos2!=pos1)
-		pos1 = pos2;
-	  else
-		pos1++;
-	}
-}
 
 // ----------------------------------------------------------------------
 /*!
@@ -184,7 +88,7 @@ int domain(int argc, const char * argv[])
 	  switch((*it).Oper())
 		{
 		case Imagine::kFmiMoveTo:
-		  tograds(level,buffer);
+		  GradsTools::print_line(cout,level,buffer);
 		  buffer.clear();
 		  // fallthrough
 		case Imagine::kFmiLineTo:
@@ -196,7 +100,7 @@ int domain(int argc, const char * argv[])
 		  throw runtime_error("The shapefile contains Bezier curve segments");
 		}
 	}
-  tograds(level,buffer);
+  GradsTools::print_line(cout,level,buffer);
 
   return 0;
 }
