@@ -77,7 +77,6 @@
 
 
 // internal
-#include "BoundingBox.h"
 #include "Polyline.h"
 // imagine
 #include "NFmiCardinalBezierFit.h"
@@ -89,6 +88,7 @@
 // newbase
 #include "NFmiArea.h"
 #include "NFmiAreaFactory.h"
+#include "NFmiAreaTools.h"
 #include "NFmiCmdLine.h"
 #include "NFmiEnumConverter.h"
 #include "NFmiFileSystem.h"
@@ -770,7 +770,7 @@ int domain(int argc, const char * argv[])
 		  try
 			{
 			  double minlon, minlat, maxlon, maxlat;
-			  BoundingBox::FindBBox(*theArea,minlon,minlat,maxlon,maxlat);
+			  NFmiAreaTools::LatLonBoundingBox(*theArea,minlon,minlat,maxlon,maxlat);
 
 			  Imagine::NFmiPath path = Imagine::NFmiGshhsTools::ReadPath(gshhsfile,
 																		 minlon,minlat,
