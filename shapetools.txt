@@ -8,6 +8,11 @@
 \ref shapedump is a program that dumps the coordinates in the given
 shapefile to the screen.
 
+\ref shape2xml is a program that outputs the path data and the
+attribute data in XML-kind form. Not to be used in routines
+without consulting Mika, the output is not really in accordance
+with official XML guidelines.
+
 \section rendering Rendering shapefiles
 
 \ref shape2ps is a program that takes as input a file containing
