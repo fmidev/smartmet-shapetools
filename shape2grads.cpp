@@ -103,7 +103,7 @@ void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
   unsigned int pos1=0;
   while(pos1 < thePoints.size())
 	{
-	  unsigned int pos2 = min(pos1+255,thePoints.size()-1);
+	  unsigned int pos2 = min(pos1+254,thePoints.size()-1);
 	  if(pos1==pos2)
 		break;
 
