@@ -558,15 +558,14 @@ const NFmiEsriShape * filter_boundingbox(const NFmiEsriShape & theShape)
 
   // Parse the bounding box
 
-  const list<string> words = NFmiStringTools::SplitWords(options.filter_boundingbox);
-  if(words.size() != 4)
+  const vector<double> values = NFmiStringTools::Split<vector<double> >(options.filter_boundingbox);
+  if(values.size() != 4)
 	throw runtime_error("Bounding box must consist of 4 values");
   
-  list<string>::const_iterator wit = words.begin();
-  const double x1 = NFmiStringTools::Convert<double>(*wit);
-  const double y1 = NFmiStringTools::Convert<double>(*(++wit));
-  const double x2 = NFmiStringTools::Convert<double>(*(++wit));
-  const double y2 = NFmiStringTools::Convert<double>(*(++wit));
+  const double x1 = values[0];
+  const double y1 = values[1];
+  const double x2 = values[2];
+  const double y2 = values[3];
 
   // Check bounding box validity
 
