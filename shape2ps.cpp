@@ -48,12 +48,19 @@
 #include "NFmiArea.h"
 #include "NFmiValueString.h"
 #include "NFmiPath.h"
+#include "NFmiPreProcessor.h"
 #include "NFmiGeoShape.h"
 // system
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <memory>
+
+#ifdef OLDGCC
+  #include <strstream>
+#else
+  #include <sstream>
+#endif
 
 // For reading a projection specification
 extern void * CreateSaveBase(unsigned long classID);
@@ -75,8 +82,10 @@ int main(int argc, char * argv[])
 
   // Open the script file
 
-  ifstream script(scriptfile.c_str());
-  if(!script)
+  const bool strip_pound = true;
+  NFmiPreProcessor processor(strip_pound);
+  processor.SetIncluding("include","","");
+  if(!processor.ReadAndStripFile(scriptfile))
 	{
 	  cerr << "Error: Could not open '"
 		   << scriptfile
@@ -84,6 +93,12 @@ int main(int argc, char * argv[])
 		   << endl;
 	  return 1;
 	}
+  string text = processor.GetString();
+#ifdef OLDGCC
+  istrstream script(text.c_str());
+#else
+  istringstream script(text);
+#endif
 
   // The area specification is not given yet
   auto_ptr<NFmiArea> theArea;
