@@ -27,7 +27,7 @@ public:
   //! Destructor
   ~Point(void) { }
   //! Constructor
-  Point(double x=0, double y=0) : itsX(x), itsY(y) { }
+  Point(double theX=0, double theY=0) : itsX(theX), itsY(theY) { }
   //! Copy constructor
   Point(const Point & pt) : itsX(pt.itsX), itsY(pt.itsY) { }
   //! Construction from NFmiPoint
