@@ -124,8 +124,8 @@ void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
 		  print_lon(thePoints[i].X());
 		  print_lat(thePoints[i].Y());
 		}
-
-	  pos1 = pos2+1;
+	  // Note! no +1, we start from where we left off!
+	  pos1 = pos2;
 	}
 }
 
