@@ -36,6 +36,7 @@
  * - {moveto} {lineto} exec <shapefile> to execute given commands for a shape
  * - project <x> <y> to output projected x and y
  * - system .... to execute the remaining line in the shell
+ * - projectionscenter <lon> <lat> <scale>
  */
 // ======================================================================
 
@@ -52,6 +53,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <memory>
 
 // For reading a projection specification
 extern void * CreateSaveBase(unsigned long classID);
@@ -84,7 +86,7 @@ int main(int argc, char * argv[])
 	}
 
   // The area specification is not given yet
-  NFmiArea * theArea = 0;
+  auto_ptr<NFmiArea> theArea;
 
   // No clipping margin given yet
   double theClipMargin = 0.0;
@@ -123,7 +125,7 @@ int main(int argc, char * argv[])
 	  // ------------------------------------------------------------
 	  else if(token == "area")
 		{
-		  if(theArea)
+		  if(theArea.get())
 			{
 			  cerr << "Error: Area already given" << endl;
 			  return 1;
@@ -131,8 +133,8 @@ int main(int argc, char * argv[])
 		  unsigned long classID;
 		  string className;
 		  script >> classID >> className;
-		  theArea = static_cast<NFmiArea *>(CreateSaveBase(classID));
-		  if(!theArea)
+		  theArea.reset(static_cast<NFmiArea *>(CreateSaveBase(classID)));
+		  if(!theArea.get())
 			{
 			  cerr << "Error: Unrecognized area in the script:" << endl
 				   << classID << " " << className << endl;
@@ -167,6 +169,39 @@ int main(int argc, char * argv[])
 			  theArea->SetXYArea(NFmiRect(x1,y2,x2,y1));
 			}
 		}
+
+	  // ------------------------------------------------------------
+	  // Handle the projectioncenter command
+	  // ------------------------------------------------------------
+
+	  else if(token == "projectioncenter")
+		{
+		  if(!theArea.get())
+			{
+			  cerr << "projectioncenter must be used after a projection has been specified" << endl;
+			  return 1;
+			}
+
+		  float lon, lat, scale;
+		  script >> lon >> lat >> scale;
+
+		  NFmiPoint center(lon,lat);
+		  double x1 = theArea->Left();
+		  double x2 = theArea->Right();
+		  double y1 = theArea->Top();
+		  double y2 = theArea->Bottom();
+
+		  // Projektiolaskuja varten
+		  theArea.reset(theArea->NewArea(center,center));
+
+		  NFmiPoint c = theArea->LatLonToWorldXY(center);
+
+		  NFmiPoint bl(c.X()-scale*1000*(x2-x1), c.Y()-scale*1000*(y2-y1));
+		  NFmiPoint tr(c.X()+scale*1000*(x2-x1), c.Y()+scale*1000*(y2-y1));
+		  NFmiPoint bottomleft = theArea->WorldXYToLatLon(bl);
+		  NFmiPoint topright = theArea->WorldXYToLatLon(tr);
+		  theArea.reset(theArea->NewArea(bottomleft, topright));
+		}
 	  
 	  // ------------------------------------------------------------
 	  // Handle the body command
@@ -178,7 +213,7 @@ int main(int argc, char * argv[])
 			  cerr << "Error: body command given twice in script" << endl;
 			  return 1;
 			}
-		  if(!theArea)
+		  if(!theArea.get())
 			{
 			  cerr << "Error: No area specified before body" << endl;
 			  return 1;
@@ -222,7 +257,7 @@ int main(int argc, char * argv[])
 
 	  else if(token == "project")
 		{
-		  if(!theArea)
+		  if(!theArea.get())
 			{
 			  cerr << "Error: Using project before area" << endl;
 			  return 1;
