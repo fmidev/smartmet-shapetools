@@ -300,7 +300,14 @@ void create_shape()
 	  if(globals.verbose)
 		cout << "  height " << *it << "..." << endl;
 
-	  NFmiContourTree tree(*it,kFloatMissing);
+	  float lolimit = kFloatMissing;
+	  float hilimit = kFloatMissing;
+	  if(*it >= 0)
+		lolimit = *it;
+	  else
+		hilimit = *it;
+
+	  NFmiContourTree tree(lolimit,hilimit);
 	  tree.SubTriangleMode(false);
 	  tree.Contour(globals.values,helper,NFmiContourTree::kFmiContourLinear);
 
