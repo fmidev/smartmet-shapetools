@@ -503,7 +503,7 @@ int domain(int argc, const char * argv[])
   string coordpath = NFmiSettings::Optional<string>("qdpoint::coordinates_path",".");
 
   NFmiLocationFinder locfinder;
-  locfinder.AddFile(FileComplete(coordfile,coordpath), false);
+  locfinder.AddFile(NFmiFileSystem::FileComplete(coordfile,coordpath), false);
 
   // We try to cache the matrices for best speed.
   // Some tokens will invalidate the matrices
