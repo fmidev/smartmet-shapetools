@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
   
   // Read the .ele file and build an edge tree obeying the area constraints
   
-  NFmiEdgeTree edges;
+  Imagine::NFmiEdgeTree edges;
   {
 	string filename = inname + ".ele";
 	ifstream in(filename.c_str());
@@ -189,22 +189,22 @@ int main(int argc, char * argv[])
 
 		if(triangle_ok)
 		  {
-			edges.Add(NFmiEdge(pt1.x(),pt1.y(),pt2.x(),pt2.y(),true));
-			edges.Add(NFmiEdge(pt2.x(),pt2.y(),pt3.x(),pt3.y(),true));
-			edges.Add(NFmiEdge(pt3.x(),pt3.y(),pt1.x(),pt1.y(),true));
+			edges.Add(Imagine::NFmiEdge(pt1.x(),pt1.y(),pt2.x(),pt2.y(),true));
+			edges.Add(Imagine::NFmiEdge(pt2.x(),pt2.y(),pt3.x(),pt3.y(),true));
+			edges.Add(Imagine::NFmiEdge(pt3.x(),pt3.y(),pt1.x(),pt1.y(),true));
 
 			if(debug)
 			  {
 				++debug_triangles;
-				debug_buffer += NFmiValueString(debug_triangles);
+				debug_buffer += static_cast<char*>(NFmiValueString(debug_triangles));
 				debug_buffer += '\t';
-				debug_buffer += NFmiValueString(idx1);
+				debug_buffer += static_cast<char*>(NFmiValueString(idx1));
 				debug_buffer += '\t';
-				debug_buffer += NFmiValueString(idx2);
+				debug_buffer += static_cast<char*>(NFmiValueString(idx2));
 				debug_buffer += '\t';
-				debug_buffer += NFmiValueString(idx3);
+				debug_buffer += static_cast<char*>(NFmiValueString(idx3));
 				debug_buffer += '\t';
-				debug_buffer += NFmiValueString(region);
+				debug_buffer += static_cast<char*>(NFmiValueString(region));
 				debug_buffer += '\n';
 			  }
 		  }
@@ -229,7 +229,7 @@ int main(int argc, char * argv[])
   // Build a path from the remaining edges
 
   cout << "Building a path" << endl;
-  NFmiPath path = edges.Path();
+  Imagine::NFmiPath path = edges.Path();
 
   // Preserve all big enough polygons in the path
 
@@ -237,14 +237,14 @@ int main(int argc, char * argv[])
   vector<Polygon> polygons;
   {
 	Polygon poly;
-	const NFmiPathData::const_iterator begin = path.Elements().begin();
-	const NFmiPathData::const_iterator end = path.Elements().end();
+	const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+	const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 	
-	for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+	for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 	  {
 		bool doflush = false;
 		// Huom! Jostain syyst‰ g++ k‰‰nt‰‰ v‰‰rin (iter++==end), pakko	tehd‰ n‰in
-		  if((*iter).Oper()==kFmiMoveTo)
+		  if((*iter).Oper()==Imagine::kFmiMoveTo)
 			doflush = true;
 		  else if(++iter==end)
 			{

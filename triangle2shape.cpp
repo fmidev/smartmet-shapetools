@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
 
   // Read the edges
 
-  NFmiEdgeTree edges;
+  Imagine::NFmiEdgeTree edges;
   {
 	string filename = inname + ".poly";
 	ifstream in(filename.c_str());
@@ -115,8 +115,8 @@ int main(int argc, char * argv[])
 				 << filename << endl;
 			return 1;
 		  }
-		NFmiEdge tmp(nodes[idx1].x(),nodes[idx1].y(),
-					 nodes[idx2].x(),nodes[idx2].y(),true);
+		Imagine::NFmiEdge tmp(nodes[idx1].x(),nodes[idx1].y(),
+							  nodes[idx2].x(),nodes[idx2].y(),true);
 		if(edge==85)
 		  cout << "Edge 85!" << endl;
 		edges.Add(tmp);
@@ -132,24 +132,24 @@ int main(int argc, char * argv[])
 
   // Build a path from the edges
 
-  NFmiPath path = edges.Path();
+  Imagine::NFmiPath path = edges.Path();
 
   // Convert individual closed segments into polygons
   // As soon as a polygon becomes closed, we output
   // it as an ESRI shape
   
   {
-	NFmiEsriShape shape;
+	Imagine::NFmiEsriShape shape;
 	Polygon poly;
 
-	const NFmiPathData::const_iterator begin = path.Elements().begin();
-	const NFmiPathData::const_iterator end = path.Elements().end();
+	const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+	const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 
-	for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+	for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 	  {
 		bool doflush = false;
 		// Huom! Jostain syystä g++ kääntää väärin (iter++==end), pakko tehdä näin
-		if((*iter).Oper()==kFmiMoveTo)
+		if((*iter).Oper()==Imagine::kFmiMoveTo)
 		  doflush = true;
 		else if(++iter==end)
 		  {
@@ -165,11 +165,11 @@ int main(int argc, char * argv[])
 			if(arealimit<=0 || poly.geoarea() >= arealimit)
 			  {
 				// Convert to NFmiEsriPolygon
-				NFmiEsriPolygon * p = new NFmiEsriPolygon();
+				Imagine::NFmiEsriPolygon * p = new Imagine::NFmiEsriPolygon();
 				Polygon::DataType::const_iterator b = poly.data().begin();
 				Polygon::DataType::const_iterator e = poly.data().end();
 				for(Polygon::DataType::const_iterator it = b; it!=e; ++it)
-				  p->Add(NFmiEsriPoint(it->x(),it->y()));
+				  p->Add(Imagine::NFmiEsriPoint(it->x(),it->y()));
 				// And add to output
 				shape.Add(p);
 			  }

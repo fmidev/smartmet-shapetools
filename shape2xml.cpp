@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
 
   try
 	{
-	  NFmiEsriShape shape;
+	  Imagine::NFmiEsriShape shape;
 	  if(!shape.Read(shapefile,true))
 		throw std::runtime_error("Failed to read "+shapefile);
 
@@ -53,11 +53,11 @@ int main(int argc, char * argv[])
 		   << shapefile
 		   << "\">" << endl;
 
-	  const NFmiEsriShape::attributes_type & attributes = shape.Attributes();
+	  const Imagine::NFmiEsriShape::attributes_type & attributes = shape.Attributes();
 
 	  {
 		cout << "<attributelist>" << endl;
-		for(NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
+		for(Imagine::NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
 			ait != attributes.end();
 			++ait)
 		  cout << " <attribute name=\"" << (*ait)->Name() << '"'
@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
 	  }
 
 	  int shapenumber = -1;
-	  for(NFmiEsriShape::const_iterator it = shape.Elements().begin();
+	  for(Imagine::NFmiEsriShape::const_iterator it = shape.Elements().begin();
 		  it != shape.Elements().end();
 		  ++it) 
 		{
@@ -80,20 +80,20 @@ int main(int argc, char * argv[])
 		  cout << "<shape id=\"" << shapenumber << '"'
 			   << " type=\"" << static_cast<int>((*it)->Type()) << '"';
 			
-		  for(NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
+		  for(Imagine::NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
 			  ait != attributes.end();
 			  ++ait)
 			{
 			  cout << ' ' << (*ait)->Name() << "=\"";
 			  switch((*ait)->Type())
 				{
-				case kFmiEsriString:
+				case Imagine::kFmiEsriString:
 				  cout << (*it)->GetString((*ait)->Name());
 				  break;
-				case kFmiEsriInteger:
+				case Imagine::kFmiEsriInteger:
 				  cout << (*it)->GetInteger((*ait)->Name());
 				  break;
-				case kFmiEsriDouble:
+				case Imagine::kFmiEsriDouble:
 				  cout << (*it)->GetDouble((*ait)->Name());
 				  break;
 				}
@@ -103,23 +103,23 @@ int main(int argc, char * argv[])
 
 		  switch( (*it)->Type())
 			{
-			case kFmiEsriNull:
-			case kFmiEsriMultiPatch:
+			case Imagine::kFmiEsriNull:
+			case Imagine::kFmiEsriMultiPatch:
 			  break;
-			case kFmiEsriPoint:
-			case kFmiEsriPointM:
-			case kFmiEsriPointZ:
+			case Imagine::kFmiEsriPoint:
+			case Imagine::kFmiEsriPointM:
+			case Imagine::kFmiEsriPointZ:
 			  {
 				const float x = (*it)->X();
 				const float y = (*it)->Y();
 				cout << "M " << x << ' ' << y << endl;
 				break;
 			  }
-			case kFmiEsriMultiPoint:
-			case kFmiEsriMultiPointM:
-			case kFmiEsriMultiPointZ:
+			case Imagine::kFmiEsriMultiPoint:
+			case Imagine::kFmiEsriMultiPointM:
+			case Imagine::kFmiEsriMultiPointZ:
 			  {
-				const NFmiEsriMultiPoint * elem = static_cast<const NFmiEsriMultiPoint *>(*it);
+				const Imagine::NFmiEsriMultiPoint * elem = static_cast<const Imagine::NFmiEsriMultiPoint *>(*it);
 				for(int i=0; i<elem->NumPoints(); i++)
 				  {
 					const float x = elem->Points()[i].X();
@@ -131,11 +131,11 @@ int main(int argc, char * argv[])
 				cout << endl;
 				break;
 			  }
-			case kFmiEsriPolyLine:
-			case kFmiEsriPolyLineM:
-			case kFmiEsriPolyLineZ:
+			case Imagine::kFmiEsriPolyLine:
+			case Imagine::kFmiEsriPolyLineM:
+			case Imagine::kFmiEsriPolyLineZ:
 			  {
-				const NFmiEsriPolyLine * elem = static_cast<const NFmiEsriPolyLine *>(*it);
+				const Imagine::NFmiEsriPolyLine * elem = static_cast<const Imagine::NFmiEsriPolyLine *>(*it);
 				for(int part=0; part<elem->NumParts(); part++)
 				  {
 					int i1,i2;
@@ -163,11 +163,11 @@ int main(int argc, char * argv[])
 				  }
 				break;
 			  }
-			case kFmiEsriPolygon:
-			case kFmiEsriPolygonM:
-			case kFmiEsriPolygonZ:
+			case Imagine::kFmiEsriPolygon:
+			case Imagine::kFmiEsriPolygonM:
+			case Imagine::kFmiEsriPolygonZ:
 			  {
-				const NFmiEsriPolygon * elem = static_cast<const NFmiEsriPolygon *>(*it);
+				const Imagine::NFmiEsriPolygon * elem = static_cast<const Imagine::NFmiEsriPolygon *>(*it);
 				for(int part=0; part<elem->NumParts(); part++)
 				  {
 					int i1,i2;

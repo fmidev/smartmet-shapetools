@@ -44,15 +44,15 @@ int main(int argc, char * argv[])
   int linenum = 0;
   try
 	{
-	  NFmiGeoShape geo(shapefile,kFmiGeoShapeEsri);
-	  NFmiPath path = geo.Path();
+	  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
+	  Imagine::NFmiPath path = geo.Path();
 
-	  const NFmiPathData::const_iterator begin = path.Elements().begin();
-	  const NFmiPathData::const_iterator end = path.Elements().end();
+	  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+	  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 
-	  for(NFmiPathData::const_iterator it=begin; it!=end; ++it)
+	  for(Imagine::NFmiPathData::const_iterator it=begin; it!=end; ++it)
 		{
-		  if((*it).Oper()==kFmiMoveTo)
+		  if((*it).Oper()==Imagine::kFmiMoveTo)
 			{
 			  shapenum++;
 			  linenum = 0;

@@ -54,22 +54,22 @@ int main(int argc, const char * argv[])
 
   // Read the shapefile
   cout << "Reading shapefile " << shapefile << endl;
-  NFmiGeoShape geo(shapefile,kFmiGeoShapeEsri);
+  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
 
   // Create a vector of polygons
   cout << "Collecting polygons large enough" << endl;
   vector<Polygon> polygons;
   {
-	NFmiPath path = geo.Path();
+	Imagine::NFmiPath path = geo.Path();
 	Polygon poly;
-	const NFmiPathData::const_iterator begin = path.Elements().begin();
-	const NFmiPathData::const_iterator end = path.Elements().end();
+	const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+	const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 	
-	for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+	for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 	  {
 		bool doflush = false;
 		// Huom! Jostain syyst‰ g++ k‰‰nt‰‰ v‰‰rin (iter++==end), pakko tehd‰ n‰in
-		if((*iter).Oper()==kFmiMoveTo)
+		if((*iter).Oper()==Imagine::kFmiMoveTo)
 		  doflush = true;
 		else if(++iter==end)
 		  {

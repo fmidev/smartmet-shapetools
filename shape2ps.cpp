@@ -409,9 +409,9 @@ int main(int argc, const char * argv[])
 		  double x,y;
 		  script >> x >> y;
 		  NFmiPoint pt = theArea->ToXY(NFmiPoint(x,y));
-		  buffer += NFmiValueString(pt.X());
+		  buffer += static_cast<char*>(NFmiValueString(pt.X()));
 		  buffer += ' ';
-		  buffer += NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top()));
+		  buffer += static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())));
 		  buffer += ' ';
 		}
 
@@ -434,9 +434,9 @@ int main(int argc, const char * argv[])
 			throw runtime_error("Location "+placename+" is not in the database");
 
 		  NFmiPoint pt = theArea->ToXY(lonlat);
-		  buffer += NFmiValueString(pt.X());
+		  buffer += static_cast<char*>(NFmiValueString(pt.X()));
 		  buffer += ' ';
-		  buffer += NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top()));
+		  buffer += static_cast<char*>(NFmiValueString(theArea->Bottom()-(pt.Y()-theArea->Top())));
 		  buffer += ' ';
 		}
 
@@ -484,20 +484,20 @@ int main(int argc, const char * argv[])
 		  // Read the shape, project and get as path
 		  try
 			{
-			  NFmiGeoShape geo(shapefile,kFmiGeoShapeEsri);
+			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
 			  geo.ProjectXY(*theArea);
-			  NFmiPath path = geo.Path();
+			  Imagine::NFmiPath path = geo.Path();
 			  
-			  const NFmiPathData::const_iterator begin = path.Elements().begin();
-			  const NFmiPathData::const_iterator end = path.Elements().end();
+			  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+			  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 			  
 			  Polyline polyline;
-			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+			  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 				{
 				  double X = (*iter).X();
 				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
 				  
-				  if((*iter).Oper()==kFmiMoveTo || (*iter).Oper()==kFmiLineTo)
+				  if((*iter).Oper()==Imagine::kFmiMoveTo || (*iter).Oper()==Imagine::kFmiLineTo)
 					polyline.add(X,Y);
 				  else
 					{
@@ -507,7 +507,7 @@ int main(int argc, const char * argv[])
 				  
 				  // Advance to next point. If end or moveto, flush previous polyline out
 				  ++iter;
-				  if(!polyline.empty() && (iter==end || (*iter).Oper()==kFmiMoveTo))
+				  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
 					{
 					  polyline.clip(theArea->Left(), theArea->Top(),
 									theArea->Right(), theArea->Bottom(),
@@ -570,22 +570,22 @@ int main(int argc, const char * argv[])
 			  double minlon, minlat, maxlon, maxlat;
 			  FindBBox(*theArea,minlon,minlat,maxlon,maxlat);
 
-			  NFmiPath path = NFmiGshhsTools::ReadPath(gshhsfile,
-													   minlon,minlat,
-													   maxlon,maxlat);
-
+			  Imagine::NFmiPath path = Imagine::NFmiGshhsTools::ReadPath(gshhsfile,
+																		 minlon,minlat,
+																		 maxlon,maxlat);
+			  
 			  path.Project(theArea.get());
 			  
-			  const NFmiPathData::const_iterator begin = path.Elements().begin();
-			  const NFmiPathData::const_iterator end = path.Elements().end();
+			  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
+			  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 			  
 			  Polyline polyline;
-			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+			  for(Imagine::NFmiPathData::const_iterator iter=begin; iter!=end; )
 				{
 				  double X = (*iter).X();
 				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
 				  
-				  if((*iter).Oper()==kFmiMoveTo || (*iter).Oper()==kFmiLineTo)
+				  if((*iter).Oper()==Imagine::kFmiMoveTo || (*iter).Oper()==Imagine::kFmiLineTo)
 					polyline.add(X,Y);
 				  else
 					{
@@ -595,7 +595,7 @@ int main(int argc, const char * argv[])
 				  
 				  // Advance to next point. If end or moveto, flush previous polyline out
 				  ++iter;
-				  if(!polyline.empty() && (iter==end || (*iter).Oper()==kFmiMoveTo))
+				  if(!polyline.empty() && (iter==end || (*iter).Oper()==Imagine::kFmiMoveTo))
 					{
 					  polyline.clip(theArea->Left(), theArea->Top(),
 									theArea->Right(), theArea->Bottom(),
