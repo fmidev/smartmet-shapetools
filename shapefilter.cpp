@@ -261,7 +261,7 @@ void path_to_shape(const NFmiPath & thePath, NFmiEsriShape & theShape)
  */
 // ----------------------------------------------------------------------
 
-NFmiEsriShape filter_even_count(const NFmiEsriShape & theShape)
+const NFmiEsriShape * filter_even_count(const NFmiEsriShape & theShape)
 {
   if(options.verbose)
 	cout << "Filtering even numbered edges..." << endl;
@@ -288,8 +288,8 @@ NFmiEsriShape filter_even_count(const NFmiEsriShape & theShape)
 
   // Convert the tree to a shape
 
-  NFmiEsriShape shape(kFmiEsriPolyLine);
-  path_to_shape(path,shape);
+  NFmiEsriShape * shape = new NFmiEsriShape(kFmiEsriPolyLine);
+  path_to_shape(path,*shape);
 
   return shape;
 }
@@ -300,7 +300,7 @@ NFmiEsriShape filter_even_count(const NFmiEsriShape & theShape)
  */
 // ----------------------------------------------------------------------
 
-NFmiEsriShape filter_odd_count(const NFmiEsriShape & theShape)
+const NFmiEsriShape * filter_odd_count(const NFmiEsriShape & theShape)
 {
   if(options.verbose)
 	cout << "Filtering odd numbered edges..." << endl;
@@ -326,9 +326,16 @@ NFmiEsriShape filter_odd_count(const NFmiEsriShape & theShape)
   NFmiPath path = tree.Path();
 
   // Convert the tree to a shape
+  // Note that polygons will remain polygons, otherwise we will
+  // assume polyline output
 
-  NFmiEsriShape shape(kFmiEsriPolyLine);
-  path_to_shape(path,shape);
+  const NFmiEsriElementType oldtype = theShape.Type();
+  NFmiEsriElementType newtype = oldtype;
+  if(oldtype != kFmiEsriPolygon)
+	newtype = kFmiEsriPolyLine;
+
+  NFmiEsriShape * shape = new NFmiEsriShape(newtype);
+  path_to_shape(path,*shape);
 
   return shape;
 }
@@ -339,14 +346,14 @@ NFmiEsriShape filter_odd_count(const NFmiEsriShape & theShape)
  */
 // ----------------------------------------------------------------------
 
-NFmiEsriShape filter_shape(const NFmiEsriShape & theShape)
+const NFmiEsriShape * filter_shape(const NFmiEsriShape & theShape)
 {
   if(options.filter_even_count)
 	return filter_even_count(theShape);
   if(options.filter_odd_count)
   	return filter_odd_count(theShape);
-  
-  throw runtime_error("No filter specified!");
+
+  return &theShape;
 }
 
 // ----------------------------------------------------------------------
@@ -378,13 +385,13 @@ int domain(int argc, const char * argv[])
 
   if(options.verbose)
 	cout << "Filtering..." << endl;
-  NFmiEsriShape outputshape = filter_shape(inputshape);
+  const NFmiEsriShape * outputshape = filter_shape(inputshape);
 
   // And write it
 
   if(options.verbose)
 	cout << "Writing output shapefile '"+options.output_shape+"'" << endl;
-  outputshape.Write(options.output_shape);
+  outputshape->Write(options.output_shape);
 
   return 0;
 
