@@ -348,9 +348,10 @@ int domain(int argc, const char * argv[])
 
   // Open the script file
 
-  const bool strip_pound = true;
+  const bool strip_pound = false;
   NFmiPreProcessor processor(strip_pound);
   processor.SetIncluding("include","","");
+  processor.SetDefine("#define");
   if(!processor.ReadAndStripFile(scriptfile))
 	throw runtime_error("Error: Could not open '"+scriptfile+"' for reading");
 
