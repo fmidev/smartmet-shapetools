@@ -37,8 +37,9 @@ struct ProjectionPimple
 	, itsTopRight(NFmiPoint(kFloatMissing,kFloatMissing))
 	, itsCenter(NFmiPoint(kFloatMissing,kFloatMissing))
 	, itsScale(kFloatMissing)
-	,itsWidth(-1)
-	,itsHeight(-1)
+	, itsWidth(-1)
+	, itsHeight(-1)
+	, itsOrigin(0,0)
   { }
 
   std::string itsType;
@@ -51,6 +52,7 @@ struct ProjectionPimple
   float itsScale;
   float itsWidth;
   float itsHeight;
+  NFmiPoint itsOrigin;
 
 };
 
@@ -250,6 +252,11 @@ void Projection::height(float theHeight)
   itsPimple->itsHeight = theHeight;
 }
 
+void Projection::origin(float theLon, float theLat)
+{
+  itsPimple->itsOrigin = NFmiPoint(theLon, theLat);
+}
+
 // ----------------------------------------------------------------------
 /*!
  * The projection service provided by the class.
@@ -345,7 +352,7 @@ NFmiArea* Projection::createArea(void) const
 	    if(w<0)	w = h * area->WorldXYAspectRatio();
 	    if(h<0)	h = w / area->WorldXYAspectRatio();
 
-	    area->SetXYArea(NFmiRect(0,h,w,0));
+	    area->SetXYArea(NFmiRect(itsPimple->itsOrigin.X(), h, w, itsPimple->itsOrigin.Y()));
   }
 
   return area;

@@ -71,6 +71,7 @@ public:
 
   void width(float theWidth);
   void height(float theHeight);
+  void origin(float theLon, float theLat);
 
   NFmiArea* createArea(void) const;
 
