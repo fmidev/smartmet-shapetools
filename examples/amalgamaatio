@@ -2,7 +2,7 @@
 
 # Convert shape to PSLG, removing all islands smaller than 5km2
 
-shape2triangle 5 /var/www/share/shapes/DCW/Suomi/ponet suomi
+shape2triangle 5 DCW/Suomi/ponet suomi
 
 # Triangulate it
 
