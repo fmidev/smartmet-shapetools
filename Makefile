@@ -1,5 +1,8 @@
 HTML = shapetools
-PROG = shape2ps triangle2shape shape2triangle amalgamate shapedump shape2xml
+PROG = shape2grads \
+	shape2ps shape2xml \
+	triangle2shape shape2triangle amalgamate \
+	shapedump
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
