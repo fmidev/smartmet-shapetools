@@ -244,12 +244,12 @@ int main(int argc, char * argv[])
 	  {
 		bool doflush = false;
 		// Huom! Jostain syystä g++ kääntää väärin (iter++==end), pakko	tehdä näin
-		  if(iter->Oper()==kFmiMoveTo)
+		  if((*iter).Oper()==kFmiMoveTo)
 			doflush = true;
 		  else if(++iter==end)
 			{
 			  --iter;
-			  poly.add(Point(iter->X(),iter->Y()));
+			  poly.add(Point((*iter).X(),(*iter).Y()));
 			  doflush = true;
 			}
 		  else
@@ -262,7 +262,7 @@ int main(int argc, char * argv[])
 			  poly.clear();
 			}
 		  
-		  poly.add(Point(iter->X(),iter->Y()));
+		  poly.add(Point((*iter).X(),(*iter).Y()));
 		  ++iter;
 	  }
   }

@@ -494,10 +494,10 @@ int main(int argc, const char * argv[])
 			  Polyline polyline;
 			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
 				{
-				  double X = iter->X();
-				  double Y = theArea->Bottom()-(iter->Y()-theArea->Top());
+				  double X = (*iter).X();
+				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
 				  
-				  if(iter->Oper()==kFmiMoveTo || iter->Oper()==kFmiLineTo)
+				  if((*iter).Oper()==kFmiMoveTo || (*iter).Oper()==kFmiLineTo)
 					polyline.add(X,Y);
 				  else
 					{
@@ -507,7 +507,7 @@ int main(int argc, const char * argv[])
 				  
 				  // Advance to next point. If end or moveto, flush previous polyline out
 				  ++iter;
-				  if(!polyline.empty() && (iter==end || iter->Oper()==kFmiMoveTo))
+				  if(!polyline.empty() && (iter==end || (*iter).Oper()==kFmiMoveTo))
 					{
 					  polyline.clip(theArea->Left(), theArea->Top(),
 									theArea->Right(), theArea->Bottom(),
@@ -582,10 +582,10 @@ int main(int argc, const char * argv[])
 			  Polyline polyline;
 			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
 				{
-				  double X = iter->X();
-				  double Y = theArea->Bottom()-(iter->Y()-theArea->Top());
+				  double X = (*iter).X();
+				  double Y = theArea->Bottom()-((*iter).Y()-theArea->Top());
 				  
-				  if(iter->Oper()==kFmiMoveTo || iter->Oper()==kFmiLineTo)
+				  if((*iter).Oper()==kFmiMoveTo || (*iter).Oper()==kFmiLineTo)
 					polyline.add(X,Y);
 				  else
 					{
@@ -595,7 +595,7 @@ int main(int argc, const char * argv[])
 				  
 				  // Advance to next point. If end or moveto, flush previous polyline out
 				  ++iter;
-				  if(!polyline.empty() && (iter==end || iter->Oper()==kFmiMoveTo))
+				  if(!polyline.empty() && (iter==end || (*iter).Oper()==kFmiMoveTo))
 					{
 					  polyline.clip(theArea->Left(), theArea->Top(),
 									theArea->Right(), theArea->Bottom(),

@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
 
 	  for(NFmiPathData::const_iterator it=begin; it!=end; ++it)
 		{
-		  if(it->Oper()==kFmiMoveTo)
+		  if((*it).Oper()==kFmiMoveTo)
 			{
 			  shapenum++;
 			  linenum = 0;
@@ -61,8 +61,8 @@ int main(int argc, char * argv[])
 		  cout << shapenum << '\t'
 			   << linenum << '\t'
 			   << std::setiosflags(std::ios::fixed)
-			   << it->X() << '\t'
-			   << it->Y() << endl;
+			   << (*it).X() << '\t'
+			   << (*it).Y() << endl;
 		}
 	  
 	}
