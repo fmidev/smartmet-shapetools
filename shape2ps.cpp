@@ -99,6 +99,7 @@
 // system
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <memory>
@@ -373,7 +374,7 @@ string pathtostring(const Imagine::NFmiPath & thePath,
   const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
   const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
   
-  string out;
+  ostringstream out;
 
   unsigned int cubic_count = 0;
 
@@ -381,33 +382,34 @@ string pathtostring(const Imagine::NFmiPath & thePath,
 	{
 	  const double X = iter->X();
 	  const double Y = theArea.Bottom()-(iter->Y()-theArea.Top());
-	  const string x = NFmiValueString(X).CharPtr();
-	  const string y = NFmiValueString(Y).CharPtr();
 
-	  out += (x + ' ' + y + ' ');
+	  out << X
+		  << ' '
+		  << Y
+		  << ' ';
 
 	  switch(iter->Oper())
 		{
 		case Imagine::kFmiMoveTo:
-		  out += (theMoveto + '\n');
+		  out << theMoveto << endl;
 		  cubic_count = 0;
 		  break;
 		case Imagine::kFmiLineTo:
 		case Imagine::kFmiGhostLineTo:
-		  out += (theLineto + '\n');
+		  out << theLineto << endl;
 		  cubic_count = 0;
 		  break;
 		case Imagine::kFmiCubicTo:
 		  ++cubic_count;
 		  if(cubic_count % 3 == 0)
-			out += (theCurveto + '\n');
+			out << theCurveto << endl;
 		  break;
 		case Imagine::kFmiConicTo:
 		  throw runtime_error("Conic segments not supported");
 		}
 	}
 
-  return out;
+  return out.str();
 }
 
 
