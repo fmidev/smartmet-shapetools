@@ -402,11 +402,34 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
 
   // Parse the relevant option
 
-  list<string> words = NFmiStringTools::SplitWords(options.filter_field,'=');
-  if(words.size() != 2)
-	throw runtime_error("Invalid syntax for filter field option '"+options.filter_field+"'");
-  const string fieldname = words.front();
-  const string fieldvalue = words.back();
+  list<string> comparisons;
+  comparisons.push_back("==");
+  comparisons.push_back("<=");
+  comparisons.push_back(">=");
+  comparisons.push_back("<>");
+  comparisons.push_back("<");
+  comparisons.push_back(">");
+  comparisons.push_back("=");
+
+  string fieldname, fieldvalue, fieldcomparison;
+  list<string> words;
+
+  for(list<string>::const_iterator it = comparisons.begin();
+	  it != comparisons.end();
+	  ++it)
+	{
+	  string::size_type pos = options.filter_field.find(*it);
+	  if(pos != string::npos)
+		{
+		  fieldcomparison = *it;
+		  fieldname = options.filter_field.substr(0,pos);
+		  fieldvalue = options.filter_field.substr(pos+it->size());
+		  break;
+		}
+	}
+
+  if(fieldcomparison.empty())
+	throw runtime_error("Unable to parse comparison option");
 
   // Fetch the attribute name
 
@@ -420,12 +443,6 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
   string svalue;
   int    ivalue;
   double dvalue;
-
-  if(options.verbose)
-	{
-	  cout << "Required field name is " << fieldname << endl
-		   << "Required field value is " << fieldvalue << endl; 
-	}
 
   switch(atype)
 	{
@@ -462,13 +479,61 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
 	  // Check if the value is correct
 
 	  bool ok = false;
-	  if(atype == kFmiEsriString)
-		ok = (svalue == (*it)->GetString(fieldname));
-	  else if(atype == kFmiEsriInteger)
-		ok = (ivalue == (*it)->GetInteger(fieldname));
-	  else
-		ok = (dvalue == (*it)->GetDouble(fieldname));
-
+	  if(fieldcomparison == "==" || fieldcomparison == "=")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) == svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) == ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) == dvalue);
+		}
+	  else if(fieldcomparison == "<>")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) != svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) != ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) != dvalue);
+		}
+	  else if(fieldcomparison == "<")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) < svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) < ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) < dvalue);
+		}
+	  else if(fieldcomparison == ">")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) > svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) > ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) > dvalue);
+		}
+	  else if(fieldcomparison == "<=")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) <= svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) <= ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) <= dvalue);
+		}
+	  else if(fieldcomparison == ">=")
+		{
+		  if(atype == kFmiEsriString)
+			ok = ((*it)->GetString(fieldname) >= svalue);
+		  else if(atype == kFmiEsriInteger)
+			ok = ((*it)->GetInteger(fieldname) >= ivalue);
+		  else
+			ok = ((*it)->GetDouble(fieldname) >= dvalue);
+		}
+		
 	  if(!ok)
 		continue;
 
