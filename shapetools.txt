@@ -36,8 +36,8 @@
  * The commands used in the process are given below in the order
  * they are typically applied.
  *
- * \subsection phase1 triangle2shape
- * \ref triangle2shape is a program to convert ESRI shapefiles into
+ * \subsection phase1 shape2triangle
+ * \ref shape2triangle is a program to convert ESRI shapefiles into
  * the PSLG format suitable for constrained Delaunay triangulation
  * by Jonathan R. Shewchuk's Delaunay triangulation programs. Particular
  * care is taken to label each polygon uniquely so that we can identify
@@ -87,8 +87,8 @@
  * triangleshow suomi
  * \endcode
  *
- * \subsection phase5 shape2triangle
- * \ref shape2triangle is a program to build a shapefile from the
+ * \subsection phase5 triangle2shape
+ * \ref triangle2shape is a program to build a shapefile from the
  * given PSLG files. An optional area limit can again be used to
  * remove too small polygons, although one is more likely to use
  * the option already in the \ref amalgamate phase.
