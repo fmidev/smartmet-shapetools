@@ -28,14 +28,14 @@ double Point::geodistance(const Point & pt) const
   const double kpi = 3.14159265358979323848/180;
   const double R = 6371.220;
 
-  const double x1 = kpi*x();
-  const double y1 = kpi*y();
-  const double x2 = kpi*pt.x();
-  const double y2 = kpi*pt.y();
+  const double xx1 = kpi*x();
+  const double yy1 = kpi*y();
+  const double xx2 = kpi*pt.x();
+  const double yy2 = kpi*pt.y();
 
-  const double sindx = sin((x2-x1)/2);
-  const double sindy = sin((y2-y1)/2);
-  const double a = sindy*sindy + cos(y1)*cos(y2)*sindx*sindx;
+  const double sindx = sin((xx2-xx1)/2);
+  const double sindy = sin((yy2-yy1)/2);
+  const double a = sindy*sindy + cos(yy1)*cos(yy2)*sindx*sindx;
   const double c = 2*asin(min(1.0,sqrt(a)));
   return R*c;
 }
