@@ -100,12 +100,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-
-#ifdef OLDGCC
-  #include <strstream>
-#else
-  #include <sstream>
-#endif
+#include <sstream>
 
 #include "boost/lexical_cast.hpp"
 
@@ -444,11 +439,7 @@ int domain(int argc, const char * argv[])
 	throw runtime_error("Error: Could not open '"+scriptfile+"' for reading");
 
   string text = processor.GetString();
-#ifdef OLDGCC
-  istrstream script(text.c_str());
-#else
   istringstream script(text);
-#endif
 
   // The area specification is not given yet
   auto_ptr<NFmiArea> theArea;
