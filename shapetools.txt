@@ -1,104 +1,101 @@
 // ======================================================================
 /*!
- * \file shapetools.h
- * \brief Main Doxygen documentation file for shapetools
- */
-// ======================================================================
-/*!
- * \mainpage shapetools - A collection of ESRI shapefile tools.
- *
- * \section rendering Rendering shapefiles
- *
- * \ref shape2ps is a program that takes as input a file containing
- * a mixture of PostScript tokens and shape2ps tokens controlling
- * shapefile polygons, and produces a rendered shapefile.
- *
- * \section amalgamation Amalgamation
- *
- * Amalgamation is the process of combining multiple adjacent or nearby
- * polygons into one bigger one. This is used for example to combine
- * many little islands into one larger one. This is especially important
- * when rendering the archipelago due to the very large number of
- * polygons present - drawing the outlines with black would cause
- * the archipelago to look black. On the other hand removing all small
- * polygons would make the archipelago look too empty.
- *
- * The approach taken for amalgamation in shapetools is to perform
- * constrained Delaunay triangulation on the input polygons. Then
- * any polygon which is not a part of the input polygons is accepted
- * as long as the sides are short enough. The sides can be short only
- * if there are nearby polygons, or if the features (bays mainly) of
- * the original polygon are small enough.
- *
- * From the accepted triangles one can then simply build new larger
- * polygons by combining adjacent triangles.
- *
- * The commands used in the process are given below in the order
- * they are typically applied.
- *
- * \subsection phase1 shape2triangle
- * \ref shape2triangle is a program to convert ESRI shapefiles into
- * the PSLG format suitable for constrained Delaunay triangulation
- * by Jonathan R. Shewchuk's Delaunay triangulation programs. Particular
- * care is taken to label each polygon uniquely so that we can identify
- * triangles which are inside the original polygons later on. An optional
- * area limit can be used to remove small islands from consideration.
- *
- * For example,
- * \code
- * shape2triangle 5 /var/www/share/shapes/DCW/Suomi/ponet suomi
- * \endcode
- * performs the conversion, and removes all polygons smaller than
- * 5 km2 from the output.
- *
- * \subsection phase2 triangle
- * This phase performs the constrained triangulation, for example
- * \code
- * triangle -pcAI suomi
- * \endcode
- * Note that all 4 options are important, and must be used.
- *
- * \subsection phase3 amalgamate
- * \ref amalgamate is a program to perform the actual amalgamation
- * on the given PSLG files with the given area and length limitations.
- * The area limit is optional, it is used to prevent too small polygons
- * from appearing in the output. Note that typically the area limit
- * used in this phase may be much larger than in the previous
- * \ref triangle2shape phase.
- *
- * For example,
- * \code
- * amalgamate 4 100 suomi suomi.1
- * \endcode
- * will connect all islands nearer than 4 km to each other, but
- * will remove all polygons smaller than 100 km2 from the output.
- * The output name contains intentionally the suffix .1 for the
- * next phase \ref phase4.
- *
- * \subsection phase4 triangleshow
- * triangleshow is part of Shewchuk's package, we have just renamed
- * the original showme command to be a bit more descriptive of the
- * origins. triangleshow is a program to visualize PSLG files, including
- * the triangulations.
- *
- * For example, to visualize the results of the previous phases
- * we would use
- * \code
- * triangleshow suomi
- * \endcode
- *
- * \subsection phase5 triangle2shape
- * \ref triangle2shape is a program to build a shapefile from the
- * given PSLG files. An optional area limit can again be used to
- * remove too small polygons, although one is more likely to use
- * the option already in the \ref amalgamate phase.
- *
- * For example, since we already used an area limit in the amalgamation
- * phase, we would simply use
- * \code
- * triangle2shape 0 suomi.1 suomishape
- * \endcode
- * to obtain suomishape.shp etc files. The files can then be used
- * for example by \ref shape2ps for rendering purposes
- */
+
+\mainpage shapetools - A collection of ESRI shapefile tools.
+
+\section rendering Rendering shapefiles
+
+\ref shape2ps is a program that takes as input a file containing
+a mixture of PostScript tokens and shape2ps tokens controlling
+shapefile polygons, and produces a rendered shapefile.
+
+\section amalgamation Amalgamation
+
+Amalgamation is the process of combining multiple adjacent or nearby
+polygons into one bigger one. This is used for example to combine
+many little islands into one larger one. This is especially important
+when rendering the archipelago due to the very large number of
+polygons present - drawing the outlines with black would cause
+the archipelago to look black. On the other hand removing all small
+polygons would make the archipelago look too empty.
+
+The approach taken for amalgamation in shapetools is to perform
+constrained Delaunay triangulation on the input polygons. Then
+any polygon which is not a part of the input polygons is accepted
+as long as the sides are short enough. The sides can be short only
+if there are nearby polygons, or if the features (bays mainly) of
+the original polygon are small enough.
+
+From the accepted triangles one can then simply build new larger
+polygons by combining adjacent triangles.
+
+The commands used in the process are given below in the order
+they are typically applied.
+
+\subsection phase1 shape2triangle
+\ref shape2triangle is a program to convert ESRI shapefiles into
+the PSLG format suitable for constrained Delaunay triangulation
+by Jonathan R. Shewchuk's Delaunay triangulation programs. Particular
+care is taken to label each polygon uniquely so that we can identify
+triangles which are inside the original polygons later on. An optional
+area limit can be used to remove small islands from consideration.
+
+For example,
+\code
+shape2triangle 5 /var/www/share/shapes/DCW/Suomi/ponet suomi
+\endcode
+performs the conversion, and removes all polygons smaller than
+5 km2 from the output.
+
+\subsection phase2 triangle
+This phase performs the constrained triangulation, for example
+\code
+triangle -pcAI suomi
+\endcode
+Note that all 4 options are important, and must be used.
+
+\subsection phase3 amalgamate
+\ref amalgamate is a program to perform the actual amalgamation
+on the given PSLG files with the given area and length limitations.
+The area limit is optional, it is used to prevent too small polygons
+from appearing in the output. Note that typically the area limit
+used in this phase may be much larger than in the previous
+\ref triangle2shape phase.
+
+For example,
+\code
+amalgamate 4 100 suomi suomi.1
+\endcode
+will connect all islands nearer than 4 km to each other, but
+will remove all polygons smaller than 100 km2 from the output.
+The output name contains intentionally the suffix .1 for the
+next phase \ref phase4.
+
+\subsection phase4 triangleshow
+triangleshow is part of Shewchuk's package, we have just renamed
+the original showme command to be a bit more descriptive of the
+origins. triangleshow is a program to visualize PSLG files, including
+the triangulations.
+
+For example, to visualize the results of the previous phases
+we would use
+\code
+triangleshow suomi
+\endcode
+
+\subsection phase5 triangle2shape
+\ref triangle2shape is a program to build a shapefile from the
+given PSLG files. An optional area limit can again be used to
+remove too small polygons, although one is more likely to use
+the option already in the \ref amalgamate phase.
+
+For example, since we already used an area limit in the amalgamation
+phase, we would simply use
+\code
+triangle2shape 0 suomi.1 suomishape
+\endcode
+to obtain suomishape.shp etc files. The files can then be used
+for example by \ref shape2ps for rendering purposes
+
+*/
 // ======================================================================
