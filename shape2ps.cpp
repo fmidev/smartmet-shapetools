@@ -21,7 +21,8 @@
  * body
  * 3 setlinewidth
  * 1 1 0 setrgbcolor
- * shape moveto lineto suomi stroke
+ * shape moveto lineto closepath suomi stroke
+ * gshhs moveto lineto closepath gshhs_f.c stroke
  * \endcode
  *
  * Atleast one of coordinate ranges given in the projection is expected to
@@ -46,6 +47,7 @@
 #include "Polyline.h"
 // imagine
 #include "NFmiGeoShape.h"
+#include "NFmiGshhsTools.h"
 // newbase
 #include "NFmiArea.h"
 #include "NFmiFileSystem.h"
@@ -70,6 +72,98 @@
 extern void * CreateSaveBase(unsigned long classID);
 
 using namespace std;
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Update bounding box based on given point
+ *
+ * \param thePoint The point to add to the bounding box
+ * \param theMinLon The variable in which to store the minimum longitude
+ * \param theMinLat The variable in which to store the minimum latitude
+ * \param theMaxLon The variable in which to store the maximum longitude
+ * \param theMaxLat The variable in which to store the maximum latitude
+ */
+// ----------------------------------------------------------------------
+
+void UpdateBBox(const NFmiPoint & thePoint,
+				double & theMinLon, double & theMinLat,
+				double & theMaxLon, double & theMaxLat)
+{
+  theMinLon = std::min(theMinLon,thePoint.X());
+  theMinLat = std::min(theMinLat,thePoint.Y());
+  theMaxLon = std::max(theMaxLon,thePoint.X());
+  theMaxLat = std::max(theMaxLat,thePoint.Y());
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Find geographic bounding box for given area
+ *
+ * The bounding box is found by traversing the edges of the area
+ * and converting the coordinates to geographic ones for extrema
+ * calculations.
+ *
+ * \param theArea The area
+ * \param theMinLon The variable in which to store the minimum longitude
+ * \param theMinLat The variable in which to store the minimum latitude
+ * \param theMaxLon The variable in which to store the maximum longitude
+ * \param theMaxLat The variable in which to store the maximum latitude
+ */
+// ----------------------------------------------------------------------
+
+void FindBBox(const NFmiArea & theArea,
+			  double & theMinLon, double & theMinLat,
+			  double & theMaxLon, double & theMaxLat)
+{
+  // Good initial values are obtained from the corners
+
+  theMinLon = theArea.TopLeftLatLon().X();
+  theMinLat = theArea.TopLeftLatLon().Y();
+  theMaxLon = theMinLon;
+  theMaxLat = theMinLat;
+
+  const unsigned int divisions = 100;
+
+  // Go through the top edge
+
+  for(unsigned int i=0; i<=divisions; i++)
+	{
+	  NFmiPoint xy(theArea.Left()+theArea.Width()*i/divisions,
+				   theArea.Top());
+	  NFmiPoint latlon(theArea.ToLatLon(xy));
+	  UpdateBBox(latlon,theMinLon,theMinLat,theMaxLon,theMaxLat);
+	}
+
+  // Go through the bottom edge
+
+  for(unsigned int i=0; i<=divisions; i++)
+	{
+	  NFmiPoint xy(theArea.Left()+theArea.Width()*i/divisions,
+				   theArea.Bottom());
+	  NFmiPoint latlon(theArea.ToLatLon(xy));
+	  UpdateBBox(latlon,theMinLon,theMinLat,theMaxLon,theMaxLat);
+	}
+  
+  // Go through the left edge
+
+  for(unsigned int i=0; i<=divisions; i++)
+	{
+	  NFmiPoint xy(theArea.Left(),
+				   theArea.Bottom()+theArea.Height()*i/divisions);
+	  NFmiPoint latlon(theArea.ToLatLon(xy));
+	  UpdateBBox(latlon,theMinLon,theMinLat,theMaxLon,theMaxLat);
+	}
+
+  // Go through the top edge
+
+  for(unsigned int i=0; i<=divisions; i++)
+	{
+	  NFmiPoint xy(theArea.Left(),
+				   theArea.Bottom()+theArea.Height()*i/divisions);
+	  NFmiPoint latlon(theArea.ToLatLon(xy));
+	  UpdateBBox(latlon,theMinLon,theMinLat,theMaxLon,theMaxLat);
+	}
+}
 
 // ----------------------------------------------------------------------
 // The main program
@@ -417,6 +511,86 @@ int main(int argc, char * argv[])
 					 << lineto << ' '
 					 << closepath << ' '
 					 << shapefile << endl;
+			  cerr << " --> " << e.what() << endl;
+			  return 1;
+			}
+		  
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the gshhs command
+	  // ------------------------------------------------------------
+
+	  else if(token == "gshhs")
+		{
+		  if(!body)
+			{
+			  cerr << "Error: Cannot have " << token << " command in header" << endl;
+			  return 1;
+			}
+		  
+		  string moveto, lineto, closepath;
+		  script >> moveto >> lineto >> closepath;
+
+		  string gshhsfile;
+		  script >> gshhsfile;
+
+		  buffer += "% ";
+		  buffer += token;
+		  buffer += ' ';
+		  buffer += gshhsfile;
+		  buffer += '\n';
+			
+		  // Read the gshhs, project and get as path
+		  try
+			{
+			  double minlon, minlat, maxlon, maxlat;
+			  FindBBox(*theArea,minlon,minlat,maxlon,maxlat);
+
+			  NFmiPath path = NFmiGshhsTools::ReadPath(gshhsfile,
+													   minlon,minlat,
+													   maxlon,maxlat);
+
+			  path.Project(theArea.get());
+			  
+			  const NFmiPathData::const_iterator begin = path.Elements().begin();
+			  const NFmiPathData::const_iterator end = path.Elements().end();
+			  
+			  Polyline polyline;
+			  for(NFmiPathData::const_iterator iter=begin; iter!=end; )
+				{
+				  double X = iter->X();
+				  double Y = theArea->Bottom()-(iter->Y()-theArea->Top());
+				  
+				  if(iter->Oper()==kFmiMoveTo || iter->Oper()==kFmiLineTo)
+					polyline.add(X,Y);
+				  else
+					{
+					  cerr << "Error: Only moveto and lineto are supported in shapes" << endl;
+					  return 1;
+					}
+				  
+				  // Advance to next point. If end or moveto, flush previous polyline out
+				  ++iter;
+				  if(!polyline.empty() && (iter==end || iter->Oper()==kFmiMoveTo))
+					{
+					  polyline.clip(theArea->Left(), theArea->Top(),
+									theArea->Right(), theArea->Bottom(),
+									theClipMargin);
+					  if(!polyline.empty())
+						buffer += polyline.path(moveto,lineto,closepath);
+					  polyline.clear();
+					}
+				}
+			  
+			}
+		  catch(std::exception & e)
+			{
+			  cerr << "Error: shape2ps failed at command gshhs "
+				   << moveto << ' '
+				   << lineto << ' '
+				   << closepath << ' '
+				   << gshhsfile << endl;
 			  cerr << " --> " << e.what() << endl;
 			  return 1;
 			}
