@@ -240,10 +240,13 @@ void path_to_shape(const NFmiPath & thePath, NFmiEsriShape & theShape)
   if(options.verbose)
 	cout << "Converting path to shape..." << endl;
 
+  const NFmiEsriElementType etype = theShape.Type();
+
   const NFmiPathData::const_iterator begin = thePath.Elements().begin();
   const NFmiPathData::const_iterator end   = thePath.Elements().end();
 
   NFmiEsriPolyLine * polyline = 0;
+  NFmiEsriPolygon * polygon = 0;
   
   for(NFmiPathData::const_iterator it = begin; it != end; )
 	{
@@ -254,8 +257,16 @@ void path_to_shape(const NFmiPath & thePath, NFmiEsriShape & theShape)
 	  else if(++it==end)
 		{
 		  --it;
-		  if(polyline == 0) polyline = new NFmiEsriPolyLine;
-		  polyline->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
+		  if(etype == kFmiEsriPolygon)
+			{
+			  if(polygon == 0) polygon = new NFmiEsriPolygon;
+			  polygon->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
+			}
+		  else
+			{
+			  if(polyline == 0) polyline = new NFmiEsriPolyLine;
+			  polyline->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
+			}
 		  doflush = true;
 		}
 	  else
@@ -263,11 +274,22 @@ void path_to_shape(const NFmiPath & thePath, NFmiEsriShape & theShape)
 
 	  if(doflush)
 		{
-		  if(polyline != 0) theShape.Add(polyline);
-		  polyline = new NFmiEsriPolyLine;
+		  if(etype == kFmiEsriPolygon)
+			{
+			  if(polygon != 0) theShape.Add(polygon);
+			  polygon = new NFmiEsriPolygon;
+			}
+		  else
+			{
+			  if(polyline != 0) theShape.Add(polyline);
+			  polyline = new NFmiEsriPolyLine;
+			}
 		}
 
-	  polyline->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
+	  if(etype == kFmiEsriPolygon)
+		polygon->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
+	  else
+		polyline->Add(NFmiEsriPoint((*it).X(),(*it).Y()));
 	  ++it;
 	}
   
