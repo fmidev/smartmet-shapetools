@@ -166,10 +166,10 @@ int main(int argc, char * argv[])
 			  {
 				// Convert to NFmiEsriPolygon
 				NFmiEsriPolygon * p = new NFmiEsriPolygon();
-				Polygon::DataType::const_iterator begin = poly.data().begin();
-				Polygon::DataType::const_iterator end = poly.data().end();
-				for(Polygon::DataType::const_iterator iter = begin; iter!=end; ++iter)
-				  p->Add(NFmiEsriPoint(iter->x(),iter->y()));
+				Polygon::DataType::const_iterator b = poly.data().begin();
+				Polygon::DataType::const_iterator e = poly.data().end();
+				for(Polygon::DataType::const_iterator it = b; it!=e; ++it)
+				  p->Add(NFmiEsriPoint(it->x(),it->y()));
 				// And add to output
 				shape.Add(p);
 			  }
