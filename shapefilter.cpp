@@ -237,7 +237,8 @@ void count_edges(const NFmiEsriShape & theShape, NFmiCounter<NFmiEdge> & theCoun
 
 void path_to_shape(const NFmiPath & thePath, NFmiEsriShape & theShape)
 {
-  cout << "Converting path to shape..." << endl;
+  if(options.verbose)
+	cout << "Converting path to shape..." << endl;
 
   const NFmiPathData::const_iterator begin = thePath.Elements().begin();
   const NFmiPathData::const_iterator end   = thePath.Elements().end();
