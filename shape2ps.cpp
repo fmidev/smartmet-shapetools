@@ -91,6 +91,7 @@
 #include "NFmiPath.h"
 #include "NFmiPreProcessor.h"
 #include "NFmiSettings.h"
+#include "NFmiSaveBaseFactory.h"
 #include "NFmiStreamQueryData.h"
 #include "NFmiValueString.h"
 // system
@@ -107,9 +108,6 @@
 #endif
 
 #include "boost/lexical_cast.hpp"
-
-// For reading a projection specification
-extern void * CreateSaveBase(unsigned long classID);
 
 using namespace boost;
 using namespace std;
