@@ -111,6 +111,8 @@ void tograds(int theLevel, const vector<NFmiPoint> & thePoints)
   while(pos1 < thePoints.size())
 	{
 	  unsigned int pos2 = min(pos1+255,thePoints.size()-1);
+	  if(pos1==pos2)
+		break;
 
 	  // Byte 0:
 	  cout << static_cast<unsigned char>(1);
