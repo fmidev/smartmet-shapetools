@@ -36,6 +36,7 @@
  * body
  * querydata /data/pal/querydata/pal/skandinavia/pinta
  * parameter Temperature
+ * level 750
  * timemode utc
  * time +1 12
  * newpath
@@ -63,6 +64,7 @@
  * - system .... to execute the remaining line in the shell
  * - querydata <name> Set the active querydata
  * - parameter <name> Set the active querydata parameter
+ * - level <levelvalue> Set the active querydata level
  * - timemode <local|utc>
  * - time <days> <hour>
  * - smoother <name> <factor> <radius>
@@ -338,6 +340,29 @@ string pathtostring(const Imagine::NFmiPath & thePath,
   return out.str();
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Set queryinfo level
+ *
+ * A negative level value implies the first level in the data
+ *
+ * \param theInfo The queryinfo
+ * \param theLevel The level value
+ */
+// ----------------------------------------------------------------------
+
+void set_level(NFmiFastQueryInfo & theInfo, int theLevel)
+{
+  if(theLevel < 0)
+	theInfo.FirstLevel();
+  else
+	{
+	  for(theInfo.ResetLevel(); theInfo.NextLevel(); )
+		if(theInfo.Level()->LevelValue() == static_cast<unsigned int>(theLevel))
+		  return;
+	  throw runtime_error("Level value "+NFmiStringTools::Convert(theLevel)+" is not available");
+	}
+}
 
 // ----------------------------------------------------------------------
 // The main driver
@@ -382,6 +407,9 @@ int domain(int argc, const char * argv[])
   // The querydata parameter is not given yet
   string theParameterName;
   FmiParameterName theParameter = kFmiBadParameter;
+
+  // The level is not given yet - use first level
+  int theLevel = -1;
 
   // The time mode is by default local time
   bool theLocalTimeMode = true;
@@ -871,6 +899,16 @@ int domain(int argc, const char * argv[])
 		}
 
 	  // ------------------------------------------------------------
+	  // Handle the level <levelvalue> command
+	  // ----------------------------------------------------------------------
+
+	  else if(token == "level")
+		{
+		  values.reset(0);
+		  script >> theLevel;
+		}
+
+	  // ------------------------------------------------------------
 	  // Handle the timemode <local|utc> command
 	  // ------------------------------------------------------------
 
@@ -965,15 +1003,17 @@ int domain(int argc, const char * argv[])
 		  NFmiFastQueryInfo * q = theQueryData.QueryInfoIter();
 		  if(q == 0)
 			throw runtime_error("querydata must be specified before using any windarrows commands");
-		  
 		  if(!q->Param(kFmiWindDirection))
 			throw runtime_error("parameter WindDirection is not available in "+theQueryDataName);
 		  
 		  if(theDay < 0 || theHour<0)
 			throw runtime_error("time must be specified before using any contouring commands");
 
+		  // Try to set the proper level on
+		  set_level(*q,theLevel);
+
 		  // Try to set the proper time on
-		  
+
 		  NFmiTime t;
 		  t.SetMin(0);
 		  t.SetSec(0);
@@ -1053,6 +1093,9 @@ int domain(int argc, const char * argv[])
 		  
 		  if(!q->Param(theParameter))
 			throw runtime_error("parameter "+theParameterName+" is not available in "+theQueryDataName);
+
+		  // Try to set the proper level on
+		  set_level(*q,theLevel);
 
 		  if(theDay < 0 || theHour<0)
 			throw runtime_error("time must be specified before using any contouring commands");
