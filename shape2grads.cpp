@@ -173,6 +173,7 @@ int domain(int argc, const char * argv[])
 		{
 		case Imagine::kFmiMoveTo:
 		  tograds(level,buffer);
+		  buffer.clear();
 		  break;
 		case Imagine::kFmiLineTo:
 		  buffer.push_back(NFmiPoint((*it).X(),(*it).Y()));
