@@ -1,9 +1,9 @@
 HTML = shapetools
 PROG = shapefilter \
 	shape2grads grads2shape gradsdump gshhs2grads gshhs2shape \
-	shape2ps shape2xml \
+	shape2ps shape2xml shapedump \
 	triangle2shape shape2triangle amalgamate \
-	shapedump
+	etopo2shape
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
@@ -19,8 +19,8 @@ CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) $(EXTRAFLAGS)
 CFLAGS_RELEASE = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
 LDFLAGS = -s
 ARFLAGS = -r
-INCLUDES = -I $(includedir) -I $(includedir)/newbase -I $(includedir)/imagine
-LIBS = -L$(libdir) -limagine -lnewbase -lpng -ljpeg -lz
+INCLUDES = -I $(includedir) -I $(includedir)/compression -I $(includedir)/newbase -I $(includedir)/imagine
+LIBS = -L$(libdir) -limagine -lnewbase -lcompression -lpng -ljpeg -lz
 
 # Common library compiling template
 
