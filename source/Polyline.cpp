@@ -46,7 +46,7 @@ namespace
 	return (!xoutside && !youtside);
   }
 
-}; // anonymous namespace
+} // anonymous namespace
 
 // ======================================================================
 //				METHOD IMPLEMENTATIONS
