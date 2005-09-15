@@ -8,7 +8,7 @@
 #ifndef POINTSELECTOR_H
 #define POINTSELECTOR_H
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 #include <list>
 
 class NFmiArea;
