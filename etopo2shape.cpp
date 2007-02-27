@@ -6,12 +6,12 @@
 // ======================================================================
 
 #include "NFmiCmdLine.h"
+#include "NFmiDataHints.h"
 #include "NFmiDataMatrix.h"
 #include "NFmiLatLonArea.h"
 #include "NFmiSettings.h"
 
 #include "NFmiContourTree.h"
-#include "NFmiContourDataHelper.h"
 #include "NFmiEsriShape.h"
 #include "NFmiEsriPolygon.h"
 #include "NFmiPath.h"
@@ -279,11 +279,7 @@ void create_shape()
 					  NFmiPoint(0,0),
 					  NFmiPoint(globals.values.NX(),globals.values.NY()));
 
-  NFmiContourDataHelper helper(globals.values);
-
-  if(globals.verbose)
-	cout << "Subgrid height range = "
-		 << helper.Min() << "..." << helper.Max() << endl;
+  NFmiDataHints hints(globals.values);
 
   // Initialize the shape
 
@@ -309,7 +305,7 @@ void create_shape()
 
 	  NFmiContourTree tree(lolimit,hilimit);
 	  tree.SubTriangleMode(false);
-	  tree.Contour(globals.values,helper,NFmiContourTree::kFmiContourLinear);
+	  tree.Contour(globals.values,hints,NFmiContourTree::kFmiContourLinear);
 
 	  NFmiPath path = tree.Path();
 	  path.InvProject(&area);
