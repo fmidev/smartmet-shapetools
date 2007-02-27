@@ -42,12 +42,14 @@
  * newpath
  * bezier approximate 10
  * contourcommands moveto lineto curveto closepath
+ * labelcommand show
  * contourline 10 stroke
  * contourline 15 stroke
  * contourline 20 stroke
  * contourline 25 stroke
  * contourline 30 stroke
  * contourfill -10 10 fill
+ * contourlabels 10 30 5
  * \endcode
  *
  * The list of special commands is
@@ -805,7 +807,7 @@ int domain(int argc, const char * argv[])
 		  buffer << "% " << token << ' ' << queryfile << endl;
 
 		  NFmiStreamQueryData qd;
-		  qd.ReadLatestData(queryfile);
+		  qd.SafeReadLatestData(queryfile);
 		  NFmiFastQueryInfo * qi = qd.QueryInfoIter();
 		  qi->First();
 
@@ -880,7 +882,7 @@ int domain(int argc, const char * argv[])
 		  coords.reset(0);
 		  values.reset(0);
 		  script >> theQueryDataName;
-		  if(!theQueryData.ReadLatestData(theQueryDataName))
+		  if(!theQueryData.SafeReadLatestData(theQueryDataName))
 			throw runtime_error("Failed to read querydata from "+theQueryDataName);
 		}
 
@@ -1021,8 +1023,6 @@ int domain(int argc, const char * argv[])
 			{
 			  t.ChangeByDays(theDay);
 			  t.SetHour(theHour);
-			  if(theLocalTimeMode)
-				t = toutctime(t);
 			}
 		  if(theTimeOrigin == "origintime")
 			{
@@ -1109,8 +1109,6 @@ int domain(int argc, const char * argv[])
 			{
 			  t.ChangeByDays(theDay);
 			  t.SetHour(theHour);
-			  if(theLocalTimeMode)
-				t = toutctime(t);
 			}
 		  if(theTimeOrigin == "origintime")
 			{
@@ -1125,6 +1123,11 @@ int domain(int argc, const char * argv[])
 			  t.ChangeByDays(theDay);
 			  t.ChangeByHours(theHour);
 			}
+
+		  if(theLocalTimeMode)
+			t = toutctime(t);
+
+		  cerr << "Time = " << t << endl;
 
 		  float lolimit, hilimit;
 		  if(token == "contourline")
