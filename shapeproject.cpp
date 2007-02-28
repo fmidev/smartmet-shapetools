@@ -190,6 +190,11 @@ public:
 	  }
   }
 
+  virtual void SetBox(const NFmiEsriBox & theBox) const
+  {
+	// We do nothing, no idea how this should even work
+  }
+
 };
 
 // ----------------------------------------------------------------------
