@@ -20,8 +20,8 @@ CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) $(EXTRAFLAGS)
 CFLAGS_RELEASE = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
 LDFLAGS = -s
 ARFLAGS = -r
-INCLUDES = -I $(includedir) -I $(includedir)/compression -I $(includedir)/newbase -I $(includedir)/imagine
-LIBS = -L$(libdir) -limagine -lnewbase -lcompression -lpng -ljpeg -lz
+INCLUDES = -I $(includedir) -I $(includedir)/newbase -I $(includedir)/imagine
+LIBS = -L$(libdir) -limagine -lnewbase -lpng -ljpeg -lz -ltiff -lgeotiff -lboost_iostreams
 
 # Common library compiling template
 

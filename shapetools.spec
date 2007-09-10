@@ -7,7 +7,7 @@ Group: Development/Tools
 URL: http://www.weatherproof.fi
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}
-Requires: newbase >= 1.0-1, imagine >= 1.0-1,  libjpeg, libjpeg-devel, libpng-devel >= 1.2.2, libpng10 => 1.0, zlib >= 1.1.4, zlib-devel >= 1.1.4, compression >= 1.0-1, libtiff-devel >= 3.5.7, libgeotiff = 1.2.1-1
+Requires: boost, newbase >= 1.0-1, imagine >= 1.0-1,  libjpeg, libjpeg-devel, libpng-devel >= 1.2.2, libpng10 => 1.0, zlib >= 1.1.4, zlib-devel >= 1.1.4, libtiff-devel >= 3.5.7, libgeotiff = 1.2.1-1
 
 %description
 FMI shapetools
