@@ -8,6 +8,7 @@
 #include "NFmiCmdLine.h"
 #include "NFmiDataHints.h"
 #include "NFmiDataMatrix.h"
+#include "NFmiFileString.h"
 #include "NFmiLatLonArea.h"
 #include "NFmiSettings.h"
 
@@ -16,7 +17,9 @@
 #include "NFmiEsriPolygon.h"
 #include "NFmiPath.h"
 
-#include "gzstream.h"
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/bzip2.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 #include <iomanip>
 #include <set>
@@ -194,9 +197,21 @@ void read_lights()
 
   // Start reading
 
-  igzstream in(filename.c_str(), ios::in|ios::binary);
+  ifstream in(filename.c_str(), ios::in|ios::binary);
   if(!in)
 	throw runtime_error("Failed to open '"+filename+"' for reading");
+
+  const NFmiFileString tmpfilename(filename);
+  const string suffix = tmpfilename.Extension().CharPtr();
+
+  using namespace boost;
+  using namespace boost::iostreams;
+  filtering_stream<input> filter;
+  if(suffix == "gz")
+	filter.push(gzip_decompressor());
+  else if(suffix == "bz2")
+	filter.push(bzip2_decompressor());
+  filter.push(in);
 
   // Skip to the first correct data element
 
@@ -204,7 +219,7 @@ void read_lights()
 
   if(globals.verbose)
 	cout << "Skipping first " << skip << " bytes..." << endl;
-  in.ignore(skip);
+  filter.ignore(skip);
 
   if(globals.verbose)
 	cout << "Reading desired subgrid..." << endl;
@@ -212,12 +227,12 @@ void read_lights()
 	{
 	  // skip to next row if not the first row
 	  if(j>0)
-		in.ignore(columns-globals.values.NX());
+		filter.ignore(columns-globals.values.NX());
 
 	  unsigned char ch;
 	  for(unsigned int i=0; i<globals.values.NX(); i++)
 		{
-		  in >> noskipws >> ch;
+		  filter >> noskipws >> ch;
 		  
 		  globals.values[i][j] = ch;
 		}
