@@ -27,14 +27,11 @@
  */
 // ======================================================================
 
-// internal
 #include "Nodes.h"
 #include "Edges.h"
 #include "Polygon.h"
-// external
-#include "NFmiEdgeTree.h"
-#include "NFmiValueString.h"
-// system
+#include "imagine/NFmiEdgeTree.h"
+#include "newbase/NFmiValueString.h"
 #include <iostream>
 #include <string>
 #include <set>

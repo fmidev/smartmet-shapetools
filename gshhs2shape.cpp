@@ -18,17 +18,12 @@
  */
 // ----------------------------------------------------------------------
 
-// imagine
-#include "NFmiGshhsTools.h"
-#include "NFmiEsriPoint.h"
-#include "NFmiEsriPolyLine.h"
-#include "NFmiEsriShape.h"
-#include "NFmiPath.h"
-
-// newbase
-#include "NFmiCmdLine.h"
-
-// system
+#include "imagine/NFmiGshhsTools.h"
+#include "imagine/NFmiEsriPoint.h"
+#include "imagine/NFmiEsriPolyLine.h"
+#include "imagine/NFmiEsriShape.h"
+#include "imagine/NFmiPath.h"
+#include "newbase/NFmiCmdLine.h"
 #include <stdexcept>
 #include <string>
 

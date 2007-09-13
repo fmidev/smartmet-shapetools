@@ -5,10 +5,7 @@
  */
 // ======================================================================
 
-// internal
 #include "Polygon.h"
-// external
-// system
 #include <iostream>
 
 using namespace std;

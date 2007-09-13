@@ -6,7 +6,7 @@
 // ======================================================================
 
 #include "GradsTools.h"
-#include "NFmiPoint.h"
+#include "newbase/NFmiPoint.h"
 
 #include <iostream>
 

@@ -47,9 +47,8 @@
 
 
 #include "PointSelector.h"
-#include "NFmiArea.h"
-#include "NFmiNearTree.h"
-
+#include "newbase/NFmiArea.h"
+#include "newbase/NFmiNearTree.h"
 #include <map>
 #include <stdexcept>
 

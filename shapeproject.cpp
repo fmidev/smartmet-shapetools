@@ -35,12 +35,12 @@
  */
 // ======================================================================
 
-#include "NFmiArea.h"
-#include "NFmiAreaFactory.h"
-#include "NFmiCmdLine.h"
-#include "NFmiEsriPoint.h"
-#include "NFmiEsriProjector.h"
-#include "NFmiEsriShape.h"
+#include "newbase/NFmiArea.h"
+#include "newbase/NFmiAreaFactory.h"
+#include "newbase/NFmiCmdLine.h"
+#include "imagine/NFmiEsriPoint.h"
+#include "imagine/NFmiEsriProjector.h"
+#include "imagine/NFmiEsriShape.h"
 
 #include <iostream>
 #include <stdexcept>

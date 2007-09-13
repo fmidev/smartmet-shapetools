@@ -33,17 +33,13 @@
  */
 // ======================================================================
 
-// shapetools
 #include "PointSelector.h"
-// newbase
-#include "NFmiArea.h"
-#include "NFmiAreaFactory.h"
-#include "NFmiCmdLine.h"
-#include "NFmiSettings.h"
-// imagine
-#include "NFmiEsriPoint.h"
-#include "NFmiEsriShape.h"
-// system
+#include "newbase/NFmiArea.h"
+#include "newbase/NFmiAreaFactory.h"
+#include "newbase/NFmiCmdLine.h"
+#include "newbase/NFmiSettings.h"
+#include "imagine/NFmiEsriPoint.h"
+#include "imagine/NFmiEsriShape.h"
 #include <memory>
 #include <string>
 

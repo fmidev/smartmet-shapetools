@@ -5,22 +5,19 @@
  */
 // ======================================================================
 
-#include "NFmiCmdLine.h"
-#include "NFmiDataHints.h"
-#include "NFmiDataMatrix.h"
-#include "NFmiFileString.h"
-#include "NFmiLatLonArea.h"
-#include "NFmiSettings.h"
-
-#include "NFmiContourTree.h"
-#include "NFmiEsriShape.h"
-#include "NFmiEsriPolygon.h"
-#include "NFmiPath.h"
-
+#include "newbase/NFmiCmdLine.h"
+#include "newbase/NFmiDataMatrix.h"
+#include "newbase/NFmiFileString.h"
+#include "newbase/NFmiLatLonArea.h"
+#include "newbase/NFmiSettings.h"
+#include "imagine/NFmiContourTree.h"
+#include "imagine/NFmiDataHints.h"
+#include "imagine/NFmiEsriShape.h"
+#include "imagine/NFmiEsriPolygon.h"
+#include "imagine/NFmiPath.h"
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/bzip2.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
-
 #include <iomanip>
 #include <set>
 #include <string>

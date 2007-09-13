@@ -19,14 +19,11 @@
  */
 // ======================================================================
 
-// internal
 #include "Point.h"
 #include "Polygon.h"
-// external
-#include "NFmiEdgeTree.h"
-#include "NFmiEsriShape.h"
-#include "NFmiEsriPolygon.h"
-// system
+#include "imagine/NFmiEdgeTree.h"
+#include "imagine/NFmiEsriShape.h"
+#include "imagine/NFmiEsriPolygon.h"
 #include <iostream>
 #include <string>
 

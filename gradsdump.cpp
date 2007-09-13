@@ -17,14 +17,9 @@
  */
 // ----------------------------------------------------------------------
 
-// newbase
-#include "NFmiCmdLine.h"
-#include "NFmiStringTools.h"
-
-// self
 #include "GradsTools.h"
-
-// system
+#include "newbase/NFmiCmdLine.h"
+#include "newbase/NFmiStringTools.h"
 #include <stdexcept>
 #include <string>
 

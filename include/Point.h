@@ -17,7 +17,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "NFmiPoint.h"
+#include "newbase/NFmiPoint.h"
 
 //! A simple point class
 

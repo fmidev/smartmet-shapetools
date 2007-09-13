@@ -13,19 +13,16 @@
  */
 // ======================================================================
 
-// newbase
-#include "NFmiCmdLine.h"
-#include "NFmiSettings.h"
-// imagine
-#include "NFmiCounter.h"
-#include "NFmiEsriPoint.h"
-#include "NFmiEsriPolygon.h"
-#include "NFmiEsriPolyLine.h"
-#include "NFmiEsriShape.h"
-#include "NFmiEdge.h"
-#include "NFmiEdgeTree.h"
-#include "NFmiPath.h"
-// system
+#include "newbase/NFmiCmdLine.h"
+#include "newbase/NFmiSettings.h"
+#include "imagine/NFmiCounter.h"
+#include "imagine/NFmiEsriPoint.h"
+#include "imagine/NFmiEsriPolygon.h"
+#include "imagine/NFmiEsriPolyLine.h"
+#include "imagine/NFmiEsriShape.h"
+#include "imagine/NFmiEdge.h"
+#include "imagine/NFmiEdgeTree.h"
+#include "imagine/NFmiPath.h"
 #include <string>
 
 using namespace std;

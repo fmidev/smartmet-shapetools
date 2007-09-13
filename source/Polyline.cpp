@@ -6,7 +6,7 @@
 // ======================================================================
 
 #include "Polyline.h"
-#include "NFmiValueString.h"
+#include "newbase/NFmiValueString.h"
 
 #include <sstream>
 

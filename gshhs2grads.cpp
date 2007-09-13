@@ -18,18 +18,11 @@
  */
 // ----------------------------------------------------------------------
 
-// imagine
-#include "NFmiGshhsTools.h"
-#include "NFmiPath.h"
-
-// newbase
-#include "NFmiCmdLine.h"
-#include "NFmiStringTools.h"
-
-// self
 #include "GradsTools.h"
-
-// system
+#include "imagine/NFmiGshhsTools.h"
+#include "imagine/NFmiPath.h"
+#include "newbase/NFmiCmdLine.h"
+#include "newbase/NFmiStringTools.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>

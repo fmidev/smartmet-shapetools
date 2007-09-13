@@ -18,16 +18,14 @@
  */
 // ======================================================================
 
-// internal
 #include "Nodes.h"
 #include "Polygon.h"
-// external
-#include "NFmiValueString.h"
-#include "NFmiFileSystem.h"
-#include "NFmiArea.h"
-#include "NFmiValueString.h"
-#include "NFmiPath.h"
-#include "NFmiGeoShape.h"
+#include "newbase/NFmiValueString.h"
+#include "newbase/NFmiFileSystem.h"
+#include "newbase/NFmiArea.h"
+#include "newbase/NFmiValueString.h"
+#include "imagine/NFmiPath.h"
+#include "imagine/NFmiGeoShape.h"
 // system
 #include <cstdlib>
 #include <iostream>
