@@ -20,31 +20,123 @@ CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) $(EXTRAFLAGS)
 CFLAGS_RELEASE = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
 LDFLAGS = -s
 ARFLAGS = -r
-INCLUDES = -I $(includedir) -I $(includedir)/newbase -I $(includedir)/imagine
-LIBS = -L$(libdir) -limagine -lnewbase -lpng -ljpeg -lz -ltiff -lgeotiff -lboost_iostreams
+INCLUDES = -I $(includedir) -I $(includedir)/smartmet/newbase -I $(includedir)/smartmet/imagine
+LIBS = -L$(libdir) -lsmartmet_imagine -lsmartmet_newbase -lpng -ljpeg -lz -lboost_iostreams
 
 # Common library compiling template
 
-include ../../makefiles/makefile.prog
+# Installation directories
+prosessor := $(shell uname -p)
 
-# Some extras
+ifeq ($(origin PREFIX), undefined)
+  PREFIX = /usr
+else
+  PREFIX = $(PREFIX)
+endif
 
-LIBNAME = shapetools
-LIB = lib$(LIBNAME).a
-lib:	$(LIB)
-$(LIB): objdir $(OBJS)
-	$(AR) $(ARFLAGS) $(LIB) $(OBJFILES)
+ifeq ($(prosessor), x86_64)
+  libdir = $(PREFIX)/lib64
+else
+  libdir = $(PREFIX)/lib
+endif
 
-install-lib:
-	@mkdir -p $(includedir)/$(LIBNAME)
-	@list='$(HDRS)'; \
-	for hdr in $$list; do \
-	  if [[ include/$$hdr -nt $(includedir)/$(LIBNAME)/$$hdr ]]; \
-	  then \
-	    echo $(INSTALL_DATA) include/$$hdr $(includedir)/$(LIBNAME)/$$hdr; \
-	  fi; \
-	  $(INSTALL_DATA) include/$$hdr $(includedir)/$(LIBNAME)/$$hdr; \
+objdir = obj
+includedir = $(PREFIX)/include
+
+ifeq ($(origin BINDIR), undefined)
+  bindir = $(PREFIX)/bin
+else
+  bindir = $(BINDIR)
+endif
+
+# rpm variables
+CWP = $(shell pwd)
+BIN = $(shell basename $(CWP))
+rpmsourcedir = /smartmet/src/redhat/SOURCES
+rpmerr = "There's no spec file ($(specfile)). RPM wasn't created. Please make a spec file or copy and rename it into $(specfile)"
+
+
+# CFLAGS
+
+ifeq ($(MAKECMDGOALS),release)
+  CFLAGS = $(CFLAGS_RELEASE)
+endif
+
+# Compilation directories
+
+vpath %.cpp source
+vpath %.h include
+vpath %.o $(objdir)
+
+# How to install
+
+INSTALL_PROG = install -m 775
+INSTALL_DATA = install -m 664
+
+# The files to be compiled
+
+SRCS = $(patsubst source/%,%,$(wildcard *.cpp source/*.cpp))
+HDRS = $(patsubst include/%,%,$(wildcard *.h include/*.h))
+OBJS = $(SRCS:%.cpp=%.o)
+
+OBJFILES = $(OBJS:%.o=obj/%.o)
+
+MAINSRCS = $(PROG:%=%.cpp)
+SUBSRCS = $(filter-out $(MAINSRCS),$(SRCS))
+SUBOBJS = $(SUBSRCS:%.cpp=%.o)
+SUBOBJFILES = $(SUBOBJS:%.o=obj/%.o)
+
+INCLUDES := -I include $(INCLUDES)
+
+.PHONY: test rpm
+
+# The rules
+
+all: objdir $(PROG)
+debug: objdir $(PROG)
+release: objdir $(PROG)
+
+$(PROG): % : $(SUBOBJS) %.o
+	$(CC) $(LDFLAGS) -o $@ obj/$@.o $(SUBOBJFILES) $(LIBS)
+
+clean:
+	rm -f $(PROG) $(OBJFILES) *~ source/*~ include/*~
+
+install:
+	mkdir -p $(bindir)
+	@list='$(PROG)'; \
+	for prog in $$list; do \
+	  echo $(INSTALL_PROG) $$prog $(bindir)/$$prog; \
+	  $(INSTALL_PROG) $$prog $(bindir)/$$prog; \
 	done
-	@mkdir -p $(libdir)
-	$(INSTALL_DATA) $(LIB) $(libdir)/$(LIB)
 
+depend:
+	makedepend $(INCLUDES)
+
+test:
+	cd test && make test
+
+html::
+	mkdir -p ../../../../html/bin/$(HTML)
+	doxygen $(HTML).dox
+
+objdir:
+	@mkdir -p $(objdir)
+
+rpm: clean depend
+	if [ -a $(BIN).spec ]; \
+	then \
+	  tar -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
+	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
+	  rpmbuild -ta $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
+	else \
+	  echo $(rpmerr); \
+	fi;
+
+.SUFFIXES: $(SUFFIXES) .cpp
+
+.cpp.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $(objdir)/$@ $<
+
+# -include Dependencies
+# DO NOT DELETE THIS LINE -- make depend depends on it.
