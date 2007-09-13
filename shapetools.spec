@@ -1,34 +1,36 @@
+%define BINNAME shapetools
 Summary: shapetools
-Name: shapetools
-Version: 1.0
-Release: 1
+Name: smartmet-%{BINNAME}
+Version: 1.0.1
+Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
 Source0: %{name}.tar.gz
-BuildRoot: %{_tmppath}/%{name}
-Requires: boost, newbase >= 1.0-1, imagine >= 1.0-1,  libjpeg, libjpeg-devel, libpng-devel >= 1.2.2, libpng10 => 1.0, zlib >= 1.1.4, zlib-devel >= 1.1.4
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
+BuildRequires: libsmartmet-newbase >= 1.0.1-1, libsmartmet-imagine >= 1.0.1-1,  libjpeg, libjpeg-devel, libpng-devel
+Requires: glibc, libgcc, libjpeg, libpng,  libstdc++, zlib
+Provides: shapefilter shapeproject shapepoints shape2grads grads2shape gradsdump gshhs2grads gshhs2shape shape2ps shape2xml shapedump triangle2shape shape2triangle amalgamate etopo2shape lights2shape
 
 %description
 FMI shapetools
 
 %prep
 rm -rf $RPM_BUILD_ROOT
-mkdir $RPM_BUILD_ROOT
 
-%setup -q -n %{name}
+%setup -q -n %{BINNAME}
  
 %build
 make %{_smp_mflags} 
 
 %install
-make install prefix="${RPM_BUILD_ROOT}"
+%makeinstall
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,www,www,0775)
+%defattr(-,root,root,0775)
 /usr/bin/shapefilter 
 /usr/bin/shapeproject 
 /usr/bin/shapepoints 
@@ -50,4 +52,3 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Jun  7 2007 tervo <tervo@xodin.weatherproof.fi> - 
 - Initial build.
-

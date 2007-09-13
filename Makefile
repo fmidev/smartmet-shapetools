@@ -18,9 +18,9 @@ DIFFICULTFLAGS = -Weffc++ -Wredundant-decls -Wshadow -Woverloaded-virtual -Wunre
 CC = g++
 CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) $(EXTRAFLAGS)
 CFLAGS_RELEASE = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
-LDFLAGS = -s
+LDFLAGS =
 ARFLAGS = -r
-INCLUDES = -I $(includedir) -I $(includedir)/smartmet/newbase -I $(includedir)/smartmet/imagine
+INCLUDES = -I $(includedir) -I $(includedir)/smartmet -I $(includedir)/smartmet/newbase -I $(includedir)/smartmet/imagine
 LIBS = -L$(libdir) -lsmartmet_imagine -lsmartmet_newbase -lpng -ljpeg -lz -lboost_iostreams
 
 # Common library compiling template
