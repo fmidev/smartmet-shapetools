@@ -30,10 +30,10 @@ CFLAGS_PROFILE = -DUNIX -O2 -g -pg -DNDEBUG $(MAINFLAGS)
 LDFLAGS_DEBUG = 
 LDFLAGS_PROFILE = 
 
-INCLUDES = -I $(includedir) \
-	-I $(includedir)/smartmet \
-	-I $(includedir)/smartmet/newbase \
-	-I $(includedir)/smartmet/imagine
+INCLUDES = -I$(includedir) \
+	-I$(includedir)/smartmet \
+	-I$(includedir)/smartmet/newbase \
+	-I$(includedir)/smartmet/imagine
 
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
@@ -112,7 +112,11 @@ SUBSRCS = $(filter-out $(MAINSRCS),$(SRCS))
 SUBOBJS = $(SUBSRCS:%.cpp=%.o)
 SUBOBJFILES = $(SUBOBJS:%.o=obj/%.o)
 
-INCLUDES := -I include $(INCLUDES)
+INCLUDES := -Iinclude $(INCLUDES)
+
+# For make depend:
+
+ALLSRCS = $(wildcard *.cpp source/*.cpp)
 
 .PHONY: test rpm
 
@@ -138,7 +142,7 @@ install:
 	done
 
 depend:
-	makedepend $(INCLUDES)
+	gccmakedep -fDependencies -- $(CFLAGS) $(INCLUDES) -- $(ALLSRCS)
 
 test:
 	cd test && make test
@@ -168,5 +172,4 @@ rpm: clean depend
 .cpp.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $(objdir)/$@ $<
 
-# -include Dependencies
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+-include Dependencies
