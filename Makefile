@@ -1,10 +1,21 @@
 HTML = shapetools
-PROG = shapefilter shapeproject \
+PROG = shapepack \
+	shapefilter \
+	shapeproject \
 	shapepoints \
-	shape2grads grads2shape gradsdump gshhs2grads gshhs2shape \
-	shape2ps shape2xml shapedump \
-	triangle2shape shape2triangle amalgamate \
-	etopo2shape lights2shape
+	shape2grads \
+	grads2shape \
+	gradsdump \
+	gshhs2grads \
+	gshhs2shape \
+	shape2ps \
+	shape2xml \
+	shapedump \
+	triangle2shape \
+	shape2triangle \
+	amalgamate \
+	etopo2shape \
+	lights2shape
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
@@ -38,7 +49,7 @@ INCLUDES = -I$(includedir) \
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
-	-lpng -ljpeg -lz -lboost_iostreams
+	-lpng -ljpeg -lz -lboost_iostreams -lboost_program_options
 
 # Common library compiling template
 
