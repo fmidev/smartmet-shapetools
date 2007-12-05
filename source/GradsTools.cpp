@@ -75,7 +75,7 @@ namespace GradsTools
 	if(thePoints.empty())
 	  return;
 	
-	unsigned int pos1=0;
+	unsigned long pos1=0;
 	while(pos1 < thePoints.size())
 	  {
 		unsigned int pos2 = min(pos1+254,thePoints.size()-1);
@@ -85,7 +85,7 @@ namespace GradsTools
 		// Must not cross the meridian during one segment
 	
 		const double x = thePoints[pos1].X();
-		for(unsigned int i=pos1+1; i<=pos2; i++)
+		for(unsigned long i=pos1+1; i<=pos2; i++)
 		  {
 			if( (x<0 && thePoints[i].X() >= 0) ||
 				(x>=0 && thePoints[i].X() < 0) )
