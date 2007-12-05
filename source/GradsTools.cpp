@@ -74,18 +74,20 @@ namespace GradsTools
   {
 	if(thePoints.empty())
 	  return;
+
+	typedef vector<NFmiPoint>::size_type size_type;
 	
-	unsigned long pos1=0;
+	size_type pos1 = 0;
 	while(pos1 < thePoints.size())
 	  {
-		unsigned int pos2 = min(pos1+254,thePoints.size()-1);
+		size_type pos2 = min(pos1+254,thePoints.size()-1);
 		if(pos1==pos2)
 		  break;
 		
 		// Must not cross the meridian during one segment
 	
 		const double x = thePoints[pos1].X();
-		for(unsigned long i=pos1+1; i<=pos2; i++)
+		for(size_type i=pos1+1; i<=pos2; i++)
 		  {
 			if( (x<0 && thePoints[i].X() >= 0) ||
 				(x>=0 && thePoints[i].X() < 0) )
