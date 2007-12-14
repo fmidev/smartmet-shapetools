@@ -437,9 +437,9 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
 
   const NFmiEsriAttributeType atype = name->Type();
 
-  string svalue;
-  int    ivalue;
-  double dvalue;
+  string svalue = "";
+  int    ivalue = 0;
+  double dvalue = 0;
 
   switch(atype)
 	{
