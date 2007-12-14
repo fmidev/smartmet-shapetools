@@ -2,7 +2,7 @@
 Summary: shapetools
 Name: smartmet-%{BINNAME}
 Version: 1.0.3
-Release: 2.el5.fmi
+Release: 3.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -51,9 +51,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
-* Fri Dec 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-2.el5.fmi
+* Fri Dec 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-3.el5.fmi
+- Added libbz2 linkage for RHEL3 releases
+* Fri Dec 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-2.el5.fmi
 - Upgraded imagine dependency
-* Fri Dec 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-1.el5.fmi
+* Fri Dec 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-1.el5.fmi
 - Added shapefind program
 * Mon Sep 24 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-4.el5.fmi
 - Fixed "make depend".
