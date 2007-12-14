@@ -1,5 +1,6 @@
 HTML = shapetools
-PROG = shapepack \
+PROG = shapefind \
+	shapepack \
 	shapefilter \
 	shapeproject \
 	shapepoints \

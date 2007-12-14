@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 1.0.2
+Version: 1.0.3
 Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
@@ -10,7 +10,7 @@ Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: libsmartmet-newbase >= 1.0.1-1, libsmartmet-imagine >= 1.0.1-1,  libjpeg, libjpeg-devel, libpng-devel
 Requires: glibc, libgcc, libjpeg, libpng,  libstdc++, zlib
-Provides: shapefilter shapeproject shapepoints shape2grads grads2shape gradsdump gshhs2grads gshhs2shape shape2ps shape2xml shapedump triangle2shape shape2triangle amalgamate etopo2shape lights2shape shapepack
+Provides: shapefilter shapeproject shapepoints shape2grads grads2shape gradsdump gshhs2grads gshhs2shape shape2ps shape2xml shapedump triangle2shape shape2triangle amalgamate etopo2shape lights2shape shapepack shapefind
 
 %description
 FMI shapetools
@@ -48,10 +48,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/etopo2shape 
 /usr/bin/lights2shape
 /usr/bin/shapepack
+/usr/bin/shapefind
 
 %changelog
-* Wed Dec  5 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.2-1.el5.fmi
-- Added shapepack program
+* Thu Dec 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-1.el5.fmi
+- Added shapefind program
 * Mon Sep 24 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-4.el5.fmi
 - Fixed "make depend".
 * Fri Sep 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-3.el5.fmi
