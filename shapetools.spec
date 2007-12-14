@@ -51,7 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
-* Thu Dec 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-1.el5.fmi
+* Fri Dec 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-1.el5.fmi
 - Added shapefind program
 * Mon Sep 24 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-4.el5.fmi
 - Fixed "make depend".
