@@ -50,7 +50,10 @@ INCLUDES = -I$(includedir) \
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
-	-lboost_iostreams -lboost_program_options \
+	-lboost_iostreams \
+	-lboost_program_options \
+	-lboost_filesystem \
+	-lboost_regex \
 	-lpng -ljpeg -lz -lbz2
 
 # Common library compiling template

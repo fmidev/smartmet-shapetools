@@ -1,8 +1,8 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 1.0.3
-Release: 3.el5.fmi
+Version: 1.0.4
+Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -51,6 +51,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Wed Dec 19 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.4-1.el5.fmi
+- Added -l option to shapefind
 * Fri Dec 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-3.el5.fmi
 - Added libbz2 linkage for RHEL3 releases
 * Fri Dec 14 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.3-2.el5.fmi

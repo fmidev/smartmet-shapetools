@@ -22,6 +22,7 @@
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiGeoTools.h>
 #include <newbase/NFmiPoint.h>
+#include <newbase/NFmiPreProcessor.h>
 #include <newbase/NFmiStringTools.h>
 #include <imagine/NFmiEsriPoint.h>
 #include <imagine/NFmiEsriPolyLine.h>
@@ -192,6 +193,53 @@ bool parse_options(int argc, char * argv[])
 
   return true;
 
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read file of form name,lon,lat
+ */
+// ----------------------------------------------------------------------
+
+typedef map<string,NFmiPoint> LocationList;
+
+LocationList read_locationlist(const string & theFile)
+{
+  // this code was copied from qdpoint.cpp
+
+  LocationList ret;
+  
+  const bool strip_pound = true;
+  NFmiPreProcessor processor(strip_pound);
+  if(!processor.ReadAndStripFile(theFile))
+	throw runtime_error("Unable to preprocess "+theFile);
+
+  string text = processor.GetString();
+  istringstream input(text);
+  string line;
+  while(getline(input,line))
+	{
+	  if(line.empty()) continue;
+	  vector<string> parts = NFmiStringTools::Split(line,",");
+	  if(parts.size() != 3)
+		cerr << "Warning: Invalid line '"+line+"' in file '"+theFile+"'" << endl;
+	  else
+		{
+		  try
+			{
+			  string name = parts[0];
+			  double lon = NFmiStringTools::Convert<double>(parts[1]);
+			  double lat = NFmiStringTools::Convert<double>(parts[2]);
+			  ret.insert(make_pair(name,NFmiPoint(lon,lat)));
+			}
+		  catch(...)
+			{
+			  cerr << "Error while reading '"+theFile+"'";
+			  throw;
+			}
+		}
+	}
+  return ret;
 }
 
 // ----------------------------------------------------------------------
@@ -708,7 +756,8 @@ void filter_out_duplicates(const NFmiEsriShape & theShape,
 // ----------------------------------------------------------------------
 
 void find_nearest_points(const NFmiEsriShape & theShape,
-						 const NFmiPoint & theLatLon)
+						 const NFmiPoint & theLatLon,
+						 const std::string & theName = "")
 {
   // Projected coordinate if needed
 
@@ -783,6 +832,10 @@ void find_nearest_points(const NFmiEsriShape & theShape,
 		  y = p.Y();
 		}
 
+	  if(!theName.empty())
+		cout << theName
+			 << options.delimiter;
+
 	  cout << ++num
 		   << options.delimiter
 		   << it->first
@@ -803,8 +856,10 @@ void find_nearest_points(const NFmiEsriShape & theShape,
  * \brief Find nearest lines from polyline shapefile
  */
 // ----------------------------------------------------------------------
+
 void find_nearest_lines(const NFmiEsriShape & theShape,
-						const NFmiPoint & theLatLon)
+						const NFmiPoint & theLatLon,
+						const std::string & theName = "")
 {
   // Projected coordinate if needed
 
@@ -895,6 +950,10 @@ void find_nearest_lines(const NFmiEsriShape & theShape,
 	  int pos = it->second;
 	  const NFmiEsriElement * elem = static_cast<const NFmiEsriElement *>(elements[pos]);
 
+	  if(!theName.empty())
+		cout << theName
+			 << options.delimiter;
+	  
 	  cout << ++num
 		   << options.delimiter
 		   << it->first
@@ -911,7 +970,8 @@ void find_nearest_lines(const NFmiEsriShape & theShape,
 // ----------------------------------------------------------------------
 
 void find_enclosing_polygons(const NFmiEsriShape & theShape,
-							 const NFmiPoint & theLatLon)
+							 const NFmiPoint & theLatLon,
+							 const std::string & theName = "")
 {
   // TODO
   throw runtime_error("Polygon data not supported yet");
@@ -964,7 +1024,26 @@ int domain(int argc, char * argv[])
 		throw runtime_error("Internal error while deciding shape type");
 	}
   else
-	throw runtime_error("Coordinate files not implemented yet");
+	{
+	  LocationList places = read_locationlist(options.coordinatefile);
+
+	  for(LocationList::const_iterator it = places.begin();
+		  it != places.end();
+		  ++it)
+		{
+		  string name = it->first;
+		  NFmiPoint latlon = it->second;
+		  
+		  if(type == kFmiEsriPoint)
+			find_nearest_points(shape,latlon,name);
+		  else if(type == kFmiEsriPolyLine)
+			find_nearest_lines(shape,latlon,name);
+		  else if(type == kFmiEsriPolygon)
+			find_enclosing_polygons(shape,latlon,name);
+		  else
+			throw runtime_error("Internal error while deciding shape type");
+		}
+	}
 
   return 1;
 }
