@@ -49,6 +49,7 @@ struct Options
   string attributes;
   string uniqueattribute;
   string projection;
+  string coordinatefile;
   float latitude;
   float longitude;
   float searchradius;
@@ -72,6 +73,7 @@ Options::Options()
   , attributes()
   , uniqueattribute()
   , projection("latlon")
+  , coordinatefile()
   , latitude()
   , longitude()
   , searchradius(10)	// kilometers
@@ -92,7 +94,6 @@ Options options;
 // Search projection and the projected search coordinate
 
 auto_ptr<NFmiArea> projection;
-NFmiPoint projected_coordinate;
 
 // ----------------------------------------------------------------------
 /*!
@@ -124,6 +125,8 @@ bool parse_options(int argc, char * argv[])
      "latitude of the searched coordinate")
     ("lon,x",po::value(&options.longitude),
      "longitude of the searched coordinate")
+    ("coordinatefile,l",po::value(&options.coordinatefile),
+     "file containing lines of form name,lon,lat for processing multiple coordinates simultaneously")
     ("radius,r",po::value(&options.searchradius),
      "maximum search radius")
     ("maxcount,n",po::value(&options.maxcount),
@@ -167,6 +170,11 @@ bool parse_options(int argc, char * argv[])
 
   if(opt.count("shapefile") == 0)
     throw runtime_error("shapefile name not specified");
+
+  if( (opt.count("lon")>0 || opt.count("lat")>0) &&
+	  (opt.count("coordinatefile")>0) )
+	throw runtime_error("-l and -x,-y options are mutually exclusive");
+
 
   // Sanity checks
 
@@ -313,10 +321,6 @@ void establish_projection()
 	return;
 
   projection = NFmiAreaFactory::Create(options.projection);
-
-  NFmiPoint p(options.longitude,options.latitude);
-  projected_coordinate = projection->LatLonToWorldXY(p);
-
 }
 
 // ----------------------------------------------------------------------
@@ -435,29 +439,30 @@ NFmiEsriElementType establish_type(const NFmiEsriShape & theShape)
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Distance calculator
+ * \brief Latlon distance calculator
  */
 // ----------------------------------------------------------------------
 
-float point_distance(double theX, double theY)
+float latlon_point_distance(double theX1, double theY1,
+							double theX2, double theY2)
 {
-  if(options.projection == "latlon")
-	{
-	  float m = NFmiGeoTools::GeoDistance(options.longitude,
-										  options.latitude,
-										  theX,
-										  theY);
-	  return m/1000;
-	}
-  else
-	{
-	  float m = NFmiGeoTools::Distance(projected_coordinate.X(),
-									   projected_coordinate.Y(),
-									   theX,
-									   theY);
-	  return m/1000;
-	}
+  float m = NFmiGeoTools::GeoDistance(theX1, theY1, theX2, theY2);
+  return m/1000;
 }
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief WorldXY Distance calculator
+ */
+// ----------------------------------------------------------------------
+
+float world_point_distance(double theX1, double theY1,
+						   double theX2, double theY2)
+{
+  float m = NFmiGeoTools::Distance(theX1, theY1, theX2, theY2);
+  return m/1000;
+}
+
 
 // ----------------------------------------------------------------------
 /*!
@@ -535,35 +540,37 @@ float isosegment_distance(double theX, double theY,
   return m;
 }
 
+
 // ----------------------------------------------------------------------
 /*!
- * \brief Line distance calculator
+ * \brief Latlon line distance calculator
  */
 // ----------------------------------------------------------------------
 
-float line_distance(double theX1, double theY1, double theX2, double theY2)
+float latlon_line_distance(double theX, double theY,
+						   double theX1, double theY1,
+						   double theX2, double theY2)
 {
-  if(options.projection == "latlon")
-	{
-	  float m = isosegment_distance(options.longitude,
-									options.latitude,
-									theX1,
-									theY1,
-									theX2,
-									theY2);
+  float m = isosegment_distance(theX, theY,
+								theX1, theY1,
+								theX2, theY2);
+  return m/1000;
+}
 
-	  return m/1000;
-	}
-  else
-	{
-	  float m = NFmiGeoTools::DistanceFromLineSegment(projected_coordinate.X(),
-													  projected_coordinate.Y(),
-													  theX1,
-													  theY1,
-													  theX2,
-													  theY2);
-	  return m/1000;
-	}
+// ----------------------------------------------------------------------
+/*!
+ * \brief WorldXY line distance calculator
+ */
+// ----------------------------------------------------------------------
+
+float world_line_distance(double theX, double theY,
+						  double theX1, double theY1,
+						  double theX2, double theY2)
+{
+  float m = NFmiGeoTools::DistanceFromLineSegment(theX, theY,
+												  theX1, theY1,
+												  theX2, theY2);
+  return m/1000;
 }
 
 // ----------------------------------------------------------------------
@@ -700,8 +707,18 @@ void filter_out_duplicates(const NFmiEsriShape & theShape,
  */
 // ----------------------------------------------------------------------
 
-void find_nearest_points(const NFmiEsriShape & theShape)
+void find_nearest_points(const NFmiEsriShape & theShape,
+						 const NFmiPoint & theLatLon)
 {
+  // Projected coordinate if needed
+
+  NFmiPoint worldxy;
+
+  if(options.projection != "latlon")
+	worldxy = projection->LatLonToWorldXY(theLatLon);
+
+  // Search results in sorted order
+
   typedef multimap<float,int> DistanceMap;
   DistanceMap distance_map;
 
@@ -720,8 +737,15 @@ void find_nearest_points(const NFmiEsriShape & theShape)
 		continue;
 
 	  const NFmiEsriPoint * elem = static_cast<const NFmiEsriPoint *>(elements[i]);
-	  float dist = point_distance(elem->X(),elem->Y());
 
+	  float dist;
+	  if(options.projection == "latlon")
+		dist = latlon_point_distance(elem->X(),elem->Y(),
+									 theLatLon.X(),theLatLon.Y());
+	  else
+		dist = world_point_distance(elem->X(),elem->Y(),
+									worldxy.X(),worldxy.Y());
+	  
 	  if(dist <= options.searchradius)
 		{
 		  if(condition_satisfied(*elem,cond_variable,cond_comparison,cond_value))
@@ -779,9 +803,18 @@ void find_nearest_points(const NFmiEsriShape & theShape)
  * \brief Find nearest lines from polyline shapefile
  */
 // ----------------------------------------------------------------------
-
-void find_nearest_lines(const NFmiEsriShape & theShape)
+void find_nearest_lines(const NFmiEsriShape & theShape,
+						const NFmiPoint & theLatLon)
 {
+  // Projected coordinate if needed
+
+  NFmiPoint worldxy;
+
+  if(options.projection != "latlon")
+	worldxy = projection->LatLonToWorldXY(theLatLon);
+
+  // Search results in sorted order
+
   typedef multimap<float,int> DistanceMap;
   DistanceMap distance_map;
 
@@ -816,10 +849,21 @@ void find_nearest_lines(const NFmiEsriShape & theShape)
 			{
 			  for(int ii=i1+1; ii<=i2; ii++)
 				{
-				  float dist = line_distance(elem->Points()[ii-1].X(),
-											 elem->Points()[ii-1].Y(),
-											 elem->Points()[ii].X(),
-											 elem->Points()[ii].Y());
+				  float dist;
+				  if(options.projection == "latlon")
+					dist = latlon_line_distance(theLatLon.X(),
+												theLatLon.Y(),
+												elem->Points()[ii-1].X(),
+												elem->Points()[ii-1].Y(),
+												elem->Points()[ii].X(),
+												elem->Points()[ii].Y());
+				  else
+					dist = world_line_distance(worldxy.X(),
+											   worldxy.Y(),
+											   elem->Points()[ii-1].X(),
+											   elem->Points()[ii-1].Y(),
+											   elem->Points()[ii].X(),
+											   elem->Points()[ii].Y());
 				  if(mindist < 0 || dist<mindist)
 					mindist = dist;
 				}
@@ -866,7 +910,8 @@ void find_nearest_lines(const NFmiEsriShape & theShape)
  */
 // ----------------------------------------------------------------------
 
-void find_enclosing_polygons(const NFmiEsriShape & theShape)
+void find_enclosing_polygons(const NFmiEsriShape & theShape,
+							 const NFmiPoint & theLatLon)
 {
   // TODO
   throw runtime_error("Polygon data not supported yet");
@@ -905,14 +950,21 @@ int domain(int argc, char * argv[])
 
   NFmiEsriElementType type = establish_type(shape);
 
-  if(type == kFmiEsriPoint)
-	find_nearest_points(shape);
-  else if(type == kFmiEsriPolyLine)
-	find_nearest_lines(shape);
-  else if(type == kFmiEsriPolygon)
-	find_enclosing_polygons(shape);
+  if(options.coordinatefile.empty())
+	{
+	  NFmiPoint latlon(options.longitude,options.latitude);
+
+	  if(type == kFmiEsriPoint)
+		find_nearest_points(shape,latlon);
+	  else if(type == kFmiEsriPolyLine)
+		find_nearest_lines(shape,latlon);
+	  else if(type == kFmiEsriPolygon)
+		find_enclosing_polygons(shape,latlon);
+	  else
+		throw runtime_error("Internal error while deciding shape type");
+	}
   else
-	throw runtime_error("Internal error while deciding shape type");
+	throw runtime_error("Coordinate files not implemented yet");
 
   return 1;
 }
