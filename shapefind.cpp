@@ -25,6 +25,7 @@
 #include <newbase/NFmiPreProcessor.h>
 #include <newbase/NFmiStringTools.h>
 #include <imagine/NFmiEsriPoint.h>
+#include <imagine/NFmiEsriPolygon.h>
 #include <imagine/NFmiEsriPolyLine.h>
 #include <imagine/NFmiEsriShape.h>
 #include <boost/program_options.hpp>
@@ -165,7 +166,12 @@ bool parse_options(int argc, char * argv[])
            << endl
            << "shapefind finds the element closest to the given point" << endl
 		   << endl
-           << desc << endl;
+           << desc
+		   << endl
+		   << "Note that if the input data consists of polygons, the options" << endl
+		   << "-u, -r and -n are meaningless since the program finds the first" << endl
+		   << "polygon containing the input coordinate." << endl
+		   << endl;
       return false;
     }
 
@@ -965,6 +971,54 @@ void find_nearest_lines(const NFmiEsriShape & theShape,
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Test if the given point is inside the polygon
+ *
+ * Copied from NFmiSvgPath::IsInside
+ */
+// ----------------------------------------------------------------------
+
+bool is_inside(const NFmiEsriPolygon & thePoly, double theX, double theY)
+{
+  int counter = 0;
+
+  for(int part=0; part<thePoly.NumParts(); part++)
+	{
+	  int i1 = thePoly.Parts()[part];             // start of part
+	  int i2;
+	  if(part+1 == thePoly.NumParts())
+		i2 = thePoly.NumPoints()-1;               // end of part
+	  else
+		i2 = thePoly.Parts()[part+1]-1;   // end of part
+	  
+	  if(i2>=i1)
+		{
+		  double x1 = thePoly.Points()[i1].X();
+		  double y1 = thePoly.Points()[i1].Y();
+
+		  for(int i=i1+1; i<=i2; i++)
+			{
+			  double x2 = thePoly.Points()[i].X();
+			  double y2 = thePoly.Points()[i].Y();
+			  if(theY > std::min(y1,y2) &&
+				 theY <= std::max(y1,y2) &&
+				 theX <= std::max(x1,x2) &&
+				 y1 != y2)
+				{
+				  const double xinters = (theY-y1)*(x2-x1)/(y2-y1)+x1;
+				  if(x1==x2 || theX<=xinters)
+					counter++;
+				}
+			  x1 = x2;
+			  y1 = y2;
+			}
+		}
+	}
+
+  return (counter%2 != 0);
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Find polygon surrounding point from polygon shapefile
  */
 // ----------------------------------------------------------------------
@@ -973,8 +1027,74 @@ void find_enclosing_polygons(const NFmiEsriShape & theShape,
 							 const NFmiPoint & theLatLon,
 							 const std::string & theName = "")
 {
-  // TODO
-  throw runtime_error("Polygon data not supported yet");
+  // Projected coordinate if needed
+
+  NFmiPoint worldxy;
+
+  if(options.projection != "latlon")
+	worldxy = projection->LatLonToWorldXY(theLatLon);
+
+  // Search conditions
+
+  string cond_variable, cond_comparison, cond_value;
+  parse_condition(cond_variable,cond_comparison,cond_value);
+
+  // Find the first match
+
+  const NFmiEsriShape::elements_type & elements = theShape.Elements();
+
+  NFmiEsriShape::elements_type::size_type i;
+  for(i=0; i<elements.size(); i++)
+	{
+	  if(elements[i] == 0)	// null element?
+		continue;
+	  
+	  const NFmiEsriPolygon * elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+
+	  bool enclosed = false;
+
+	  if(condition_satisfied(*elem,cond_variable,cond_comparison,cond_value))
+		{
+		  if(options.projection == "latlon")
+			enclosed = is_inside(*elem,theLatLon.X(),theLatLon.Y());
+		  else
+			enclosed = is_inside(*elem,worldxy.X(),worldxy.Y());
+		}
+	  
+	  if(enclosed)
+		break;
+	}
+
+  // Print the results.
+
+  if(i<elements.size())
+	{
+	  const NFmiEsriPolygon * elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+
+	  if(!theName.empty())
+		cout << theName
+			 << options.delimiter;
+	  
+	  print_attributes(*elem);
+	  cout << endl;
+	}
+  else
+	{
+	  // No match, print name,-,-,-,-,....
+	  if(!theName.empty())
+		cout << theName
+			 << options.delimiter
+			 << "-";
+
+	  vector<string> attribs = NFmiStringTools::Split(options.attributes,",");
+	  for(unsigned j=0; j<attribs.size(); j++)
+		{
+		  if(!theName.empty() || j>0)
+			cout << options.delimiter;
+		  cout << "-";
+		}
+	  cout << endl;
+	}
 }
 
 // ----------------------------------------------------------------------
