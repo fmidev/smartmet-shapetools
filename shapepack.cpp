@@ -67,6 +67,7 @@
 #include <boost/program_options.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <set>
 #include <stdexcept>
