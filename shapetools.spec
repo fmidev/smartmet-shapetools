@@ -1,14 +1,14 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 1.0.5
+Version: 8.9.29
 Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
-BuildRequires: libsmartmet-newbase >= 1.0.7-1, libsmartmet-imagine >= 1.0.7-1,  libjpeg, libjpeg-devel, libpng-devel
+BuildRequires: libsmartmet-newbase >= 8.9.29-1, libsmartmet-imagine >= 8.9.29-1,  libjpeg, libjpeg-devel, libpng-devel, boost-devel
 Requires: glibc, libgcc, libjpeg, libpng,  libstdc++, zlib
 Provides: shapefilter shapeproject shapepoints shape2grads grads2shape gradsdump gshhs2grads gshhs2shape shape2ps shape2xml shapedump triangle2shape shape2triangle amalgamate etopo2shape lights2shape shapepack shapefind
 
@@ -51,6 +51,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Mon Sep 29 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.9.29-1.el5.fmi
+- Newbase headers changed
+* Mon Sep 22 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.9.22-1.el5.fmi
+- Linked statically with boost 1.36
 * Mon Dec 31 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.5-1.el5.fmi
 - Added polygon support to shapefind
 * Wed Dec 19 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.4-1.el5.fmi
