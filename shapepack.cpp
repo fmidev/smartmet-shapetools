@@ -99,6 +99,7 @@ struct Options
   float lat2;
   string attribute;
   bool verbose;
+  bool accurate;
 
   Options()
 	: shapefile()
@@ -112,6 +113,7 @@ struct Options
 	, lat2(90)
 	, attribute()
 	, verbose(false)
+	, accurate(false)
   {
   }
 };
@@ -155,7 +157,8 @@ bool parse_options(int argc, char * argv[])
 	("lon2",po::value(&options.lon2),
 	 "top right longitude (default is 180)")
 	("lat2",po::value(&options.lat2),
-	 "top right latitude (default is 90)");
+	 "top right latitude (default is 90)")
+	("accurate,A",po::bool_switch(&options.accurate));
   
   po::positional_options_description p;
   p.add("shapefile",1);
@@ -355,6 +358,17 @@ inline float ypixel(float y)
   return (y+90)/180 * options.height;
 }
 
+inline float lonpixel(int x)
+{
+  return (360.0*x/options.width - 180);
+}
+
+inline float latpixel(int y)
+{
+  return (180.0*y/options.height-90);
+}
+
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Insert polygon to fillmap
@@ -433,6 +447,196 @@ void render_image(NFmiImage & theImage,
 	  polygon_to_fillmap(fillmap,*it);
 	  fillmap.Fill(theImage,color,NFmiColorTools::kFmiColorCopy);
 	}
+
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Test if the given point is inside the polygon
+ *
+ * Copied from shapefind.cpp
+ */
+// ----------------------------------------------------------------------
+
+bool is_inside(const NFmiEsriPolygon & thePoly, double theX, double theY)
+{
+  int counter = 0;
+
+  for(int part=0; part<thePoly.NumParts(); part++)
+	{
+	  int i1 = thePoly.Parts()[part];             // start of part
+	  int i2;
+	  if(part+1 == thePoly.NumParts())
+		i2 = thePoly.NumPoints()-1;               // end of part
+	  else
+		i2 = thePoly.Parts()[part+1]-1;   // end of part
+	  
+	  if(i2>=i1)
+		{
+		  double x1 = thePoly.Points()[i1].X();
+		  double y1 = thePoly.Points()[i1].Y();
+
+		  for(int i=i1+1; i<=i2; i++)
+			{
+			  double x2 = thePoly.Points()[i].X();
+			  double y2 = thePoly.Points()[i].Y();
+			  if(theY > std::min(y1,y2) &&
+				 theY <= std::max(y1,y2) &&
+				 theX <= std::max(x1,x2) &&
+				 y1 != y2)
+				{
+				  const double xinters = (theY-y1)*(x2-x1)/(y2-y1)+x1;
+				  if(x1==x2 || theX<=xinters)
+					counter++;
+				}
+			  x1 = x2;
+			  y1 = y2;
+			}
+		}
+	}
+
+  return (counter%2 != 0);
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Find polygon surrounding point from polygon shapefile
+ */
+// ----------------------------------------------------------------------
+
+string find_enclosing_polygon(const NFmiEsriShape & theShape,
+							  float theLon,
+							  float theLat)
+{
+  // Find the first match
+
+  const NFmiEsriShape::elements_type & elements = theShape.Elements();
+
+  NFmiEsriShape::elements_type::size_type i;
+  for(i=0; i<elements.size(); i++)
+	{
+	  if(elements[i] == 0)	// null element?
+		continue;
+	  
+	  const NFmiEsriPolygon * elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+
+	  bool enclosed = is_inside(*elem,theLon,theLat);
+	  
+	  if(enclosed)
+		break;
+	}
+
+  // Print the results.
+
+  if(i<elements.size())
+	{
+	  const NFmiEsriPolygon * elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+	  const NFmiEsriShape::attributes_type & attributes = theShape.Attributes();
+	  NFmiEsriShape::attributes_type::const_iterator at = find_attribute(attributes,options.attribute);
+ 	  const string value = get_attribute_value(*elem,**at);
+	  return value;
+	}
+  else
+	return "";
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Test if pixel color is the same if the coordinate is inside image
+ *
+ * We intentionally return true for pixels outside the image.
+ */
+// ----------------------------------------------------------------------
+
+inline
+bool same_color(const NFmiImage & theImage, int i, int j, NFmiColorTools::Color c)
+{
+  return (i<0 ||
+		 j<0 ||
+		 i>=theImage.Width() ||
+		 j>=theImage.Height() ||
+		  theImage(i,j) == c);
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Check if pixel is surrounded by indentical pixels or not
+ */
+// ----------------------------------------------------------------------
+
+inline
+bool is_boundary_pixel(const NFmiImage & theImage, int i, int j)
+{
+  const NFmiColorTools::Color color = theImage(i,j);
+
+  return !(same_color(theImage,i-1,j-1,color) &&
+		   same_color(theImage,i+1,j-1,color) &&
+		   same_color(theImage,i,j-1,color) &&
+		   same_color(theImage,i-1,j,color) &&
+		   same_color(theImage,i+1,j,color) &&
+		   same_color(theImage,i-1,j+1,color) &&
+		   same_color(theImage,i,j+1,color) &&
+		   same_color(theImage,i+1,j+1,color));
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Check accuracy of image near borders
+ */
+// ----------------------------------------------------------------------
+
+void refine_image(NFmiImage & theImage,
+				  const NFmiEsriShape & theShape,
+				  const map<string,int> & theValues)
+{
+  int checks = 0;
+  int changes = 0;
+  int pixels = 0;
+
+  int percentage = 0;
+  int perstep = 1;
+  int total_pixels = theImage.Width()*theImage.Height();
+
+  if(options.verbose)
+	cout << "Validating border areas..." << endl;
+
+  for(int i=0; i<theImage.Width(); i++)
+	for(int j=0; j<theImage.Height(); j++)
+	  {
+		++pixels;
+		if(pixels*100.0/total_pixels - percentage > perstep)
+		  {
+			percentage += perstep;
+			if(options.verbose)
+			  cout << "\t" << percentage << "%" << endl;
+		  }
+
+		if(is_boundary_pixel(theImage,i,j))
+		  {
+			++checks;
+
+			string tz = find_enclosing_polygon(theShape,
+											   lonpixel(i),
+											   latpixel(j));
+
+			if(!tz.empty())
+			  {
+				int idx = theValues.find(tz)->second;
+				if(theImage(i,j) != idx)
+				  {
+					if(options.verbose)
+					  cout << "Changed " << i << "," << j << " value from " << theImage(i,j)
+						   << " to " << idx << " (" << tz << ")" << endl;
+					++changes;
+					theImage(i,j) = idx;
+				  }
+			  }
+		  }
+	  }
+
+  if(options.verbose)
+	cout << "Total checks:  " << checks << endl
+		 << "Total changes: " << changes << endl;
 
 }
 
@@ -601,6 +805,9 @@ int domain(int argc, char * argv[])
   NFmiImage img(options.width,options.height);
   map<string,int> attmap = make_attribute_map(uniques);
   render_image(img,shape,attmap);
+
+  if(options.accurate)
+	refine_image(img,shape,attmap);
 
   if(!options.pngfile.empty())
 	img.WritePng(options.pngfile);
