@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 8.9.29
+Version: 8.11.13
 Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
@@ -51,6 +51,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Thu Nov 13 2008 pkeranen <pekka.keranen@fmi.fi> - 8.11.13-1.el5.fmi
+- Imagine shapefile support improved
 * Mon Sep 29 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.9.29-1.el5.fmi
 - Newbase headers changed
 * Mon Sep 22 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.9.22-1.el5.fmi
