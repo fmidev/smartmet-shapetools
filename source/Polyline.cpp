@@ -9,6 +9,7 @@
 #include "newbase/NFmiValueString.h"
 
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -103,6 +104,7 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2, doub
   DataType newpts;
 
   int last_quadrant = 0;
+  int next_quadrant = 0;
   int this_quadrant = 0;
 
   // Initialize the new bounding box
@@ -111,29 +113,40 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2, doub
   double maxx = itsPoints[0].x();
   double maxy = itsPoints[0].y();
 
+  next_quadrant = quadrant(itsPoints[0].x(),itsPoints[0].y(),theX1,theY1,theX2,theY2,margin);
+
   for(unsigned int i=0; i<size(); i++)
 	{
-	  bool pushed = true;
+	  last_quadrant = this_quadrant;
+	  this_quadrant = next_quadrant;
+	  if(i<size()-1)
+		next_quadrant = quadrant(itsPoints[i+1].x(),itsPoints[i+1].y(),theX1,theY1,theX2,theY2,margin);		
+
+	  bool pushit = true;
+
 	  if(i==0)
-		newpts.push_back(itsPoints[i]);
+		pushit = true;
+	  else if(this_quadrant == central_quadrant)
+		pushit = true;
+	  else if(this_quadrant != next_quadrant)
+		pushit = true;
+	  else if(this_quadrant != last_quadrant)
+		pushit = true;
+	  else if(i==size()-1)
+		pushit = true;
 	  else
-		{
-		  this_quadrant = quadrant(itsPoints[i].x(),itsPoints[i].y(),theX1,theY1,theX2,theY2,margin);
-		  if(this_quadrant==central_quadrant)
-			newpts.push_back(itsPoints[i]);
-		  else if(this_quadrant != last_quadrant)
-			newpts.push_back(itsPoints[i]);
-		  else
-			pushed = false;
-		  last_quadrant = this_quadrant;
-		}
+		pushit = false;
+
+	  if(pushit)
+		newpts.push_back(itsPoints[i]);
+
 	  // Update bounding box if point was accepted
-	  if(pushed)
+	  if(pushit)
 		{
-		  minx = min(minx,itsPoints[i].x());
-		  miny = min(miny,itsPoints[i].y());
-		  maxx = max(maxx,itsPoints[i].x());
-		  maxy = max(maxy,itsPoints[i].y());
+		  minx = min(minx,itsPoints[i-1].x());
+		  miny = min(miny,itsPoints[i-1].y());
+		  maxx = max(maxx,itsPoints[i-1].x());
+		  maxy = max(maxy,itsPoints[i-1].y());
 		}
 	}
   
