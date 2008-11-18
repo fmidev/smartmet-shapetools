@@ -2,7 +2,7 @@
 Summary: shapetools
 Name: smartmet-%{BINNAME}
 Version: 8.11.18
-Release: 1.el5.fmi
+Release: 2.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi

@@ -138,15 +138,15 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2, doub
 		pushit = false;
 
 	  if(pushit)
-		newpts.push_back(itsPoints[i]);
-
-	  // Update bounding box if point was accepted
-	  if(pushit)
 		{
-		  minx = min(minx,itsPoints[i-1].x());
-		  miny = min(miny,itsPoints[i-1].y());
-		  maxx = max(maxx,itsPoints[i-1].x());
-		  maxy = max(maxy,itsPoints[i-1].y());
+		  newpts.push_back(itsPoints[i]);
+
+		  // Update bounding box if point was accepted
+
+		  minx = min(minx,itsPoints[i].x());
+		  miny = min(miny,itsPoints[i].y());
+		  maxx = max(maxx,itsPoints[i].x());
+		  maxy = max(maxy,itsPoints[i].y());
 		}
 	}
   
