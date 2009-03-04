@@ -1,16 +1,43 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 8.11.18
-Release: 2.el5.fmi
+Version: 9.3.4
+Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
-BuildRequires: libsmartmet-newbase >= 8.9.29-1, libsmartmet-imagine >= 8.9.29-1,  libjpeg, libjpeg-devel, libpng-devel, boost-devel
-Requires: glibc, libgcc, libjpeg, libpng,  libstdc++, zlib
-Provides: shapefilter shapeproject shapepoints shape2grads grads2shape gradsdump gshhs2grads gshhs2shape shape2ps shape2xml shapedump triangle2shape shape2triangle amalgamate etopo2shape lights2shape shapepack shapefind
+BuildRequires: boost-devel
+BuildRequires: libjpeg
+BuildRequires: libjpeg-devel
+BuildRequires: libpng-devel
+BuildRequires: libsmartmet-imagine >= 8.9.29-1
+BuildRequires: libsmartmet-newbase >= 9.3.4-2
+Provides: amalgamate
+Provides: etopo2shape
+Provides: grads2shape
+Provides: gradsdump
+Provides: gshhs2grads
+Provides: gshhs2shape
+Provides: lights2shape
+Provides: shape2grads
+Provides: shape2ps
+Provides: shape2triangle
+Provides: shape2xml
+Provides: shapedump
+Provides: shapefilter
+Provides: shapefind
+Provides: shapepack
+Provides: shapepoints
+Provides: shapeproject
+Provides: triangle2shape
+Requires: glibc
+Requires: libgcc
+Requires: libjpeg
+Requires: libpng
+Requires: libstdc++
+Requires: zlib
 
 %description
 FMI shapetools
@@ -51,6 +78,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Wed Mar  4 2009 mheiskan <mika.heiskanen@fmi.fi> - 9.3.4-1.el5.fmi
+- Newbase preprocessor fixes
 * Tue Nov 14 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.11.18-1.el5.fmi
 - Fixed polygon clipping in Polyline
 * Thu Nov 13 2008 pkeranen <pekka.keranen@fmi.fi> - 8.11.13-1.el5.fmi
