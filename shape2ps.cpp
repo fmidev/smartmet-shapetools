@@ -391,7 +391,7 @@ int domain(int argc, const char * argv[])
   processor.SetIncluding("include","","");
   processor.SetDefine("#define");
   if(!processor.ReadAndStripFile(scriptfile))
-	throw runtime_error("Error: Could not open '"+scriptfile+"' for reading");
+	throw runtime_error("Error: "+processor.GetMessage());
 
   string text = processor.GetString();
   istringstream script(text);
