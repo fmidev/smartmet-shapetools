@@ -32,7 +32,7 @@
 #include "Polygon.h"
 #include "imagine/NFmiEdgeTree.h"
 #include "newbase/NFmiValueString.h"
-#include <iostream>
+#include <fstream>
 #include <string>
 #include <set>
 

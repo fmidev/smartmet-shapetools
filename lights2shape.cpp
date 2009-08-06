@@ -18,6 +18,7 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/bzip2.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <fstream>
 #include <iomanip>
 #include <set>
 #include <string>

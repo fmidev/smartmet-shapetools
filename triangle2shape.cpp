@@ -24,7 +24,7 @@
 #include "imagine/NFmiEdgeTree.h"
 #include "imagine/NFmiEsriShape.h"
 #include "imagine/NFmiEsriPolygon.h"
-#include <iostream>
+#include <fstream>
 #include <string>
 
 using namespace std;

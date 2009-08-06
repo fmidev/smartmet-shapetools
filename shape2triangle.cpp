@@ -28,7 +28,7 @@
 #include "imagine/NFmiGeoShape.h"
 // system
 #include <cstdlib>
-#include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 
