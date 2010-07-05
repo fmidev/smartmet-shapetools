@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 10.1.15
+Version: 10.7.5
 Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
@@ -12,8 +12,8 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 10.1.15-1
-BuildRequires: libsmartmet-newbase >= 10.1.15-1
+BuildRequires: libsmartmet-imagine >= 10.7.5-2
+BuildRequires: libsmartmet-newbase >= 10.7.5-2
 Provides: amalgamate
 Provides: etopo2shape
 Provides: grads2shape
@@ -78,6 +78,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Mon Jul  5 2010 mheiskan <mika.heiskanen@fmi.fi> - 10.7.5-1.el5.fmi
+- Upgrade to newbase 10.7.5-2
 * Fri Jan 15 2010 mheiskan <mika.heiskanen@fmi.fi> - 10.1.15-1.el5.fmi
 - Upgrade to boost 1.41
 * Wed Mar  4 2009 mheiskan <mika.heiskanen@fmi.fi> - 9.3.4-1.el5.fmi
