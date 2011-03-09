@@ -87,7 +87,12 @@ endif
 
 CWP = $(shell pwd)
 BIN = $(shell basename $(CWP))
-rpmsourcedir = /smartmet/src/redhat/SOURCES
+ifeq (exists, $(shell [ -d /smartmet ] ) && echo exists )
+then
+	rpmsourcedir = /smartmet/src/redhat/SOURCES
+else 
+	rpmsourcedir = /fmi/dev/src/redhat/SOURCES
+endif
 rpmerr = "There's no spec file ($(specfile)). RPM wasn't created. Please make a spec file or copy and rename it into $(specfile)"
 
 rpmversion := $(shell grep "^Version:" $(HTML).spec  | cut -d\  -f 2 | tr . _)
