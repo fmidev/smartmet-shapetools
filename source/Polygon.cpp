@@ -76,8 +76,8 @@ double Polygon::geoarea(void) const
   double dx1 = 0; // X-offsets for longitudes are multiples
   double dx2 = 0; // of 360 (in radians)
 
-  double x1;	// the previous point is not defined yet
-  double y1;
+  double x1 = 0;	// the previous point is not defined yet
+  double y1 = 0;
 
   for(unsigned int i=0; i<itsData.size(); i++)
 	{
