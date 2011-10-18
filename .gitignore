@@ -17,3 +17,6 @@ shapepack
 shapepoints
 shapeproject
 triangle2shape
+shape2svg
+*~
+obj/

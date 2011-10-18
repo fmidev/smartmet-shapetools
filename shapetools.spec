@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 10.7.5
+Version: 11.10.18
 Release: 1.el5.fmi
 License: FMI
 Group: Development/Tools
@@ -12,8 +12,8 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 10.7.5-2
-BuildRequires: libsmartmet-newbase >= 10.7.5-2
+BuildRequires: libsmartmet-imagine >= 11.10.17
+BuildRequires: libsmartmet-newbase >= 11.10.17
 Provides: amalgamate
 Provides: etopo2shape
 Provides: grads2shape
@@ -23,6 +23,7 @@ Provides: gshhs2shape
 Provides: lights2shape
 Provides: shape2grads
 Provides: shape2ps
+Provides: shape2svg
 Provides: shape2triangle
 Provides: shape2xml
 Provides: shapedump
@@ -67,6 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/gshhs2grads 
 /usr/bin/gshhs2shape 
 /usr/bin/shape2ps 
+/usr/bin/shape2svg
 /usr/bin/shape2xml 
 /usr/bin/shapedump 
 /usr/bin/triangle2shape 
@@ -78,6 +80,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Tue Oct 18 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.10.18-1.el5.fmi
+- Added shape2svg
 * Mon Jul  5 2010 mheiskan <mika.heiskanen@fmi.fi> - 10.7.5-1.el5.fmi
 - Upgrade to newbase 10.7.5-2
 * Fri Jan 15 2010 mheiskan <mika.heiskanen@fmi.fi> - 10.1.15-1.el5.fmi
