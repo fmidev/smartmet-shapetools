@@ -1,8 +1,8 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 11.10.18
-Release: 1.el5.fmi
+Version: 11.10.20
+Release: 1.el6.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -15,6 +15,7 @@ BuildRequires: libpng-devel
 BuildRequires: libsmartmet-imagine >= 11.10.17
 BuildRequires: libsmartmet-newbase >= 11.10.17
 Provides: amalgamate
+Provides: compositealpha
 Provides: etopo2shape
 Provides: grads2shape
 Provides: gradsdump
@@ -59,6 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,0775)
+/usr/bin/compositealpha
 /usr/bin/shapefilter 
 /usr/bin/shapeproject 
 /usr/bin/shapepoints 
@@ -80,6 +82,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Thu Oct 20 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.10.20-1.el5.fmi
+- Added compositealpha
 * Tue Oct 18 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.10.18-1.el5.fmi
 - Added shape2svg
 * Mon Jul  5 2010 mheiskan <mika.heiskanen@fmi.fi> - 10.7.5-1.el5.fmi

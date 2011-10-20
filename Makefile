@@ -17,7 +17,8 @@ PROG = shape2svg \
 	shape2triangle \
 	amalgamate \
 	etopo2shape \
-	lights2shape
+	lights2shape \
+	compositealpha
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 

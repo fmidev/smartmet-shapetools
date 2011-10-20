@@ -20,3 +20,5 @@ triangle2shape
 shape2svg
 *~
 obj/
+Dependencies*
+.kdbgrc.*
