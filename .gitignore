@@ -1,4 +1,5 @@
 amalgamate
+compositealpha
 etopo2shape
 grads2shape
 gradsdump
@@ -7,6 +8,7 @@ gshhs2shape
 lights2shape
 shape2grads
 shape2ps
+shape2svg
 shape2triangle
 shape2tz
 shape2xml
@@ -17,7 +19,6 @@ shapepack
 shapepoints
 shapeproject
 triangle2shape
-shape2svg
 *~
 obj/
 Dependencies*
