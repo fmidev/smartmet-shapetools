@@ -52,6 +52,7 @@ INCLUDES = -I$(includedir) \
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
+	-lsmartmet_macgyver \
 	-lboost_iostreams \
 	-lboost_program_options \
 	-lboost_filesystem \
