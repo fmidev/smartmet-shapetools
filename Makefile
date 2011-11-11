@@ -23,11 +23,11 @@ PROG = shape2svg \
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
 EXTRAFLAGS = -pedantic -Wpointer-arith -Wcast-qual \
-	-Wcast-align -Wwrite-strings -Wconversion -Winline \
+	-Wcast-align -Wwrite-strings -Winline \
 	-Wctor-dtor-privacy -Wnon-virtual-dtor -Wno-pmf-conversions \
 	-Wsign-promo -Wchar-subscripts -Wold-style-cast
 
-DIFFICULTFLAGS = -Weffc++ -Wredundant-decls -Wshadow -Woverloaded-virtual -Wunreachable-code
+DIFFICULTFLAGS = -Weffc++ -Wredundant-decls -Wshadow -Woverloaded-virtual -Wunreachable-code -Wconversion
 
 CC = g++
 
@@ -52,13 +52,15 @@ INCLUDES = -I$(includedir) \
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
-	-lsmartmet_macgyver \
+	/smartmet/src/cpp/lib/macgyver/libsmartmet_macgyver.a \
 	-lboost_iostreams \
 	-lboost_program_options \
 	-lboost_filesystem \
 	-lboost_regex \
 	-lboost_system \
 	-lpng -ljpeg -lz -lbz2 -lpthread
+
+#	-lsmartmet_macgyver \
 
 # Common library compiling template
 

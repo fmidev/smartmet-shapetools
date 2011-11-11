@@ -1061,8 +1061,8 @@ int domain(int argc, const char * argv[])
 				double x = xy.X();
 				double y = theArea->Bottom()-(xy.Y()-theArea->Top());
 
-				if(x > theArea->Left() && x < theArea->Right() ||
-				   y > theArea->Top() && y < theArea->Bottom())
+				if((x > theArea->Left() && x < theArea->Right()) ||
+					(y > theArea->Top() && y < theArea->Bottom()))
 				  {
 					buffer << wdir << ' ' << x << ' ' << y << ' ' << " windarrow" << endl;
 				  }
