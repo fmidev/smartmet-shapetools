@@ -59,13 +59,18 @@
  */
 // ======================================================================
 
-#include <imagine/NFmiColorTools.h>
+
 #include <imagine/NFmiEsriShape.h>
 #include <imagine/NFmiEsriPolygon.h>
 #include <imagine/NFmiFillMap.h>
 #include <imagine/NFmiImage.h>
+
+#include <macgyver/WorldTimeZones.h>
+
+#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 #include <boost/lexical_cast.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -91,6 +96,7 @@ struct Options
   string shapefile;
   string packfile;
   string pngfile;
+  string zonefile;
   int width;
   int height;
   float lon1;
@@ -105,6 +111,7 @@ struct Options
 	: shapefile()
 	, packfile()
 	, pngfile()
+	, zonefile()
 	, width(-1)
 	, height(-1)
 	, lon1(-180)
@@ -144,8 +151,10 @@ bool parse_options(int argc, char * argv[])
 	 "shapefile (without suffix)")
 	("output,o",po::value(&options.packfile),
 	 "output filename")
-	("pngfile,i",po::value(&options.pngfile),
+	("pngfile,p",po::value(&options.pngfile),
 	 "optional image filename")
+	("zonefile,z",po::value(&options.zonefile),
+	 "optional shapepack with which to combine the information with")
 	("width,W",po::value(&options.width),
 	 "width of rendered image")
 	("height,H",po::value(&options.height),
@@ -709,6 +718,24 @@ string compress_image(const NFmiImage & theImage,
   int lastcolor = theImage(0,0);
   int duplicates = 0;
 
+#if 1
+  std::cout << "Unique values:" << std::endl;
+  std::set<int> uniques;
+  int last = -1000;
+  for(int i=0; i<theImage.Width(); i++)
+	for(int j=0; j<theImage.Height(); j++)
+	  {
+		if(theImage(i,j) != last)
+		  uniques.insert(theImage(i,j));
+		last = theImage(i,j);
+	  }
+  BOOST_FOREACH(int c, uniques)
+	std::cout << c << std::endl;
+#endif
+
+  if(options.verbose)
+	std::cout << "Compressing the image data" << std::endl;
+
   for(int i=0; i<theImage.Width(); i++)
 	for(int j=0; j<theImage.Height(); j++)
 	  {
@@ -740,6 +767,39 @@ string compress_image(const NFmiImage & theImage,
 
   return out.str();
   
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Render a shapepack onto an image
+ */
+// ----------------------------------------------------------------------
+
+void render_shapepack(NFmiImage & img, const Fmi::WorldTimeZones & zones, const map<string,int> & attmap)
+{
+  if(options.verbose)
+	std::cout << "Rendering background shapepack" << std::endl;
+
+  for(int i=0; i<img.Width(); i++)
+	for(int j=0; j<img.Height(); j++)
+	  {
+		try
+		  {
+			std::string tz = zones.zone_name(lonpixel(i),latpixel(j));
+			map<string,int>::const_iterator it = attmap.find(tz);
+			if(it == attmap.end())
+			  {
+				cerr << "Failed to find index for timezone " << tz
+					 << " at coordinate " << i << "," << j
+					 << " at lonlat " << lonpixel(i) << "," << latpixel(j)
+					 << endl;
+			  }
+			else
+			  img(i,j) = attmap.find(tz)->second;
+		  }
+		catch(...)
+		  { }
+	  }  
 }
 
 // ----------------------------------------------------------------------
@@ -793,6 +853,12 @@ int domain(int argc, char * argv[])
 	  options.attribute = (*attributes.begin())->Name();
 	}
 
+  // Help informatio
+
+  boost::shared_ptr<Fmi::WorldTimeZones> zones;
+  if(!options.zonefile.empty())
+	zones.reset(new Fmi::WorldTimeZones(options.zonefile));
+
   // Unique attributes
 
   set<string> uniques = find_unique_attributes(shape,options.attribute);
@@ -800,10 +866,23 @@ int domain(int argc, char * argv[])
   if(options.verbose)
 	print_uniques(uniques);
 
+  if(zones)
+	{
+	  BOOST_FOREACH(const string & z, zones->zones())
+		uniques.insert(z);
+	}
+
+  map<string,int> attmap = make_attribute_map(uniques);
+
+  if(options.verbose)
+	print_uniques(uniques);
+
   // Render the image
 
-  NFmiImage img(options.width,options.height);
-  map<string,int> attmap = make_attribute_map(uniques);
+  NFmiImage img(options.width,options.height,-1);
+  if(zones)
+	render_shapepack(img,*zones,attmap);
+
   render_image(img,shape,attmap);
 
   if(options.accurate)

@@ -52,7 +52,7 @@ INCLUDES = -I$(includedir) \
 LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
-	/smartmet/src/cpp/lib/macgyver/libsmartmet_macgyver.a \
+	-lsmartmet_macgyver \
 	-lboost_iostreams \
 	-lboost_program_options \
 	-lboost_filesystem \
