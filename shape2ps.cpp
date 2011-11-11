@@ -59,6 +59,7 @@
  * - body to indicate the start of the PostScript body
  * - shape <moveto> <lineto> <closepath> <shapefile> to render a shapefile
  * - gshhs <moveto> <lineto> <closepath> <gshhsfile> to render a shoreline
+ * - graticule <moveto> <lineto> <lon1> <lon2> <dx> <lat1> <lat2> <dy> to render a graticule
  * - {moveto} {lineto} exec <shapefile> to execute given commands for vertices
  * - {} qdexec <querydata> to execute given commands for grid points
  * - project <x> <y> to output projected x and y
@@ -868,6 +869,56 @@ int domain(int argc, const char * argv[])
 			  throw runtime_error(e.what());
 			}
 		  
+		}
+
+	  // ------------------------------------------------------------
+	  // Handle the graticule <moveto> <lineto> <lon1> <lon2> <dx> <lat1> <lat2> <dy> command
+	  // ------------------------------------------------------------
+
+	  else if(token == "graticule")
+		{
+		  if(!body)
+			throw runtime_error("Cannot have "+token+" command in header");
+		  
+		  string moveto, lineto;
+		  script >> moveto >> lineto;
+
+		  double lon1, lon2, dx, lat1, lat2, dy;
+		  script >> lon1 >> lon2 >> dx >> lat1 >> lat2 >> dy;
+
+		  if(lon1 > lon2) throw runtime_error("Graticule lon1>lon2");
+		  if(lat1 > lat2) throw runtime_error("Graticule lat1>lat2");
+		  if(dx<=0) throw runtime_error("Graticule dx<=0");
+		  if(dy<=0) throw runtime_error("Graticule dy<=0");
+
+		  buffer << "% graticule "
+				 << lon1 << ' ' << lon2 << ' ' << dx << ' '
+				 << lat1 << ' ' << lat2 << ' ' << dy << endl;
+
+		  Imagine::NFmiPath path;
+
+		  for(double x=lon1; x<=lon2; x+=dx)
+			for(double y=lat1; y<=lat2; y+=dy)
+			  {
+				if(y==lat1)
+				  path.MoveTo(x,y);
+				else
+				  path.LineTo(x,y);
+			  }
+
+		  for(double y=lat1; y<=lat2; y+=dy)
+			for(double x=lon1; x<=lon2; x+=dx)
+			  {
+				if(x==lon1)
+				  path.MoveTo(x,y);
+				else
+				  path.LineTo(x,y);
+			  }
+
+		  path.Project(theArea.get());
+
+		  buffer << pathtostring(path,*theArea,theClipMargin,moveto,lineto,"closepath");
+
 		}
 
 	  // ------------------------------------------------------------
