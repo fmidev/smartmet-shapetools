@@ -1,5 +1,6 @@
 HTML = shapetools
-PROG = shape2svg \
+PROG = shapepick \
+	shape2svg \
 	shapefind \
 	shapepack \
 	shapefilter \
