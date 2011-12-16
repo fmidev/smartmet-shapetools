@@ -1,8 +1,8 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 11.11.11
-Release: 2.el5.fmi
+Version: 11.12.16
+Release: 1.el6.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -80,9 +80,12 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/etopo2shape 
 /usr/bin/lights2shape
 /usr/bin/shapepack
+/usr/bin/shapepick
 /usr/bin/shapefind
 
 %changelog
+* Fri Dec 16 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.12.16-1.el6.fmi
+- Added shapepick program
 * Fri Nov 11 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.11.11-2.el5.fmi
 - Added graticule command to shape2ps
 * Fri Nov 11 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.11.11-1.el5.fmi

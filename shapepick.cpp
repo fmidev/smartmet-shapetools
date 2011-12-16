@@ -12,8 +12,11 @@
  */
 // ======================================================================
 
+#include <macgyver/WorldTimeZones.h>
+
 #include <boost/program_options.hpp>
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -64,8 +67,8 @@ bool parse_options(int argc, char * argv[])
   
   po::positional_options_description p;
   p.add("infile",1);
-  p.add("lon",2);
-  p.add("lat",3);
+  p.add("lon",1);
+  p.add("lat",1);
   
   po::variables_map opt;
   po::store(po::command_line_parser(argc,argv)
@@ -129,6 +132,10 @@ int run(int argc, char * argv[])
 {
   if(!parse_options(argc,argv))
 	return 0;
+
+  Fmi::WorldTimeZones shape(options.infile);
+
+  std::cout << shape.zone_name(options.lon,options.lat) << std::endl;
 
   return 0;
 }
