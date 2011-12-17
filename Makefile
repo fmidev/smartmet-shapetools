@@ -185,7 +185,7 @@ tag:
 rpm: clean depend
 	if [ -a $(BIN).spec ]; \
 	then \
-	  tar -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
+	  tar --exclude-vcs -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
 	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
 	  rpmbuild -ta $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
 	else \
