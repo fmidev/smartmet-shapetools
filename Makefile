@@ -58,6 +58,7 @@ LIBS = -L$(libdir) \
 	-lboost_program_options \
 	-lboost_filesystem \
 	-lboost_regex \
+	-lboost_thread \
 	-lboost_system \
 	-lpng -ljpeg -lz -lbz2 -lpthread
 

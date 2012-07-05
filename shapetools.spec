@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 11.12.16
+Version: 12.7.5
 Release: 1.el6.fmi
 License: FMI
 Group: Development/Tools
@@ -12,9 +12,9 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 11.10.17
-BuildRequires: libsmartmet-newbase >= 11.10.17
-BuildRequires: libsmartmet-macgyver >= 11.11.11
+BuildRequires: libsmartmet-imagine >= 12.7.5-1
+BuildRequires: libsmartmet-newbase >= 12.7.5-1
+BuildRequires: libsmartmet-macgyver >= 12.7.5-1
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -84,6 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.el6.fmi
+- Migration to boost 1.50
+* Fri Dec 16 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.12.16-2.el6.fmi
+- Recompiled due to a macgyver bug fix in timeone handling
 * Fri Dec 16 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.12.16-1.el6.fmi
 - Added shapepick program
 * Fri Nov 11 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.11.11-2.el5.fmi
