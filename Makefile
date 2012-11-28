@@ -95,7 +95,7 @@ endif
 CWP = $(shell pwd)
 BIN = $(shell basename $(CWP))
 
-rpmsourcedir=$(shell test -d /smartmet && echo /smartmet/src/redhat/SOURCES || echo /fmi/dev/src/redhat/SOURCES )
+rpmsourcedir=/tmp/$(shell whoami)/rpmbuild
 
 rpmerr = "There's no spec file ($(specfile)). RPM wasn't created. Please make a spec file or copy and rename it into $(specfile)"
 
@@ -188,9 +188,11 @@ tag:
 rpm: clean depend
 	if [ -a $(BIN).spec ]; \
 	then \
+	  mkdir -p $(rpmsourcedir) ; \
 	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
 	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
 	  rpmbuild -ta $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
+	  rm -f $(rpmsourcedir)/libsmartmet-$(LIB).tar.gz ; \
 	else \
 	  echo $(rpmerr); \
 	fi;
