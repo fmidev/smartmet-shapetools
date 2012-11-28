@@ -192,7 +192,7 @@ rpm: clean depend
 	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
 	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
 	  rpmbuild -ta $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
-	  rm -f $(rpmsourcedir)/smartmet-$(LIB).tar.gz ; \
+	  rm -f $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
 	else \
 	  echo $(rpmerr); \
 	fi;
