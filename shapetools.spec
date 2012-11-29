@@ -2,7 +2,7 @@
 Summary: shapetools
 Name: smartmet-%{BINNAME}
 Version: 12.7.5
-Release: 1.el6.fmi
+Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -84,7 +84,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
-* Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.el6.fmi
+* Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.fmi
 - Migration to boost 1.50
 * Fri Dec 16 2011 mheiskan <mika.heiskanen@fmi.fi> - 11.12.16-2.el6.fmi
 - Recompiled due to a macgyver bug fix in timeone handling
