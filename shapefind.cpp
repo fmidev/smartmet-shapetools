@@ -95,7 +95,7 @@ Options options;
 
 // Search projection and the projected search coordinate
 
-auto_ptr<NFmiArea> projection;
+NFmiAreaFactory::return_type projection;
 
 // ----------------------------------------------------------------------
 /*!

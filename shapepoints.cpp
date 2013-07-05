@@ -34,12 +34,13 @@
 // ======================================================================
 
 #include "PointSelector.h"
-#include "newbase/NFmiArea.h"
-#include "newbase/NFmiAreaFactory.h"
-#include "newbase/NFmiCmdLine.h"
-#include "newbase/NFmiSettings.h"
-#include "imagine/NFmiEsriPoint.h"
-#include "imagine/NFmiEsriShape.h"
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaFactory.h>
+#include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiSettings.h>
+#include <imagine/NFmiEsriPoint.h>
+#include <imagine/NFmiEsriShape.h>
+#include <boost/shared_ptr.hpp>
 #include <memory>
 #include <string>
 
@@ -257,7 +258,7 @@ void create_shape(const PointSelector & theSelector,
 	  it != theSelector.end();
 	  ++it)
 	{
-	  NFmiEsriElement * tmp = elements[*it]->Clone().release();
+	  NFmiEsriElement * tmp = elements[*it]->Clone().get();
 	  shape.Add(tmp);
 	}
 
@@ -311,7 +312,7 @@ int domain(int argc, const char * argv[])
 
   // Setup the selector
 
-  auto_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
+  boost::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
   PointSelector selector(*area,options.negate);
   selector.minDistance(options.mindistance);
   selector.boundingBox(area->Left() + options.minborderdistance,

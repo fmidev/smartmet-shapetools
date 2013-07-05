@@ -398,7 +398,7 @@ int domain(int argc, const char * argv[])
   istringstream script(text);
 
   // The area specification is not given yet
-  auto_ptr<NFmiArea> theArea;
+  boost::shared_ptr<NFmiArea> theArea;
 
   // The querydata is not given yet
   string theQueryDataName;
@@ -596,7 +596,7 @@ int domain(int argc, const char * argv[])
 
 		  string specs;
 		  script >> specs;
-		  theArea.reset(NFmiAreaFactory::Create(specs).release());
+		  theArea = NFmiAreaFactory::Create(specs);
 
 		  // Now handle XY limits
 

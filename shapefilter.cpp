@@ -534,7 +534,7 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
 	  if(!ok)
 		continue;
 
-	  NFmiEsriElement * tmp = (*it)->Clone().release();
+	  NFmiEsriElement * tmp = (*it)->Clone().get();
 	  shape->Add(tmp);
 	}
 
@@ -610,7 +610,7 @@ const NFmiEsriShape * filter_boundingbox(const NFmiEsriShape & theShape)
 	  // If elements overlaps bbox, add it to the result
 	  if(!outside)
 		{
-		  NFmiEsriElement * tmp = (*it)->Clone().release();
+		  NFmiEsriElement * tmp = (*it)->Clone().get();
 		  shape->Add(tmp);
 		}
 	}

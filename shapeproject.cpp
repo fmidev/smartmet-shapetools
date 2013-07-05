@@ -35,12 +35,12 @@
  */
 // ======================================================================
 
-#include "newbase/NFmiArea.h"
-#include "newbase/NFmiAreaFactory.h"
-#include "newbase/NFmiCmdLine.h"
-#include "imagine/NFmiEsriPoint.h"
-#include "imagine/NFmiEsriProjector.h"
-#include "imagine/NFmiEsriShape.h"
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaFactory.h>
+#include <newbase/NFmiCmdLine.h>
+#include <imagine/NFmiEsriPoint.h>
+#include <imagine/NFmiEsriProjector.h>
+#include <imagine/NFmiEsriShape.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -211,8 +211,8 @@ int domain(int argc, const char * argv[])
 
   // Create the projections
 
-  auto_ptr<NFmiArea> inarea = NFmiAreaFactory::Create(options.inputprojection);
-  auto_ptr<NFmiArea> outarea = NFmiAreaFactory::Create(options.outputprojection);
+  NFmiAreaFactory::return_type inarea = NFmiAreaFactory::Create(options.inputprojection);
+  NFmiAreaFactory::return_type outarea = NFmiAreaFactory::Create(options.outputprojection);
   // Read the shape data
 
   NFmiEsriShape shape;
