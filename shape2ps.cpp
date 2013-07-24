@@ -755,8 +755,9 @@ int domain(int argc, const char * argv[])
 		  try
 			{
 			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
-			  geo.ProjectXY(*theArea);
-			  Imagine::NFmiPath path = geo.Path();
+			  // geo.ProjectXY(*theArea);
+			  Imagine::NFmiPath path = geo.Path().PacificView(theArea->PacificView());
+			  path.Project(theArea.get());
 
 			  if(token=="shape")
 				buffer << pathtostring(path,
