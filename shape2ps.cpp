@@ -756,6 +756,7 @@ int domain(int argc, const char * argv[])
 			{
 			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
 			  // geo.ProjectXY(*theArea);
+
 			  Imagine::NFmiPath path = geo.Path().PacificView(theArea->PacificView());
 			  path.Project(theArea.get());
 

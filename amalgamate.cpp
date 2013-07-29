@@ -186,9 +186,9 @@ int main(int argc, char * argv[])
 
 		if(triangle_ok)
 		  {
-			edges.Add(Imagine::NFmiEdge(pt1.x(),pt1.y(),pt2.x(),pt2.y(),true));
-			edges.Add(Imagine::NFmiEdge(pt2.x(),pt2.y(),pt3.x(),pt3.y(),true));
-			edges.Add(Imagine::NFmiEdge(pt3.x(),pt3.y(),pt1.x(),pt1.y(),true));
+			edges.Add(Imagine::NFmiEdge(pt1.x(),pt1.y(),pt2.x(),pt2.y(),true,false));
+			edges.Add(Imagine::NFmiEdge(pt2.x(),pt2.y(),pt3.x(),pt3.y(),true,false));
+			edges.Add(Imagine::NFmiEdge(pt3.x(),pt3.y(),pt1.x(),pt1.y(),true,false));
 
 			if(debug)
 			  {

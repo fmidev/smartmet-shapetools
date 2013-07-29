@@ -192,7 +192,7 @@ void count_edges(const NFmiEsriShape & theShape, NFmiCounter<NFmiEdge> & theCoun
 						{
 						  double x2 = elem->Points()[i].X();
 						  double y2 = elem->Points()[i].Y();
-						  theCounts.Add(NFmiEdge(x1,y1,x2,y2,true));
+						  theCounts.Add(NFmiEdge(x1,y1,x2,y2,true,false));
 						  x1 = x2;
 						  y1 = y2;
 						}
@@ -223,7 +223,7 @@ void count_edges(const NFmiEsriShape & theShape, NFmiCounter<NFmiEdge> & theCoun
 						{
 						  double x2 = elem->Points()[i].X();
 						  double y2 = elem->Points()[i].Y();
-						  theCounts.Add(NFmiEdge(x1,y1,x2,y2,true));
+						  theCounts.Add(NFmiEdge(x1,y1,x2,y2,true,false));
 						  x1 = x2;
 						  y1 = y2;
 						}

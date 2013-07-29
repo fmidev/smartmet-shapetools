@@ -113,7 +113,8 @@ int main(int argc, char * argv[])
 			return 1;
 		  }
 		Imagine::NFmiEdge tmp(nodes[idx1].x(),nodes[idx1].y(),
-							  nodes[idx2].x(),nodes[idx2].y(),true);
+							  nodes[idx2].x(),nodes[idx2].y(),
+							  true,false);
 		if(edge==85)
 		  cout << "Edge 85!" << endl;
 		edges.Add(tmp);
