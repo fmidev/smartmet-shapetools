@@ -35,7 +35,7 @@ CC = g++
 # Default compile options
 
 CFLAGS = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
-LDFLAGS = -s
+LDFLAGS = 
 
 # Special modes
 
