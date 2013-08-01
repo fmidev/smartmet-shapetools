@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 13.7.3
+Version: 13.8.2
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -12,9 +12,9 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 13.7.3-1
-BuildRequires: libsmartmet-newbase >= 13.7.3-1
-BuildRequires: libsmartmet-macgyver >= 13.7.3-1
+BuildRequires: libsmartmet-imagine >= 13.8.2
+BuildRequires: libsmartmet-newbase >= 13.8.2
+BuildRequires: libsmartmet-macgyver >= 13.7.30
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -84,6 +84,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-1.fmi
+- Enabled Pacific views of data
 * Wed Jul  3 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.7.3-1.fmi
 - Update to boost 1.54
 * Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.fmi
