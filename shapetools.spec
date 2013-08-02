@@ -2,7 +2,7 @@
 Summary: shapetools
 Name: smartmet-%{BINNAME}
 Version: 13.8.2
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -12,7 +12,7 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 13.8.2-3
+BuildRequires: libsmartmet-imagine >= 13.8.2-4
 BuildRequires: libsmartmet-newbase >= 13.8.2-2
 BuildRequires: libsmartmet-macgyver >= 13.8.2-1
 Provides: amalgamate
@@ -84,12 +84,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-2.fmi
+- Fixed problems in handling long lines at the poles
 * Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-1.fmi
-<<<<<<< HEAD
 - Added support for Pacific views
-=======
 - Enabled Pacific views of data
->>>>>>> c594e3973fc5ce426ce16965715b905e660aeb6a
 * Wed Jul  3 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.7.3-1.fmi
 - Update to boost 1.54
 * Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.fmi
