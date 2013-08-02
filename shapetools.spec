@@ -14,7 +14,7 @@ BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libsmartmet-imagine >= 13.8.2-3
 BuildRequires: libsmartmet-newbase >= 13.8.2-2
-BuildRequires: libsmartmet-macgyver >= 13.7.22-1
+BuildRequires: libsmartmet-macgyver >= 13.8.2-1
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -85,7 +85,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-1.fmi
+<<<<<<< HEAD
 - Added support for Pacific views
+=======
+- Enabled Pacific views of data
+>>>>>>> c594e3973fc5ce426ce16965715b905e660aeb6a
 * Wed Jul  3 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.7.3-1.fmi
 - Update to boost 1.54
 * Thu Jul  5 2012 Mika Heiskanen <mika.heiskanen@fmi.fi> - 12.7.5-1.fmi
