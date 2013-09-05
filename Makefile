@@ -54,12 +54,12 @@ LIBS = -L$(libdir) \
 	-lsmartmet_imagine \
 	-lsmartmet_newbase \
 	-lsmartmet_macgyver \
-	-lboost_iostreams \
-	-lboost_program_options \
-	-lboost_filesystem \
-	-lboost_regex \
-	-lboost_thread \
-	-lboost_system \
+	-lboost_iostreams-mt\
+	-lboost_program_options-mt \
+	-lboost_filesystem-mt\
+	-lboost_regex-mt\
+	-lboost_thread-mt \
+	-lboost_system-mt\
 	-lpng -ljpeg -lz -lbz2 -lpthread -lrt
 
 #	-lsmartmet_macgyver \
