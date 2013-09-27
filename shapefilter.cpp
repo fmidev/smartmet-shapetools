@@ -20,6 +20,7 @@
 #include "imagine/NFmiEsriPolygon.h"
 #include "imagine/NFmiEsriPolyLine.h"
 #include "imagine/NFmiEsriShape.h"
+#include "imagine/NFmiEsriTools.h"
 #include "imagine/NFmiEdge.h"
 #include "imagine/NFmiEdgeTree.h"
 #include "imagine/NFmiPath.h"
@@ -397,149 +398,7 @@ const NFmiEsriShape * filter_field(const NFmiEsriShape & theShape)
   if(options.verbose)
 	cout << "Filtering based on field value..." << endl;
 
-  // Parse the relevant option
-
-  list<string> comparisons;
-  comparisons.push_back("==");
-  comparisons.push_back("<=");
-  comparisons.push_back(">=");
-  comparisons.push_back("<>");
-  comparisons.push_back("<");
-  comparisons.push_back(">");
-  comparisons.push_back("=");
-
-  string fieldname, fieldvalue, fieldcomparison;
-  list<string> words;
-
-  for(list<string>::const_iterator it = comparisons.begin();
-	  it != comparisons.end();
-	  ++it)
-	{
-	  string::size_type pos = options.filter_field.find(*it);
-	  if(pos != string::npos)
-		{
-		  fieldcomparison = *it;
-		  fieldname = options.filter_field.substr(0,pos);
-		  fieldvalue = options.filter_field.substr(pos+it->size());
-		  break;
-		}
-	}
-
-  if(fieldcomparison.empty())
-	throw runtime_error("Unable to parse comparison option");
-
-  // Fetch the attribute name
-
-  const NFmiEsriAttributeName * name = theShape.AttributeName(fieldname);
-  if(name==0)
-	throw runtime_error("The shape does not have a field named '"+fieldname+"'");
-  // Preparse the desired field value
-
-  const NFmiEsriAttributeType atype = name->Type();
-
-  string svalue = "";
-  int    ivalue = 0;
-  double dvalue = 0;
-
-  switch(atype)
-	{
-	case kFmiEsriString:
-	  svalue = fieldvalue;
-	  break;
-	case kFmiEsriInteger:
-	  ivalue = NFmiStringTools::Convert<int>(fieldvalue);
-	  break;
-	case kFmiEsriDouble:
-	  dvalue = NFmiStringTools::Convert<double>(fieldvalue);
-	  break;
-	default:
-	  throw runtime_error("The field '"+fieldname+"' is of unknown type");
-	}
-
-  NFmiEsriShape * shape = new NFmiEsriShape(theShape.Type());
-  for(NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
-	  ait != theShape.Attributes().end();
-	  ++ait)
-	{
-	  shape->Add(new NFmiEsriAttributeName(**ait));
-	}
-
-
-  for(NFmiEsriShape::const_iterator it = theShape.Elements().begin();
-	  it != theShape.Elements().end();
-	  ++it)
-	{
-	  // Skip empty elements
-	  if(*it == 0)
-		continue;
-
-	  // Check if the value is correct
-
-	  bool ok = false;
-	  if(fieldcomparison == "==" || fieldcomparison == "=")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) == svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) == ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) == dvalue);
-		}
-	  else if(fieldcomparison == "<>")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) != svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) != ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) != dvalue);
-		}
-	  else if(fieldcomparison == "<")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) < svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) < ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) < dvalue);
-		}
-	  else if(fieldcomparison == ">")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) > svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) > ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) > dvalue);
-		}
-	  else if(fieldcomparison == "<=")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) <= svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) <= ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) <= dvalue);
-		}
-	  else if(fieldcomparison == ">=")
-		{
-		  if(atype == kFmiEsriString)
-			ok = ((*it)->GetString(fieldname) >= svalue);
-		  else if(atype == kFmiEsriInteger)
-			ok = ((*it)->GetInteger(fieldname) >= ivalue);
-		  else
-			ok = ((*it)->GetDouble(fieldname) >= dvalue);
-		}
-		
-	  if(!ok)
-		continue;
-
-	  NFmiEsriElement * tmp = (*it)->Clone().get();
-	  shape->Add(tmp);
-	}
-
-  return shape;
-
+  return NFmiEsriTools::filter(theShape, options.filter_field);
 }
 
 // ----------------------------------------------------------------------
@@ -610,7 +469,7 @@ const NFmiEsriShape * filter_boundingbox(const NFmiEsriShape & theShape)
 	  // If elements overlaps bbox, add it to the result
 	  if(!outside)
 		{
-		  NFmiEsriElement * tmp = (*it)->Clone().get();
+		  NFmiEsriElement * tmp = (*it)->Clone();
 		  shape->Add(tmp);
 		}
 	}

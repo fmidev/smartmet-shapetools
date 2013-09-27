@@ -258,7 +258,7 @@ void create_shape(const PointSelector & theSelector,
 	  it != theSelector.end();
 	  ++it)
 	{
-	  NFmiEsriElement * tmp = elements[*it]->Clone().get();
+	  NFmiEsriElement * tmp = elements[*it]->Clone();
 	  shape.Add(tmp);
 	}
 

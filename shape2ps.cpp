@@ -22,6 +22,7 @@
  * 3 setlinewidth
  * 1 1 0 setrgbcolor
  * shape moveto lineto closepath suomi stroke
+ * subshape moveto lineto closepath field=value suomi stroke
  * gshhs moveto lineto closepath gshhs_f.c stroke
  * \endcode
  *
@@ -732,16 +733,20 @@ int domain(int argc, const char * argv[])
 	  // ------------------------------------------------------------
 	  // Handle the shape and exec commands
 	  // ------------------------------------------------------------
-	  else if(token == "shape" || token=="exec")
+	  else if(token == "shape" || token == "subshape" || token=="exec")
 		{
 		  if(!body)
 			throw runtime_error("Cannot have "+token+" command in header");
 		  
 		  string moveto, lineto, closepath;
-		  if(token == "shape")
+		  if(token == "shape" || token == "subshape")
 			script >> moveto >> lineto >> closepath;
 
-		  string shapefile;
+		  string shapefile, condition;
+
+		  if(token == "subshape")
+			script >> condition;
+
 		  script >> shapefile;
 
 		  buffer << "% ";
@@ -754,13 +759,13 @@ int domain(int argc, const char * argv[])
 		  // Read the shape, project and get as path
 		  try
 			{
-			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri);
+			  Imagine::NFmiGeoShape geo(shapefile,Imagine::kFmiGeoShapeEsri, condition);
 			  // geo.ProjectXY(*theArea);
 
 			  Imagine::NFmiPath path = geo.Path().PacificView(theArea->PacificView());
 			  path.Project(theArea.get());
 
-			  if(token=="shape")
+			  if(token=="shape" || token=="subshape")
 				buffer << pathtostring(path,
 									   *theArea,
 									   theClipMargin,

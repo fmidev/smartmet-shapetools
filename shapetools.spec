@@ -1,8 +1,8 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 13.8.2
-Release: 2%{?dist}.fmi
+Version: 13.9.27
+Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
 URL: http://www.weatherproof.fi
@@ -12,9 +12,9 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 13.8.2-4
-BuildRequires: libsmartmet-newbase >= 13.8.2-2
-BuildRequires: libsmartmet-macgyver >= 13.8.2-1
+BuildRequires: libsmartmet-imagine >= 13.9.5
+BuildRequires: libsmartmet-newbase >= 13.9.26
+BuildRequires: libsmartmet-macgyver >= 13.9.16
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -84,6 +84,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapefind
 
 %changelog
+* Fri Sep 27 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.9.27-1.fmi
+- Fixed shapefilter and shapepoints not to crash
+- Added subshape command to shape2ps
 * Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-2.fmi
 - Fixed problems in handling long lines at the poles
 * Fri Aug  2 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.8.2-1.fmi
