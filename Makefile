@@ -1,25 +1,4 @@
 HTML = shapetools
-PROG = shapepick \
-	shape2svg \
-	shapefind \
-	shapepack \
-	shapefilter \
-	shapeproject \
-	shapepoints \
-	shape2grads \
-	grads2shape \
-	gradsdump \
-	gshhs2grads \
-	gshhs2shape \
-	shape2ps \
-	shape2xml \
-	shapedump \
-	triangle2shape \
-	shape2triangle \
-	amalgamate \
-	etopo2shape \
-	lights2shape \
-	compositealpha
 
 MAINFLAGS = -Wall -W -Wno-unused-parameter
 
@@ -118,7 +97,7 @@ endif
 
 # Compilation directories
 
-vpath %.cpp source
+vpath %.cpp source main
 vpath %.h include
 vpath %.o $(objdir)
 
@@ -135,10 +114,14 @@ OBJS = $(SRCS:%.cpp=%.o)
 
 OBJFILES = $(OBJS:%.o=obj/%.o)
 
-MAINSRCS = $(PROG:%=%.cpp)
-SUBSRCS = $(filter-out $(MAINSRCS),$(SRCS))
-SUBOBJS = $(SUBSRCS:%.cpp=%.o)
-SUBOBJFILES = $(SUBOBJS:%.o=obj/%.o)
+MAINSRCS     = $(patsubst main/%,%,$(wildcard main/*.cpp))
+MAINPROGS    = $(MAINSRCS:%.cpp=%)
+MAINOBJS     = $(MAINSRCS:%.cpp=%.o)
+MAINOBJFILES = $(MAINOBJS:%.o=obj/%.o)
+
+SRCS     = $(patsubst source/%,%,$(wildcard source/*.cpp))
+OBJS     = $(SRCS:%.cpp=%.o)
+OBJFILES = $(OBJS:%.o=obj/%.o)
 
 INCLUDES := -Iinclude $(INCLUDES)
 
@@ -150,20 +133,20 @@ ALLSRCS = $(wildcard *.cpp source/*.cpp)
 
 # The rules
 
-all: objdir $(PROG)
-debug: objdir $(PROG)
-release: objdir $(PROG)
-profile: objdir $(PROG)
+all: objdir $(MAINPROGS)
+debug: objdir $(MAINPROGS)
+release: objdir $(MAINPROGS)
+profile: objdir $(MAINPROGS)
 
-$(PROG): % : $(SUBOBJS) %.o
-	$(CC) $(LDFLAGS) -o $@ obj/$@.o $(SUBOBJFILES) $(LIBS)
+$(MAINPROGS): % : $(OBJS) %.o
+	$(CC) $(LDFLAGS) -o $@ obj/$@.o $(OBJFILES) $(LIBS)
 
 clean:
-	rm -f $(PROG) $(OBJFILES) *~ source/*~ include/*~
+	rm -f $(MAINPROGS) $(OBJFILES) $(MAINOBJFILES)*~ source/*~ include/*~
 
 install:
 	mkdir -p $(bindir)
-	@list='$(PROG)'; \
+	@list='$(MAINPROGS)'; \
 	for prog in $$list; do \
 	  echo $(INSTALL_PROG) $$prog $(bindir)/$$prog; \
 	  $(INSTALL_PROG) $$prog $(bindir)/$$prog; \
@@ -188,6 +171,7 @@ tag:
 rpm: clean depend
 	if [ -a $(BIN).spec ]; \
 	then \
+	  smartspecupdate $(BIN).spec ]; \
 	  mkdir -p $(rpmsourcedir) ; \
 	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
 	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
