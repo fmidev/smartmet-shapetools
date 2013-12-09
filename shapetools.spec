@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 13.9.27
+Version: 13.12.9
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -34,6 +34,7 @@ Provides: shapefind
 Provides: shapepack
 Provides: shapepoints
 Provides: shapeproject
+Provides: svg2shape
 Provides: triangle2shape
 Requires: glibc
 Requires: libgcc
@@ -82,8 +83,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapepack
 /usr/bin/shapepick
 /usr/bin/shapefind
+/usr/bin/svg2shape
 
 %changelog
+* Mon Dec  9 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.12.9-1.fmi
+- Added svg2shape program
 * Fri Sep 27 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.9.27-1.fmi
 - Fixed shapefilter and shapepoints not to crash
 - Added subshape command to shape2ps
