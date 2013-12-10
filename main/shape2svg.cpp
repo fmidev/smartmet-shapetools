@@ -22,11 +22,14 @@
 #pragma warning(disable : 4786) // STL name length warnings off
 #endif
 
-#include "newbase/NFmiCmdLine.h"
-#include "imagine/NFmiEsriShape.h"
-#include "imagine/NFmiEsriMultiPoint.h"
-#include "imagine/NFmiEsriPolyLine.h"
-#include "imagine/NFmiEsriPolygon.h"
+#include <newbase/NFmiCmdLine.h>
+#include <imagine/NFmiEsriShape.h>
+#include <imagine/NFmiEsriMultiPoint.h>
+#include <imagine/NFmiEsriPolyLine.h>
+#include <imagine/NFmiEsriPolygon.h>
+#include <imagine/NFmiPath.h>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/foreach.hpp>
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
@@ -98,6 +101,10 @@ int run(int argc, const char * argv[])
 
   const Imagine::NFmiEsriShape::attributes_type & attributes = shape.Attributes();
 
+  // Collect the data fully before writing to files
+  typedef std::map<std::string, Imagine::NFmiPath> Paths;
+  Paths paths;
+
   int shapenumber = -1;
   for(Imagine::NFmiEsriShape::const_iterator it = shape.Elements().begin();
 	  it != shape.Elements().end();
@@ -129,14 +136,9 @@ int run(int argc, const char * argv[])
 	  if(name.empty())
 		throw runtime_error("The shape does not contain a field named "+options.fieldname);
 
-
 	  string outfile = options.outdir + "/" + name + ".svg";
 
-	  ofstream out(outfile.c_str());
-	  if(!out)
-		throw runtime_error("Failed to open '"+outfile+"' for writing");
-
-	  out << '"';
+	  Imagine::NFmiPath & path = paths[outfile];
 
 	  switch( (*it)->Type())
 		{
@@ -149,7 +151,7 @@ int run(int argc, const char * argv[])
 		  {
 			const float x = (*it)->X();
 			const float y = (*it)->Y();
-			out << "M " << x << ' ' << y << endl;
+			path.MoveTo(x,y);
 			break;
 		  }
 		case Imagine::kFmiEsriMultiPoint:
@@ -161,11 +163,8 @@ int run(int argc, const char * argv[])
 			  {
 				const float x = elem->Points()[i].X();
 				const float y = elem->Points()[i].Y();
-				if(i>0)
-				  out << ' ';
-				out << "M " << x << ' ' << y;
+				path.MoveTo(x,y);
 			  }
-			out << endl;
 			break;
 		  }
 		case Imagine::kFmiEsriPolyLine:
@@ -184,18 +183,9 @@ int run(int argc, const char * argv[])
 				
 				if(i2>=i1)
 				  {
-					if(part>0)
-					  out << endl;
-					out << "M "
-						<< elem->Points()[i1].X()
-						<< ' '
-						<< elem->Points()[i1].Y();
+					path.MoveTo(elem->Points()[i1].X(),elem->Points()[i1].Y());
 					for(int i=i1+1; i<=i2; i++)
-					  out << " L "
-						  << elem->Points()[i].X()
-						  << ' '
-						  << elem->Points()[i].Y();
-					out << endl;
+					  path.LineTo(elem->Points()[i].X(),elem->Points()[i].Y());
 				  }
 			  }
 			break;
@@ -216,25 +206,25 @@ int run(int argc, const char * argv[])
 				
 				if(i2>=i1)
 				  {
-					if(part>0)
-					  out << endl;
-					out << "M "
-						<< elem->Points()[i1].X()
-						<< ' '
-						<< elem->Points()[i1].Y();
+					path.MoveTo(elem->Points()[i1].X(),elem->Points()[i1].Y());
 					for(int i=i1+1; i<=i2; i++)
-					  out << " L "
-						  << elem->Points()[i].X()
-						  << ' '
-						  << elem->Points()[i].Y();
-					out << " Z" << endl;
+					  path.LineTo(elem->Points()[i].X(),elem->Points()[i].Y());
 				  }
 			  }
 			break;
 		  }
 		}
+	}
 
-	  out << '"' << endl;
+  BOOST_FOREACH(const Paths::value_type & ob, paths)
+	{
+	  const std::string & outfile = ob.first;
+	  const Imagine::NFmiPath & path = ob.second;
+
+	  ofstream out(outfile.c_str());
+	  if(!out)
+		throw runtime_error("Failed to open '"+outfile+"' for writing");
+	  out << '"' << boost::algorithm::replace_all_copy(path.SVG(),","," ") << '"';
 	  out.close();
 	}
 

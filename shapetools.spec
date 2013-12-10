@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 13.12.9
+Version: 13.12.10
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -86,6 +86,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Tue Dec 10 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.12.10-1.fmi
+- Fixed shape2svg to handle multipart shapes correctly
 * Mon Dec  9 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.12.9-1.fmi
 - Added svg2shape program
 * Fri Sep 27 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.9.27-1.fmi
