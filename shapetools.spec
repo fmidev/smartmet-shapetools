@@ -12,9 +12,9 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 13.9.5
-BuildRequires: libsmartmet-newbase >= 13.9.26
-BuildRequires: libsmartmet-macgyver >= 13.9.16
+BuildRequires: libsmartmet-imagine >= 13.11.27
+BuildRequires: libsmartmet-newbase >= 13.12.4
+BuildRequires: libsmartmet-macgyver >= 13.10.25
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
