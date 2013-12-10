@@ -171,7 +171,7 @@ tag:
 rpm: clean depend
 	if [ -a $(BIN).spec ]; \
 	then \
-	  smartspecupdate $(BIN).spec ]; \
+	  smartspecupdate $(BIN).spec ; \
 	  mkdir -p $(rpmsourcedir) ; \
 	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
 	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
