@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 13.12.10
+Version: 14.1.21
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -13,8 +13,8 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libsmartmet-imagine >= 13.11.27
-BuildRequires: libsmartmet-newbase >= 13.12.4
-BuildRequires: libsmartmet-macgyver >= 13.10.25
+BuildRequires: libsmartmet-newbase >= 14.1.20
+BuildRequires: libsmartmet-macgyver >= 14.1.14
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -86,6 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Tue Jan 21 2014 Mika Heiskanen <mika.heiskanen@fmi.fi> - 14.1.21-1.fmi
+- shape2ps now adds a clip path the size of the bounding box for AI working
+- shape2ps now generates the bounding box path with command boundingbox
 * Tue Dec 10 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.12.10-1.fmi
 - Fixed shape2svg to handle multipart shapes correctly
 * Mon Dec  9 2013 Mika Heiskanen <mika.heiskanen@fmi.fi> - 13.12.9-1.fmi

@@ -57,6 +57,7 @@
  * - projection ... to set the projection
  * - area ... to set the projection as an object
  * - projectioncenter <lon> <lat> <scale>
+ * - boundingbox to generate the path for the bounding box
  * - body to indicate the start of the PostScript body
  * - shape <moveto> <lineto> <closepath> <shapefile> to render a shapefile
  * - gshhs <moveto> <lineto> <closepath> <gshhsfile> to render a shoreline
@@ -671,8 +672,32 @@ int domain(int argc, const char * argv[])
 				 << "%%Page: 1 1" << endl
 				 << "%%BeginPageSetup" << endl
 				 << "mydict begin" << endl
-				 << "%%EndPageSetup" << endl;
+				 << "%%EndPageSetup" << endl
+				 << "gsave "
+				 << static_cast<int>(theArea->Left()) << " "
+				 << static_cast<int>(theArea->Top()) << " "
+				 << static_cast<int>(theArea->Right()) << " "
+				 << static_cast<int>(theArea->Bottom())
+				 << " rectclip newpath" << endl;
+		}
 
+	  // ----------------------------------------------------------------------
+	  // Handle a boundingbox command
+	  // ----------------------------------------------------------------------
+
+	  else if(token == "boundingbox")
+		{
+		  if(!theArea.get())
+			throw runtime_error("Using boundingbox before area");
+
+		  buffer << static_cast<int>(theArea->Left()) << " "
+				 << static_cast<int>(theArea->Bottom()) << " moveto "
+				 << static_cast<int>(theArea->Left()) << " "
+				 << static_cast<int>(theArea->Top()) << " lineto "
+				 << static_cast<int>(theArea->Right()) << " "
+				 << static_cast<int>(theArea->Top()) << " lineto "
+				 << static_cast<int>(theArea->Right()) << " "
+				 << static_cast<int>(theArea->Bottom()) << " lineto closepath" << endl;
 		}
 
 	  // ------------------------------------------------------------
@@ -1269,6 +1294,10 @@ int domain(int argc, const char * argv[])
 	  cerr << "Error: There was no body in the script" << endl;
 	  return 1;
 	}
+
+  // End the clipping
+
+  buffer << "grestore" << endl;
 
   // Fill in the contours
 
