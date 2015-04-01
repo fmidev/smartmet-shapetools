@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 14.1.21
+Version: 15.3.30
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -12,9 +12,12 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine >= 13.11.27
-BuildRequires: libsmartmet-newbase >= 14.1.20
-BuildRequires: libsmartmet-macgyver >= 14.1.14
+BuildRequires: libsmartmet-imagine-devel >= 15.3.30
+BuildRequires: libsmartmet-newbase-devel >= 15.3.30
+BuildRequires: libsmartmet-macgyver-devel >= 15.2.12
+Requires: libsmartmet-imagine >= 15.3.30
+Requires: libsmartmet-newbase >= 15.3.30
+Requires: libsmartmet-macgyver >= 15.2.12
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -61,7 +64,7 @@ make %{_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,root,root,0775)
+%defattr(0775,root,root,-)
 /usr/bin/compositealpha
 /usr/bin/shapefilter 
 /usr/bin/shapeproject 
@@ -86,6 +89,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Mar 30 2015  <mheiskan@centos7.fmi.fi> - 15.3.30-1.fmi
+- Use dynamic linking of smartmet libraries
 * Tue Jan 21 2014 Mika Heiskanen <mika.heiskanen@fmi.fi> - 14.1.21-1.fmi
 - shape2ps now adds a clip path the size of the bounding box for AI working
 - shape2ps now generates the bounding box path with command boundingbox
