@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 15.3.30
+Version: 15.4.9
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -12,11 +12,11 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: libsmartmet-imagine-devel >= 15.3.30
-BuildRequires: libsmartmet-newbase-devel >= 15.3.30
+BuildRequires: libsmartmet-imagine-devel >= 15.4.9
+BuildRequires: libsmartmet-newbase-devel >= 15.4.9
 BuildRequires: libsmartmet-macgyver-devel >= 15.2.12
-Requires: libsmartmet-imagine >= 15.3.30
-Requires: libsmartmet-newbase >= 15.3.30
+Requires: libsmartmet-imagine >= 15.4.9
+Requires: libsmartmet-newbase >= 15.4.9
 Requires: libsmartmet-macgyver >= 15.2.12
 Provides: amalgamate
 Provides: compositealpha
@@ -89,6 +89,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Thu Apr  9 2015 Mika Heiskanen <mika.heiskanen@fmi.fi> - 15.4.9-1.fmi
+- newbase API changed
 * Mon Mar 30 2015  <mheiskan@centos7.fmi.fi> - 15.3.30-1.fmi
 - Use dynamic linking of smartmet libraries
 * Tue Jan 21 2014 Mika Heiskanen <mika.heiskanen@fmi.fi> - 14.1.21-1.fmi
