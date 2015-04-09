@@ -752,7 +752,7 @@ int domain(int argc, const char * argv[])
 
 		  getline(script,token);
 		  buffer << "% " << token << endl;
-		  system(token.c_str());
+		  ::system(token.c_str());
 		}
 
 	  // ------------------------------------------------------------
