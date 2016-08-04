@@ -14,10 +14,10 @@ BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libsmartmet-imagine-devel >= 16.1.17
 BuildRequires: libsmartmet-newbase-devel >= 16.6.16
-BuildRequires: libsmartmet-macgyver-devel >= 16.4.18
+BuildRequires: libsmartmet-macgyver-devel >= 16.5.6
 Requires: libsmartmet-imagine >= 16.1.17
 Requires: libsmartmet-newbase >= 16.6.16
-Requires: libsmartmet-macgyver >= 16.4.18
+Requires: libsmartmet-macgyver >= 16.5.6
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
