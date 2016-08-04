@@ -1,7 +1,7 @@
 %define BINNAME shapetools
 Summary: shapetools
 Name: smartmet-%{BINNAME}
-Version: 16.1.21
+Version: 16.8.4
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -13,11 +13,11 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libsmartmet-imagine-devel >= 16.1.17
-BuildRequires: libsmartmet-newbase-devel >= 16.1.17
-BuildRequires: libsmartmet-macgyver-devel >= 16.1.19
+BuildRequires: libsmartmet-newbase-devel >= 16.6.16
+BuildRequires: libsmartmet-macgyver-devel >= 16.4.18
 Requires: libsmartmet-imagine >= 16.1.17
-Requires: libsmartmet-newbase >= 16.1.17
-Requires: libsmartmet-macgyver >= 16.1.19
+Requires: libsmartmet-newbase >= 16.6.16
+Requires: libsmartmet-macgyver >= 16.4.18
 Provides: amalgamate
 Provides: compositealpha
 Provides: etopo2shape
@@ -89,6 +89,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Thu Aug  4 2016 Mika Heiskanen <mika.heiskanen@fmi.fi> - 16.8.4-1.fmi
+- Recompiled with the latest newbase
 * Thu Jan 21 2016 Mika Heiskanen <mika.heiskanen@fmi.fi> - 16.1.21-1.fmi
 - newbase API changed
 * Thu Apr  9 2015 Mika Heiskanen <mika.heiskanen@fmi.fi> - 15.4.9-1.fmi
