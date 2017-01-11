@@ -1,51 +1,74 @@
-HTML = shapetools
+MODULE = shapetools
+SPEC = smartmet-shapetools
 
-MAINFLAGS = -Wall -W -Wno-unused-parameter
+MAINFLAGS = -MMD -Wall -W -Wno-unused-parameter
 
-EXTRAFLAGS = -pedantic -Wpointer-arith -Wcast-qual \
-	-Wcast-align -Wwrite-strings -Winline \
-	-Wctor-dtor-privacy -Wnon-virtual-dtor -Wno-pmf-conversions \
-	-Wsign-promo -Wchar-subscripts -Wold-style-cast
+ifeq (6, $(RHEL_VERSION))
+  MAINFLAGS += -std=c++0x
+else
+  MAINFLAGS += -std=c++11 -fdiagnostics-color=always
+endif
 
-DIFFICULTFLAGS = -Weffc++ -Wredundant-decls -Wshadow -Woverloaded-virtual -Wunreachable-code -Wconversion
+EXTRAFLAGS = \
+	-Werror \
+	-Winline \
+	-Wpointer-arith \
+	-Wcast-qual \
+	-Wcast-align \
+	-Wwrite-strings \
+	-Wnon-virtual-dtor \
+	-Wno-pmf-conversions \
+	-Wsign-promo \
+	-Wchar-subscripts \
+	-Wredundant-decls \
+	-Woverloaded-virtual
+
+DIFFICULTFLAGS = \
+	-Wunreachable-code \
+	-Wconversion \
+	-Wctor-dtor-privacy \
+	-Weffc++ \
+	-Wold-style-cast \
+	-pedantic \
+	-Wshadow
 
 CC = g++
 
-# Default compile options
+# Default compiler flags
 
-CFLAGS = -DUNIX -O2 -DNDEBUG $(MAINFLAGS)
+DEFINES = -DUNIX
+
+CFLAGS = $(DEFINES) -O2 -DNDEBUG $(MAINFLAGS)
 LDFLAGS = 
 
 # Special modes
 
-CFLAGS_DEBUG = -DUNIX -O0 -g $(MAINFLAGS) $(EXTRAFLAGS) -Werror
-CFLAGS_PROFILE = -DUNIX -O2 -g -pg -DNDEBUG $(MAINFLAGS)
+CFLAGS_DEBUG = $(DEFINES) -O0 -g $(MAINFLAGS) $(EXTRAFLAGS) -Werror
+CFLAGS_PROFILE = $(DEFINES) -O2 -g -pg -DNDEBUG $(MAINFLAGS)
 
-LDFLAGS_DEBUG = 
-LDFLAGS_PROFILE = 
+LDFLAGS_DEBUG =
+LDFLAGS_PROFILE =
 
 INCLUDES = -I$(includedir) \
 	-I$(includedir)/smartmet \
 	-I$(includedir)/smartmet/newbase \
+	-I$(includedir)/smartmet/macgyver \
 	-I$(includedir)/smartmet/imagine
 
-LIBS = -L$(libdir) \
-	-lsmartmet_imagine \
-	-lsmartmet_newbase \
-	-lsmartmet_macgyver \
-	-lboost_iostreams\
-	-lboost_program_options \
-	-lboost_filesystem\
-	-lboost_regex\
-	-lboost_thread \
-	-lboost_system\
-	-lpng -ljpeg -lz -lbz2 -lpthread -lrt
 
-#	-lsmartmet_macgyver \
+LIBS = -L$(libdir) \
+	-lsmartmet-imagine \
+	-lsmartmet-newbase \
+	-lsmartmet-macgyver \
+	-lboost_iostreams \
+	-lboost_filesystem \
+	-lboost_program_options \
+	-lboost_system
 
 # Common library compiling template
 
 # Installation directories
+
 processor := $(shell uname -p)
 
 ifeq ($(origin PREFIX), undefined)
@@ -71,15 +94,7 @@ endif
 
 # rpm variables
 
-CWP = $(shell pwd)
-BIN = $(shell basename $(CWP))
-
 rpmsourcedir=/tmp/$(shell whoami)/rpmbuild
-
-rpmerr = "There's no spec file ($(specfile)). RPM wasn't created. Please make a spec file or copy and rename it into $(specfile)"
-
-rpmversion := $(shell grep "^Version:" $(HTML).spec  | cut -d\  -f 2 | tr . _)
-rpmrelease := $(shell grep "^Release:" $(HTML).spec  | cut -d\  -f 2 | tr . _)
 
 rpmexcludevcs := $(shell tar --help | grep -m 1 -o -- '--exclude-vcs')
 
@@ -100,6 +115,7 @@ endif
 vpath %.cpp source main
 vpath %.h include
 vpath %.o $(objdir)
+vpath %.d $(objdir)
 
 # How to install
 
@@ -108,11 +124,7 @@ INSTALL_DATA = install -m 664
 
 # The files to be compiled
 
-SRCS = $(patsubst source/%,%,$(wildcard *.cpp source/*.cpp))
 HDRS = $(patsubst include/%,%,$(wildcard *.h include/*.h))
-OBJS = $(SRCS:%.cpp=%.o)
-
-OBJFILES = $(OBJS:%.o=obj/%.o)
 
 MAINSRCS     = $(patsubst main/%,%,$(wildcard main/*.cpp))
 MAINPROGS    = $(MAINSRCS:%.cpp=%)
@@ -127,7 +139,7 @@ INCLUDES := -Iinclude $(INCLUDES)
 
 # For make depend:
 
-ALLSRCS = $(wildcard *.cpp source/*.cpp)
+ALLSRCS = $(wildcard main/*.cpp source/*.cpp)
 
 .PHONY: test rpm
 
@@ -138,11 +150,16 @@ debug: objdir $(MAINPROGS)
 release: objdir $(MAINPROGS)
 profile: objdir $(MAINPROGS)
 
-$(MAINPROGS): % : $(OBJS) %.o
+.SECONDEXPANSION:
+$(MAINPROGS): % : $(OBJS) %.o 
 	$(CC) $(LDFLAGS) -o $@ obj/$@.o $(OBJFILES) $(LIBS)
 
 clean:
 	rm -f $(MAINPROGS) $(OBJFILES) $(MAINOBJFILES)*~ source/*~ include/*~
+	rm -f obj/*.d
+
+format:
+	clang-format -i -style=file include/*.h source/*.cpp main/*.cpp
 
 install:
 	mkdir -p $(bindir)
@@ -152,33 +169,22 @@ install:
 	  $(INSTALL_PROG) $$prog $(bindir)/$$prog; \
 	done
 
-depend:
-	gccmakedep -fDependencies -- $(CFLAGS) $(INCLUDES) -- $(ALLSRCS)
-
 test:
 	cd test && make test
-
-html::
-	mkdir -p ../../../../html/bin/$(HTML)
-	doxygen $(HTML).dox
 
 objdir:
 	@mkdir -p $(objdir)
 
-tag:
-	cvs -f tag 'smartmet_$(HTML)_$(rpmversion)-$(rpmrelease)' .
-
-rpm: clean depend
-	if [ -a $(BIN).spec ]; \
+rpm: clean
+	@if [ -a $(SPEC).spec ]; \
 	then \
-	  smartspecupdate $(BIN).spec ; \
 	  mkdir -p $(rpmsourcedir) ; \
-	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/smartmet-$(BIN).tar $(BIN) ; \
-	  gzip -f $(rpmsourcedir)/smartmet-$(BIN).tar ; \
-	  rpmbuild -ta $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
-	  rm -f $(rpmsourcedir)/smartmet-$(BIN).tar.gz ; \
+	  tar $(rpmexcludevcs) -C ../ -cf $(rpmsourcedir)/$(SPEC).tar $(MODULE) ; \
+	  gzip -f $(rpmsourcedir)/$(SPEC).tar ; \
+	  TAR_OPTIONS=--wildcards rpmbuild -ta $(rpmsourcedir)/$(SPEC).tar.gz ; \
+	  rm -f $(rpmsourcedir)/$(SPEC).tar.gz ; \
 	else \
-	  echo $(rpmerr); \
+	  echo $(SPEC).spec missing; \
 	fi;
 
 .SUFFIXES: $(SUFFIXES) .cpp
@@ -186,4 +192,4 @@ rpm: clean depend
 .cpp.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $(objdir)/$@ $<
 
--include Dependencies
+-include obj/*.d
