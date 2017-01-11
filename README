@@ -1,4 +1,0 @@
-shape2ps		Renders ESRI shapefiles
-shape2triangle		Converts ESRI shapefiles to PSLG
-triangle2shape		Converts PSLG to ESRI shapefiles
-amalgamate		Performs amalgamation on PSLG
