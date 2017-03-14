@@ -6,7 +6,7 @@
 // ======================================================================
 /*!
  * \class Polyline
- * 
+ *
  * Operations on the polyline include clipping it and returning a string
  * representation of the polyline with user specified moveto, lineto and
  * closepath operations.
@@ -27,15 +27,13 @@
 
 //! A simple polyline container
 
-class Polyline
-{
+class Polyline {
 public:
-
   //! Default destructor
-  ~Polyline(void) { }
+  ~Polyline(void) {}
 
   //! Default constructor
-  Polyline(void) { }
+  Polyline(void) {}
 
   //! Return the size of the polyline
   unsigned int size(void) const { return itsPoints.size(); }
@@ -47,25 +45,25 @@ public:
   void clear(void) { itsPoints.clear(); }
 
   //! Add a point to the polyline
-  void add(double x, double y) { itsPoints.push_back(Point(x,y)); }
+  void add(double x, double y) { itsPoints.push_back(Point(x, y)); }
 
   //! Add a point to the polyline
-  void add(const Point & thePoint) { itsPoints.push_back(thePoint); }
+  void add(const Point &thePoint) { itsPoints.push_back(thePoint); }
 
   //! Clip the polyline with the given rectangle
-  void clip(double theX1, double theY1, double theX2, double theY2, double margin=0);
+  void clip(double theX1, double theY1, double theX2, double theY2,
+            double margin = 0);
 
   //! Clip the polyline with the given bounding box
-  void clip(const Point & lowleft, const Point & topright, double margin=0)
-  { clip(lowleft.x(),lowleft.y(),topright.x(),topright.y(),margin); }
+  void clip(const Point &lowleft, const Point &topright, double margin = 0) {
+    clip(lowleft.x(), lowleft.y(), topright.x(), topright.y(), margin);
+  }
 
   //! Return a string representation of the polyline
-  std::string path(const std::string & moveto,
-				   const std::string & lineto,
-				   const std::string & closepath="") const;
+  std::string path(const std::string &moveto, const std::string &lineto,
+                   const std::string &closepath = "") const;
 
 private:
-
   typedef std::vector<Point> DataType;
 
   //! The actual data container

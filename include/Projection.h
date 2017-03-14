@@ -50,15 +50,14 @@ class NFmiArea;
 struct ProjectionPimple;
 
 //! Define a projection
-class Projection
-{
+class Projection {
 public:
   ~Projection(void);
   Projection(void);
-  Projection(const Projection & theProjection);
-  Projection & operator=(const Projection & theProjection);
+  Projection(const Projection &theProjection);
+  Projection &operator=(const Projection &theProjection);
 
-  void type(const std::string & theType);
+  void type(const std::string &theType);
   void centralLatitude(float theLatitude);
   void centralLongitude(float theLongitude);
   void trueLatitude(float theLongitude);
@@ -73,12 +72,11 @@ public:
   void height(float theHeight);
   void origin(float theLon, float theLat);
 
-  NFmiArea* createArea(void) const;
+  NFmiArea *createArea(void) const;
 
 private:
-
   std::auto_ptr<ProjectionPimple> itsPimple;
-  
+
 }; // class Projection
 
 #endif // PROJECTION_H

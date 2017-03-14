@@ -55,20 +55,15 @@ using namespace Imagine;
  */
 // ----------------------------------------------------------------------
 
-struct Options
-{
+struct Options {
   string inputprojection;
   string outputprojection;
   string inputfile;
   string outputfile;
 
   Options()
-	: inputprojection("latlon")
-	, outputprojection("latlon")
-	, inputfile()
-	, outputfile()
-  { }
-
+      : inputprojection("latlon"), outputprojection("latlon"), inputfile(),
+        outputfile() {}
 };
 
 // ----------------------------------------------------------------------
@@ -85,20 +80,19 @@ Options options;
  */
 // ----------------------------------------------------------------------
 
-void usage()
-{
+void usage() {
   cout << "Usage: shapeproject [options] inputshape outputshape" << endl
-	   << endl
-	   << "shapeproject projects SHP-data to a different coordinate system." << endl
-	   << endl
-	   << "The available options are:" << endl
-	   << endl
-	   << "\t-h\t\tprint this help information" << endl
-	   << "\t-i [proj]\tthe input projection (default: latlon)" << endl
-	   << "\t-o [proj]\tthe output projection (default: latlon)" << endl
-	   << endl;
+       << endl
+       << "shapeproject projects SHP-data to a different coordinate system."
+       << endl
+       << endl
+       << "The available options are:" << endl
+       << endl
+       << "\t-h\t\tprint this help information" << endl
+       << "\t-i [proj]\tthe input projection (default: latlon)" << endl
+       << "\t-o [proj]\tthe output projection (default: latlon)" << endl
+       << endl;
 }
-
 
 // ----------------------------------------------------------------------
 /*!
@@ -108,44 +102,41 @@ void usage()
  */
 // ----------------------------------------------------------------------
 
-bool parse_command_line(int argc, const char * argv[])
-{
-  NFmiCmdLine cmdline(argc,argv,"hi!o!");
+bool parse_command_line(int argc, const char *argv[]) {
+  NFmiCmdLine cmdline(argc, argv, "hi!o!");
 
-  if(cmdline.Status().IsError())
-	throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   // help-option must be checked first
 
-  if(cmdline.isOption('h'))
-	{
-	  usage();
-	  return false;
-	}
+  if (cmdline.isOption('h')) {
+    usage();
+    return false;
+  }
 
   // then the required parameters
 
-  if(cmdline.NumberofParameters() != 2)
-	throw runtime_error("Incorrect number of command line parameters");
+  if (cmdline.NumberofParameters() != 2)
+    throw runtime_error("Incorrect number of command line parameters");
 
-  options.inputfile  = cmdline.Parameter(1);
+  options.inputfile = cmdline.Parameter(1);
   options.outputfile = cmdline.Parameter(2);
 
   // options
 
-  if(cmdline.isOption('i'))
-	options.inputprojection = cmdline.OptionValue('i');
+  if (cmdline.isOption('i'))
+    options.inputprojection = cmdline.OptionValue('i');
 
-  if(cmdline.isOption('o'))
-	options.outputprojection = cmdline.OptionValue('o');
+  if (cmdline.isOption('o'))
+    options.outputprojection = cmdline.OptionValue('o');
 
   // validity checks
 
-  if(options.inputprojection == options.outputprojection)
-	throw("Input and output projections are equal, nothing to do");
+  if (options.inputprojection == options.outputprojection)
+    throw("Input and output projections are equal, nothing to do");
 
   return true;
-
 }
 
 // ----------------------------------------------------------------------
@@ -154,47 +145,33 @@ bool parse_command_line(int argc, const char * argv[])
  */
 // ----------------------------------------------------------------------
 
-class MyProjector : public NFmiEsriProjector
-{
+class MyProjector : public NFmiEsriProjector {
 private:
-
-  const NFmiArea & itsInputArea;
-  const NFmiArea & itsOutputArea;
+  const NFmiArea &itsInputArea;
+  const NFmiArea &itsOutputArea;
 
 public:
+  MyProjector(const NFmiArea &theInputArea, const NFmiArea &theOutputArea)
+      : itsInputArea(theInputArea), itsOutputArea(theOutputArea) {}
 
-  MyProjector(const NFmiArea & theInputArea,
-			  const NFmiArea & theOutputArea)
-	: itsInputArea(theInputArea)
-	, itsOutputArea(theOutputArea)
-  { }
-
-  virtual NFmiEsriPoint operator()(const NFmiEsriPoint & thePoint) const
-  {
-	const NFmiPoint p(thePoint.X(),thePoint.Y());
-	if(options.inputprojection == "latlon")
-	  {
-		const NFmiPoint q = itsOutputArea.LatLonToWorldXY(p);
-		return NFmiEsriPoint(q.X(),q.Y());
-	  }
-	else if(options.outputprojection == "latlon")
-	  {
-		const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
-		return NFmiEsriPoint(latlon.X(),latlon.Y());
-	  }
-	else
-	  {
-		const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
-		const NFmiPoint q = itsOutputArea.LatLonToWorldXY(latlon);
-		return NFmiEsriPoint(q.X(),q.Y());
-	  }
+  virtual NFmiEsriPoint operator()(const NFmiEsriPoint &thePoint) const {
+    const NFmiPoint p(thePoint.X(), thePoint.Y());
+    if (options.inputprojection == "latlon") {
+      const NFmiPoint q = itsOutputArea.LatLonToWorldXY(p);
+      return NFmiEsriPoint(q.X(), q.Y());
+    } else if (options.outputprojection == "latlon") {
+      const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
+      return NFmiEsriPoint(latlon.X(), latlon.Y());
+    } else {
+      const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
+      const NFmiPoint q = itsOutputArea.LatLonToWorldXY(latlon);
+      return NFmiEsriPoint(q.X(), q.Y());
+    }
   }
 
-  virtual void SetBox(const NFmiEsriBox & theBox) const
-  {
-	// We do nothing, no idea how this should even work
+  virtual void SetBox(const NFmiEsriBox &theBox) const {
+    // We do nothing, no idea how this should even work
   }
-
 };
 
 // ----------------------------------------------------------------------
@@ -203,24 +180,25 @@ public:
  */
 // ----------------------------------------------------------------------
 
-int domain(int argc, const char * argv[])
-{
+int domain(int argc, const char *argv[]) {
   // Parse the command line options
-  if(!parse_command_line(argc,argv))
-	return 0;
+  if (!parse_command_line(argc, argv))
+    return 0;
 
   // Create the projections
 
-  NFmiAreaFactory::return_type inarea = NFmiAreaFactory::Create(options.inputprojection);
-  NFmiAreaFactory::return_type outarea = NFmiAreaFactory::Create(options.outputprojection);
+  NFmiAreaFactory::return_type inarea =
+      NFmiAreaFactory::Create(options.inputprojection);
+  NFmiAreaFactory::return_type outarea =
+      NFmiAreaFactory::Create(options.outputprojection);
   // Read the shape data
 
   NFmiEsriShape shape;
-  if(!shape.Read(options.inputfile))
-	throw runtime_error("Failed to read shape '"+options.inputfile+"'");
+  if (!shape.Read(options.inputfile))
+    throw runtime_error("Failed to read shape '" + options.inputfile + "'");
 
   // Project it
-  MyProjector projector(*inarea,*outarea);
+  MyProjector projector(*inarea, *outarea);
   shape.Project(projector);
 
   // And save the results
@@ -235,20 +213,14 @@ int domain(int argc, const char * argv[])
  */
 // ----------------------------------------------------------------------
 
-int main(int argc, const char * argv[])
-{
-  try
-	{
-	  return domain(argc,argv);
-	}
-  catch(exception & e)
-	{
-	  cout << "Error: " << e.what() << endl;
-	  return 1;
-	}
-  catch(...)
-	{
-	  cout << "Error: Caught an unknown exception" << endl;
-	  return 1;
-	}
+int main(int argc, const char *argv[]) {
+  try {
+    return domain(argc, argv);
+  } catch (exception &e) {
+    cout << "Error: " << e.what() << endl;
+    return 1;
+  } catch (...) {
+    cout << "Error: Caught an unknown exception" << endl;
+    return 1;
+  }
 }

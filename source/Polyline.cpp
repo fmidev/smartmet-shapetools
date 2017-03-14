@@ -17,37 +17,32 @@ using namespace std;
 //				HIDDEN INTERNAL FUNCTIONS
 // ======================================================================
 
-namespace
-{
-  //! The number identifying the region within the rectangle
-  const int central_quadrant = 4;
+namespace {
+//! The number identifying the region within the rectangle
+const int central_quadrant = 4;
 
-  //! Test the position of given point with respect to a rectangle.
-  int quadrant(double x, double y,
-			   double x1, double y1,
-			   double x2, double y2,
-			   double margin)
-  {
-	int value = central_quadrant;
-	if(x<x1-margin)
-	  value--;
-	else if(x>x2+margin)
-	  value++;
-	if(y<y1-margin)
-	  value -= 3;
-	else if(y>y2+margin)
-	  value += 3;
-	return value;
-  }
-  
-  //! Test whether two rectangles intersect
-  bool intersects(double x1, double y1, double x2, double y2,
-				  double X1, double Y1, double X2, double Y2)
-  {
-	bool xoutside = (x1>X2 || x2<X1);
-	bool youtside = (y1>Y2 || y2<Y1);
-	return (!xoutside && !youtside);
-  }
+//! Test the position of given point with respect to a rectangle.
+int quadrant(double x, double y, double x1, double y1, double x2, double y2,
+             double margin) {
+  int value = central_quadrant;
+  if (x < x1 - margin)
+    value--;
+  else if (x > x2 + margin)
+    value++;
+  if (y < y1 - margin)
+    value -= 3;
+  else if (y > y2 + margin)
+    value += 3;
+  return value;
+}
+
+//! Test whether two rectangles intersect
+bool intersects(double x1, double y1, double x2, double y2, double X1,
+                double Y1, double X2, double Y2) {
+  bool xoutside = (x1 > X2 || x2 < X1);
+  bool youtside = (y1 > Y2 || y2 < Y1);
+  return (!xoutside && !youtside);
+}
 
 } // anonymous namespace
 
@@ -65,27 +60,20 @@ namespace
  */
 // ----------------------------------------------------------------------
 
-string Polyline::path(const string & moveto,
-					  const string & lineto,
-					  const string & closepath) const
-{
+string Polyline::path(const string &moveto, const string &lineto,
+                      const string &closepath) const {
   ostringstream out;
-  unsigned int n = size()-1;
-  bool isclosed = (size()>1 && itsPoints[0]==itsPoints[n]);
-  for(unsigned int i=0; i<=n; i++)
-	{
-	  if(isclosed && i==n && !closepath.empty())
-		out << closepath;
-	  else
-		{
-		  out << itsPoints[i].x()
-			  << ' '
-			  << itsPoints[i].y()
-			  << ' '
-			  << (i==0 ? moveto : lineto);
-		}
-	  out << endl;
-	}
+  unsigned int n = size() - 1;
+  bool isclosed = (size() > 1 && itsPoints[0] == itsPoints[n]);
+  for (unsigned int i = 0; i <= n; i++) {
+    if (isclosed && i == n && !closepath.empty())
+      out << closepath;
+    else {
+      out << itsPoints[i].x() << ' ' << itsPoints[i].y() << ' '
+          << (i == 0 ? moveto : lineto);
+    }
+    out << endl;
+  }
   return out.str();
 }
 
@@ -96,10 +84,10 @@ string Polyline::path(const string & moveto,
  */
 // ----------------------------------------------------------------------
 
-void Polyline::clip(double theX1, double theY1, double theX2, double theY2, double margin)
-{
-  if(empty())
-	return;
+void Polyline::clip(double theX1, double theY1, double theX2, double theY2,
+                    double margin) {
+  if (empty())
+    return;
 
   DataType newpts;
 
@@ -113,53 +101,52 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2, doub
   double maxx = itsPoints[0].x();
   double maxy = itsPoints[0].y();
 
-  next_quadrant = quadrant(itsPoints[0].x(),itsPoints[0].y(),theX1,theY1,theX2,theY2,margin);
+  next_quadrant = quadrant(itsPoints[0].x(), itsPoints[0].y(), theX1, theY1,
+                           theX2, theY2, margin);
 
-  for(unsigned int i=0; i<size(); i++)
-	{
-	  last_quadrant = this_quadrant;
-	  this_quadrant = next_quadrant;
-	  if(i<size()-1)
-		next_quadrant = quadrant(itsPoints[i+1].x(),itsPoints[i+1].y(),theX1,theY1,theX2,theY2,margin);		
+  for (unsigned int i = 0; i < size(); i++) {
+    last_quadrant = this_quadrant;
+    this_quadrant = next_quadrant;
+    if (i < size() - 1)
+      next_quadrant = quadrant(itsPoints[i + 1].x(), itsPoints[i + 1].y(),
+                               theX1, theY1, theX2, theY2, margin);
 
-	  bool pushit = true;
+    bool pushit = true;
 
-	  if(i==0)
-		pushit = true;
-	  else if(this_quadrant == central_quadrant)
-		pushit = true;
-	  else if(this_quadrant != next_quadrant)
-		pushit = true;
-	  else if(this_quadrant != last_quadrant)
-		pushit = true;
-	  else if(i==size()-1)
-		pushit = true;
-	  else
-		pushit = false;
+    if (i == 0)
+      pushit = true;
+    else if (this_quadrant == central_quadrant)
+      pushit = true;
+    else if (this_quadrant != next_quadrant)
+      pushit = true;
+    else if (this_quadrant != last_quadrant)
+      pushit = true;
+    else if (i == size() - 1)
+      pushit = true;
+    else
+      pushit = false;
 
-	  if(pushit)
-		{
-		  newpts.push_back(itsPoints[i]);
+    if (pushit) {
+      newpts.push_back(itsPoints[i]);
 
-		  // Update bounding box if point was accepted
+      // Update bounding box if point was accepted
 
-		  minx = min(minx,itsPoints[i].x());
-		  miny = min(miny,itsPoints[i].y());
-		  maxx = max(maxx,itsPoints[i].x());
-		  maxy = max(maxy,itsPoints[i].y());
-		}
-	}
-  
+      minx = min(minx, itsPoints[i].x());
+      miny = min(miny, itsPoints[i].y());
+      maxx = max(maxx, itsPoints[i].x());
+      maxy = max(maxy, itsPoints[i].y());
+    }
+  }
+
   // If the bounding boxes don't intersect, output nothing, otherwise
   // replace old points with clipped ones
 
-  if(newpts.size()<=1 ||
-	 !intersects(minx,miny,maxx,maxy,theX1-margin,theY1-margin,theX2+margin,theY2+margin))
-	itsPoints.clear();
+  if (newpts.size() <= 1 ||
+      !intersects(minx, miny, maxx, maxy, theX1 - margin, theY1 - margin,
+                  theX2 + margin, theY2 + margin))
+    itsPoints.clear();
   else
-	itsPoints = newpts;
+    itsPoints = newpts;
 }
 
 // ======================================================================
-
-

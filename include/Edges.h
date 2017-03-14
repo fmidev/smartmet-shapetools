@@ -18,28 +18,26 @@
 #include <set>
 
 //! Edges maintains a set of unique edges
-class Edges
-{
+class Edges {
 public:
   //! Destructor
-  ~Edges(void) { }
+  ~Edges(void) {}
 
   //! Default constructor
-  Edges(void) { }
+  Edges(void) {}
 
   //! The type of the contained data
   typedef std::set<Edge> DataType;
 
   //! Adding a new edge to the set returns true if the edge is new
-  bool add(const Edge & edge)
-  { return itsData.insert(edge).second; }
+  bool add(const Edge &edge) { return itsData.insert(edge).second; }
 
   //! Testing if the given edge is in the set
-  bool contains(const Edge & edge) const
-  { return (itsData.find(edge) != itsData.end()); }
+  bool contains(const Edge &edge) const {
+    return (itsData.find(edge) != itsData.end());
+  }
 
 private:
-
   //! The actual data
   DataType itsData;
 

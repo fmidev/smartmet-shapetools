@@ -26,18 +26,16 @@
 
 //! A simple polygon container
 
-class Polygon
-{
+class Polygon {
 public:
-
   //! Destructor
-  ~Polygon(void) { }
+  ~Polygon(void) {}
 
   //! Default constructor
-  Polygon(void) { }
+  Polygon(void) {}
 
   //! Adding a new point to the polygon
-  void add(const Point & pt) { itsData.push_back(pt); }
+  void add(const Point &pt) { itsData.push_back(pt); }
 
   //! Test if the polygon is empty
   bool empty(void) const { return itsData.empty(); }
@@ -52,7 +50,7 @@ public:
   double geoarea(void) const;
 
   //! Test whether the given point is inside the polygon
-  bool isInside(const Point & thePoint) const;
+  bool isInside(const Point &thePoint) const;
 
   //! Find some point inside the polygon
   Point someInsidePoint(void) const;
@@ -62,10 +60,11 @@ public:
 
   //! Return the data itself
 
-  const DataType & data(void) const { return itsData; }
-private:
+  const DataType &data(void) const { return itsData; }
 
-  //! Close the polygon by making sure the last point is equal to the first point
+private:
+  //! Close the polygon by making sure the last point is equal to the first
+  //! point
   void close(void) const;
 
   //! The actual data is mutable, since we want close to be const

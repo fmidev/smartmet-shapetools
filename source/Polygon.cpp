@@ -17,11 +17,10 @@ using namespace std;
  */
 // ======================================================================
 
-void Polygon::close(void) const
-{
-  if(!itsData.empty())
-	if(itsData[0] != itsData[itsData.size()-1])
-	  itsData.push_back(itsData[0]);
+void Polygon::close(void) const {
+  if (!itsData.empty())
+    if (itsData[0] != itsData[itsData.size() - 1])
+      itsData.push_back(itsData[0]);
 }
 
 // ----------------------------------------------------------------------
@@ -32,15 +31,15 @@ void Polygon::close(void) const
  */
 // ----------------------------------------------------------------------
 
-double Polygon::area(void) const
-{
+double Polygon::area(void) const {
   close();
-  if(itsData.size()<=2)
-	return 0.0;
+  if (itsData.size() <= 2)
+    return 0.0;
   double sum = 0;
-  for(unsigned int i=0; i<itsData.size()-1; i++)
-	sum += itsData[i].x()*itsData[i+1].y()-itsData[i+1].x()*itsData[i].y();
-  return abs(0.5*sum);
+  for (unsigned int i = 0; i < itsData.size() - 1; i++)
+    sum += itsData[i].x() * itsData[i + 1].y() -
+           itsData[i + 1].x() * itsData[i].y();
+  return abs(0.5 * sum);
 }
 
 // ----------------------------------------------------------------------
@@ -57,54 +56,49 @@ double Polygon::area(void) const
  */
 // ----------------------------------------------------------------------
 
-double Polygon::geoarea(void) const
-{
+double Polygon::geoarea(void) const {
   // The last point must be the same as the first point, make sure it is
   close();
 
   // Safety against strange input
-  if(itsData.size()<=2)
-	return 0.0;
+  if (itsData.size() <= 2)
+    return 0.0;
 
   // Angle constants for projection
-  const double kpi = 3.14159265358979323/180;
-  const double k90 = kpi*90;
-  const double k360 = kpi*360;
+  const double kpi = 3.14159265358979323 / 180;
+  const double k90 = kpi * 90;
+  const double k360 = kpi * 360;
 
   double sum = 0; // The accumulated area so far
 
   double dx1 = 0; // X-offsets for longitudes are multiples
   double dx2 = 0; // of 360 (in radians)
 
-  double x1 = 0;	// the previous point is not defined yet
+  double x1 = 0; // the previous point is not defined yet
   double y1 = 0;
 
-  for(unsigned int i=0; i<itsData.size(); i++)
-	{
-	  // Establish new current projected point
-	  double x2 = kpi*itsData[i].x();
-	  double y2 = sin(kpi*itsData[i].y());
+  for (unsigned int i = 0; i < itsData.size(); i++) {
+    // Establish new current projected point
+    double x2 = kpi * itsData[i].x();
+    double y2 = sin(kpi * itsData[i].y());
 
-	  // If we are at the second point, we can start calculating
-	  if(i>0)
-		{
-		  // Update dx2 if the 180 meridian is crossed
-		  if(x1<-k90 && x2>k90)
-			dx2 -= k360;
-		  else if(x1>k90 && x2<-k90)
-			dx2 += k360;
-		  
-		  // Update area sum
-		  sum += (x1+dx1)*y2-(x2+dx2)*y1;
+    // If we are at the second point, we can start calculating
+    if (i > 0) {
+      // Update dx2 if the 180 meridian is crossed
+      if (x1 < -k90 && x2 > k90)
+        dx2 -= k360;
+      else if (x1 > k90 && x2 < -k90)
+        dx2 += k360;
 
-		}
-	  
-	  // Current point becomes new previous point
-	  dx1 = dx2;
-	  x1 = x2;
-	  y1 = y2;
+      // Update area sum
+      sum += (x1 + dx1) * y2 - (x2 + dx2) * y1;
+    }
 
-	}
+    // Current point becomes new previous point
+    dx1 = dx2;
+    x1 = x2;
+    y1 = y2;
+  }
 
   // Fix things if we went around the pole by adding path
   // xn,yn -> xn,pole
@@ -112,24 +106,22 @@ double Polygon::geoarea(void) const
   // x1,pole -> x1,y1
   // where pole is +-90 depending on which pole we're nearest to
 
-  if(dx2!=0)
-	{
-	  double x2 = x1;
-	  double y2 = sin(y1<0 ? -k90 : k90);
-	  sum += (x1+dx1)*y2-(x2+dx2)*y1;
-	  x1 = x2, y1 = y2, dx1=dx2;
-	  x2 = kpi*itsData[0].x();
-	  sum += (x1+dx1)*y2-x2*y1;
-	  x1 = x2, y1 = y2;
-	  y2 = sin(kpi*itsData[0].y());
-	  sum += x1*y2-x2*y1;
-	}
-  
+  if (dx2 != 0) {
+    double x2 = x1;
+    double y2 = sin(y1 < 0 ? -k90 : k90);
+    sum += (x1 + dx1) * y2 - (x2 + dx2) * y1;
+    x1 = x2, y1 = y2, dx1 = dx2;
+    x2 = kpi * itsData[0].x();
+    sum += (x1 + dx1) * y2 - x2 * y1;
+    x1 = x2, y1 = y2;
+    y2 = sin(kpi * itsData[0].y());
+    sum += x1 * y2 - x2 * y1;
+  }
+
   // And finally calculate the correct scaled result in square kilometers
 
   const double R = 6371.220;
-  return R*R*abs(0.5*sum);
-
+  return R * R * abs(0.5 * sum);
 }
 
 // ----------------------------------------------------------------------
@@ -142,40 +134,34 @@ double Polygon::geoarea(void) const
  */
 // ----------------------------------------------------------------------
 
-bool Polygon::isInside(const Point & pt) const
-{
+bool Polygon::isInside(const Point &pt) const {
   close();
 
-  if(itsData.size() <= 2)
-	return false;
+  if (itsData.size() <= 2)
+    return false;
 
   // Saattaa nopeuttaa koodia, riippuu kääntäjästä:
   const double x = pt.x();
   const double y = pt.y();
 
   // Edellinen ja nykyinen piste
-  double x1=0, y1=0, x2=0, y2=0;
+  double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
   bool inside = false;
 
   const DataType::const_iterator begin = itsData.begin();
   const DataType::const_iterator end = itsData.end();
-  for(DataType::const_iterator iter=begin; iter!=end; ++iter)
-	{
-	  x2 = iter->x();
-	  y2 = iter->y();
-	  if(iter!=begin)
-		{
-		  if(y > min(y1,y2) &&
-			 y <= max(y1,y2) &&
-			 x <= max(x1,x2) &&
-			 y1!=y2 &&
-			 (x1==x2 || x<(y-y1)*(x2-x1)/(y2-y1)+x1))
-			inside = !inside;
-		}
-	  x1 = x2;
-	  y1 = y2;
-	}
+  for (DataType::const_iterator iter = begin; iter != end; ++iter) {
+    x2 = iter->x();
+    y2 = iter->y();
+    if (iter != begin) {
+      if (y > min(y1, y2) && y <= max(y1, y2) && x <= max(x1, x2) && y1 != y2 &&
+          (x1 == x2 || x < (y - y1) * (x2 - x1) / (y2 - y1) + x1))
+        inside = !inside;
+    }
+    x1 = x2;
+    y1 = y2;
+  }
   return inside;
 }
 
@@ -208,75 +194,69 @@ bool Polygon::isInside(const Point & pt) const
  * In the worst case this may prevent a point to be found, but this is
  * a small price to pay for strange effects caused by marking a point
  * as being inside within some marging close to rounding error.
- * The easiest way to test the shape is to require that 
+ * The easiest way to test the shape is to require that
  */
 // ----------------------------------------------------------------------
 
-Point Polygon::someInsidePoint(void) const
-{
+Point Polygon::someInsidePoint(void) const {
   close();
-  if(itsData.size()<3)
-	return Point(0,0);
+  if (itsData.size() < 3)
+    return Point(0, 0);
 
   const long max_iterations = 10000;
   long iterations = 0;
 
   double shapelimit = 10;
 
-  while(true)
-	{
-	  for(unsigned int i=0; i<itsData.size()-2; i++)
-		{
-		  if(++iterations > max_iterations)
-			{
-			  cerr << "Error: Could not find a point inside polygon" << endl;
-			  exit(1);
-			}
+  while (true) {
+    for (unsigned int i = 0; i < itsData.size() - 2; i++) {
+      if (++iterations > max_iterations) {
+        cerr << "Error: Could not find a point inside polygon" << endl;
+        exit(1);
+      }
 
-		  const double x1 = itsData[i].x();
-		  const double y1 = itsData[i].y();
-		  const double x2 = itsData[i+1].x();
-		  const double y2 = itsData[i+1].y();
-		  const double x3 = itsData[i+2].x();
-		  const double y3 = itsData[i+2].y();
+      const double x1 = itsData[i].x();
+      const double y1 = itsData[i].y();
+      const double x2 = itsData[i + 1].x();
+      const double y2 = itsData[i + 1].y();
+      const double x3 = itsData[i + 2].x();
+      const double y3 = itsData[i + 2].y();
 
-		  // lengths of the edges
-		  const double a = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-		  const double b = sqrt((x2-x3)*(x2-x3)+(y2-y3)*(y2-y3));
-		  const double c = sqrt((x1-x3)*(x1-x3)+(y1-y3)*(y1-y3));
-		  // perimeter
-		  const double L = a+b+c;
-		  // semiperimeter
-		  const double s = 0.5*L;
-		  // area
-		  const double A = sqrt(s*(s-a)*(s-b)*(s-c));
-		  // shape index
-		  const double shape = L/sqrt(A);
-		  
-		  // if shape is too distorted, skip the triangle. To prevent
-		  // too strict shape requirements, we gradually loosen the
-		  // shape requirement
-		  shapelimit *= 1.01;
-		  if(shape>shapelimit)
-			continue;
+      // lengths of the edges
+      const double a = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+      const double b = sqrt((x2 - x3) * (x2 - x3) + (y2 - y3) * (y2 - y3));
+      const double c = sqrt((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3));
+      // perimeter
+      const double L = a + b + c;
+      // semiperimeter
+      const double s = 0.5 * L;
+      // area
+      const double A = sqrt(s * (s - a) * (s - b) * (s - c));
+      // shape index
+      const double shape = L / sqrt(A);
 
-		  // We limit the scales to 0.2-0.8 to guarantee numerical stability
-		  // For example a1=0.999x is known to have caused trouble
+      // if shape is too distorted, skip the triangle. To prevent
+      // too strict shape requirements, we gradually loosen the
+      // shape requirement
+      shapelimit *= 1.01;
+      if (shape > shapelimit)
+        continue;
 
-		  double a1 = 0.2+(0.8-0.2)*rand()/(RAND_MAX+1.0);
-		  double a2 = 0.2+(0.8-0.2)*rand()/(RAND_MAX+1.0);
+      // We limit the scales to 0.2-0.8 to guarantee numerical stability
+      // For example a1=0.999x is known to have caused trouble
 
-		  const double x = x1 + a1*(x2-x1)+(1-a1)*a2*(x3-x1);
-		  const double y = y1 + a1*(y2-y1)+(1-a1)*a2*(y3-y1);
+      double a1 = 0.2 + (0.8 - 0.2) * rand() / (RAND_MAX + 1.0);
+      double a2 = 0.2 + (0.8 - 0.2) * rand() / (RAND_MAX + 1.0);
 
-		  Point tmp(x,y);
+      const double x = x1 + a1 * (x2 - x1) + (1 - a1) * a2 * (x3 - x1);
+      const double y = y1 + a1 * (y2 - y1) + (1 - a1) * a2 * (y3 - y1);
 
-		  if(isInside(tmp))
-			return tmp;
-		}
-	}
+      Point tmp(x, y);
+
+      if (isInside(tmp))
+        return tmp;
+    }
+  }
 }
 
 // ======================================================================
-
-

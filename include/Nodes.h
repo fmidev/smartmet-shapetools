@@ -29,47 +29,44 @@
 #include <vector>
 
 //! Nodes is a collection of uniquely numbered points
-class Nodes
-{
+class Nodes {
 public:
   //! Destructor
-  ~Nodes(void) { }
+  ~Nodes(void) {}
 
   //! Default constructor
-  Nodes(void) { }
+  Nodes(void) {}
 
   //! Add a point, returning the ordinal of the point
-  long add(const Point & pt, long theId=0);
+  long add(const Point &pt, long theId = 0);
 
   //! Return the ordinal of the given point
-  unsigned long number(const Point & pt) const;
+  unsigned long number(const Point &pt) const;
 
   //! Return the id assigned to the given point
-  long id(const Point & pt) const;
+  long id(const Point &pt) const;
 
   //! Return the point with the given ordinal
   Point point(long ordinal) const;
 
   //! The container holds a map of Points with values number,id
-  typedef std::map<Point,std::pair<unsigned long,long> > DataType;
+  typedef std::map<Point, std::pair<unsigned long, long>> DataType;
 
   //! Return the data
-  const DataType & data(void) const { return itsData; }
+  const DataType &data(void) const { return itsData; }
 
 private:
-
   //! Copy constructor is disabled
-  Nodes(const Nodes & theNodes);
+  Nodes(const Nodes &theNodes);
 
   //! Assignment is disabled
-  Nodes & operator=(const Nodes & theNodes);
+  Nodes &operator=(const Nodes &theNodes);
 
   //! The actual data
   DataType itsData;
 
   //! An extra ordinal sorted container
   std::vector<Point> itsOrderedData;
- 
 
 }; // class Nodes
 

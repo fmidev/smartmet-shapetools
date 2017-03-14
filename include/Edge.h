@@ -16,32 +16,28 @@
 #define EDGE_H
 
 //! An edge is a pair of unordered integer indices.
-class Edge
-{
+class Edge {
 public:
   //! Destructor
-  ~Edge(void) { }
+  ~Edge(void) {}
 
   //! Constructor from the given indices
   Edge(long idx1, long idx2)
-	: itsIndex1(idx1<idx2 ? idx1 : idx2)
-	, itsIndex2(idx1>idx2 ? idx1 : idx2)
-  { }
+      : itsIndex1(idx1 < idx2 ? idx1 : idx2),
+        itsIndex2(idx1 > idx2 ? idx1 : idx2) {}
 
   //! Equality comparison
-  bool operator==(const Edge & edge) const
-  { return (itsIndex1==edge.itsIndex1 && itsIndex2==edge.itsIndex2); }
+  bool operator==(const Edge &edge) const {
+    return (itsIndex1 == edge.itsIndex1 && itsIndex2 == edge.itsIndex2);
+  }
 
   //! Lexical less-than comparison
-  bool operator<(const Edge & edge) const
-  {
-	return ((itsIndex1!=edge.itsIndex1) ?
-			(itsIndex1<edge.itsIndex1) :
-			(itsIndex2<edge.itsIndex2));
+  bool operator<(const Edge &edge) const {
+    return ((itsIndex1 != edge.itsIndex1) ? (itsIndex1 < edge.itsIndex1)
+                                          : (itsIndex2 < edge.itsIndex2));
   }
 
 private:
-
   //! Default constructor is disabled
   Edge(void);
 
@@ -50,7 +46,7 @@ private:
 
   //! The larger of the indices
   long itsIndex2;
-  
+
 }; // class Edge
 
 #endif // EDGE_H

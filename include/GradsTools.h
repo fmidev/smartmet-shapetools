@@ -13,20 +13,18 @@
 
 class NFmiPoint;
 
-namespace GradsTools
-{
+namespace GradsTools {
 
-  void print_double(std::ostream & out, double theValue);
-  void print_lon(std::ostream & out, double theLon);
-  void print_lat(std::ostream & out, double theLat);
-  void print_line(std::ostream & out,
-				  int theLevel,
-				  const std::vector<NFmiPoint> & thePoints);
+void print_double(std::ostream &out, double theValue);
+void print_lon(std::ostream &out, double theLon);
+void print_lat(std::ostream &out, double theLat);
+void print_line(std::ostream &out, int theLevel,
+                const std::vector<NFmiPoint> &thePoints);
 
-  int read_int(std::istream & in);
-  double read_lon(std::istream & in);
-  double read_lat(std::istream & in);
-  unsigned int read_length(std::istream & in);
+int read_int(std::istream &in);
+double read_lon(std::istream &in);
+double read_lat(std::istream &in);
+unsigned int read_length(std::istream &in);
 
 } // namespace GradsTools
 
