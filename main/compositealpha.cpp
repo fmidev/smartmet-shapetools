@@ -10,9 +10,9 @@
  */
 // ======================================================================
 
-#include "newbase/NFmiStringTools.h"
-#include "imagine/NFmiColorTools.h"
-#include "imagine/NFmiImage.h"
+#include <newbase/NFmiStringTools.h>
+#include <imagine/NFmiColorTools.h>
+#include <imagine/NFmiImage.h>
 
 #include <iomanip>
 #include <iostream>

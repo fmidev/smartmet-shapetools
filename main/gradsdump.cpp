@@ -18,8 +18,8 @@
 // ----------------------------------------------------------------------
 
 #include "GradsTools.h"
-#include "newbase/NFmiCmdLine.h"
-#include "newbase/NFmiStringTools.h"
+#include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiStringTools.h>
 #include <fstream>
 #include <stdexcept>
 #include <string>

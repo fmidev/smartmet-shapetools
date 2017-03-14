@@ -30,8 +30,8 @@
 #include "Nodes.h"
 #include "Edges.h"
 #include "Polygon.h"
-#include "imagine/NFmiEdgeTree.h"
-#include "newbase/NFmiValueString.h"
+#include <imagine/NFmiEdgeTree.h>
+#include <newbase/NFmiValueString.h>
 #include <fstream>
 #include <string>
 #include <set>

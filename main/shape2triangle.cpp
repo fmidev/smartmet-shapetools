@@ -20,12 +20,12 @@
 
 #include "Nodes.h"
 #include "Polygon.h"
-#include "newbase/NFmiValueString.h"
-#include "newbase/NFmiFileSystem.h"
-#include "newbase/NFmiArea.h"
-#include "newbase/NFmiValueString.h"
-#include "imagine/NFmiPath.h"
-#include "imagine/NFmiGeoShape.h"
+#include <newbase/NFmiValueString.h>
+#include <newbase/NFmiFileSystem.h>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiValueString.h>
+#include <imagine/NFmiPath.h>
+#include <imagine/NFmiGeoShape.h>
 // system
 #include <cstdlib>
 #include <fstream>

@@ -21,10 +21,10 @@
 #pragma warning(disable : 4786) // STL name length warnings off
 #endif
 
-#include "imagine/NFmiEsriShape.h"
-#include "imagine/NFmiEsriMultiPoint.h"
-#include "imagine/NFmiEsriPolyLine.h"
-#include "imagine/NFmiEsriPolygon.h"
+#include <imagine/NFmiEsriShape.h>
+#include <imagine/NFmiEsriMultiPoint.h>
+#include <imagine/NFmiEsriPolyLine.h>
+#include <imagine/NFmiEsriPolygon.h>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>

@@ -19,10 +19,10 @@
 // ----------------------------------------------------------------------
 
 #include "GradsTools.h"
-#include "imagine/NFmiGshhsTools.h"
-#include "imagine/NFmiPath.h"
-#include "newbase/NFmiCmdLine.h"
-#include "newbase/NFmiStringTools.h"
+#include <imagine/NFmiGshhsTools.h>
+#include <imagine/NFmiPath.h>
+#include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiStringTools.h>
 #include <iostream>
 #include <stdexcept>
 #include <string>

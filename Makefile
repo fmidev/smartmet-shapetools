@@ -50,11 +50,7 @@ LDFLAGS_DEBUG =
 LDFLAGS_PROFILE =
 
 INCLUDES = -I$(includedir) \
-	-I$(includedir)/smartmet \
-	-I$(includedir)/smartmet/newbase \
-	-I$(includedir)/smartmet/macgyver \
-	-I$(includedir)/smartmet/imagine
-
+	-I$(includedir)/smartmet
 
 LIBS = -L$(libdir) \
 	-lsmartmet-imagine \

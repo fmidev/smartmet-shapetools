@@ -18,12 +18,12 @@
 // ----------------------------------------------------------------------
 
 #include "GradsTools.h"
-#include "imagine/NFmiEsriShape.h"
-#include "imagine/NFmiEsriPoint.h"
-#include "imagine/NFmiEsriPolyLine.h"
-#include "newbase/NFmiPoint.h"
-#include "newbase/NFmiCmdLine.h"
-#include "newbase/NFmiStringTools.h"
+#include <imagine/NFmiEsriShape.h>
+#include <imagine/NFmiEsriPoint.h>
+#include <imagine/NFmiEsriPolyLine.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiStringTools.h>
 #include <fstream>
 #include <stdexcept>
 #include <string>
