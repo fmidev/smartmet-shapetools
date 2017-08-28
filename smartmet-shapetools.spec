@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 17.2.13
+Version: 17.8.28
 Release: 1%{?dist}.fmi
 License: FMI
 Group: Development/Tools
@@ -15,12 +15,12 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 17.2.10
-BuildRequires: smartmet-library-newbase-devel >= 17.2.13
-BuildRequires: smartmet-library-macgyver-devel >= 17.1.18
-Requires: smartmet-library-imagine >= 17.2.10
-Requires: smartmet-library-newbase >= 17.2.13
-Requires: smartmet-library-macgyver >= 17.1.18
+BuildRequires: smartmet-library-imagine-devel >= 17.8.28
+BuildRequires: smartmet-library-newbase-devel >= 17.8.28
+BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
+Requires: smartmet-library-imagine >= 17.8.28
+Requires: smartmet-library-newbase >= 17.8.28
+Requires: smartmet-library-macgyver >= 17.8.28
 Requires: glibc
 Requires: libgcc
 Requires: libjpeg
@@ -92,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Aug 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.8.28-1.fmi
+- Upgrade to boost 1.65
+
 * Mon Feb 13 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.2.13-1.fmi
 - Repackaged due to newbase API changes
 
