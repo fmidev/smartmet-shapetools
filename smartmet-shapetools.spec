@@ -2,9 +2,9 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 17.8.28
+Version: 17.9.13
 Release: 1%{?dist}.fmi
-License: FMI
+License: MIT
 Group: Development/Tools
 URL: https://github.com/fmidev/smartmet-shapetools
 Source0: %{name}.tar.gz
@@ -92,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Wed Sep 13 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.13-1.fmi
+- Fixed license to be MIT
+
 * Mon Aug 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.8.28-1.fmi
 - Upgrade to boost 1.65
 
