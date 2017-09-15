@@ -21,6 +21,10 @@ BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
 Requires: smartmet-library-imagine >= 17.8.28
 Requires: smartmet-library-newbase >= 17.8.28
 Requires: smartmet-library-macgyver >= 17.8.28
+Requires: boost-iostreams
+Requires: boost-filesystem
+Requires: boost-program-options
+Requires: boost-system
 Requires: glibc
 Requires: libgcc
 Requires: libjpeg
