@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 17.9.13
+Version: 17.9.21
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -15,11 +15,11 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 17.8.28
-BuildRequires: smartmet-library-newbase-devel >= 17.8.28
+BuildRequires: smartmet-library-imagine-devel >= 17.9.21
+BuildRequires: smartmet-library-newbase-devel >= 17.9.14
 BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
-Requires: smartmet-library-imagine >= 17.8.28
-Requires: smartmet-library-newbase >= 17.8.28
+Requires: smartmet-library-imagine >= 17.9.21
+Requires: smartmet-library-newbase >= 17.9.14
 Requires: smartmet-library-macgyver >= 17.8.28
 Requires: boost-iostreams
 Requires: boost-filesystem
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Thu Sep 21 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.21-1.fmi
+- Added support for handling shapes with dBASE Date fields in them
+
 * Wed Sep 13 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.13-1.fmi
 - Fixed license to be MIT
 

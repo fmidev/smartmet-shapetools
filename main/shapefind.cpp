@@ -615,6 +615,9 @@ void print_attributes(const NFmiEsriElement &theElement)
       case kFmiEsriDouble:
         cout << theElement.GetDouble(attribs[i]);
         break;
+      case kFmiEsriDate:
+        cout << theElement.GetDate(attribs[i]).ToStr(kYYYYMMDD);
+        break;
     }
   }
 }
@@ -634,6 +637,7 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
   set<string> unique_strings;
   set<int> unique_ints;
   set<double> unique_doubles;
+  set<NFmiMetTime> unique_dates;
 
   NFmiEsriAttributeType atype = establish_attribute_type(theShape, options.uniqueattribute);
 
@@ -673,6 +677,16 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
         {
           newdata.insert(*it);
           unique_doubles.insert(value);
+        }
+        break;
+      }
+      case kFmiEsriDate:
+      {
+        NFmiMetTime value = elem->GetDate(options.uniqueattribute);
+        if (unique_dates.find(value) == unique_dates.end())
+        {
+          newdata.insert(*it);
+          unique_dates.insert(value);
         }
         break;
       }

@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
           case Imagine::kFmiEsriDouble:
             cout << (*it)->GetDouble((*ait)->Name());
             break;
+          case Imagine::kFmiEsriDate:
+            cout << (*it)->GetDate((*ait)->Name()).ToStr(kYYYYMMDD);
+            break;
         }
         cout << '"';
       }
