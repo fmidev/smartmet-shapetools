@@ -27,25 +27,26 @@
  */
 // ======================================================================
 
-#include "Nodes.h"
 #include "Edges.h"
+#include "Nodes.h"
 #include "Polygon.h"
 #include <imagine/NFmiEdgeTree.h>
 #include <newbase/NFmiValueString.h>
 #include <fstream>
-#include <string>
 #include <set>
+#include <string>
 
 using namespace std;
 
 // ----------------------------------------------------------------------
 // The main program
 // ----------------------------------------------------------------------
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   // Read the command line arguments
-  if (argc != 5) {
-    cerr << "Usage: " << argv[0]
-         << " [lengthlimit] [arealimit] [input] [output]" << endl;
+  if (argc != 5)
+  {
+    cerr << "Usage: " << argv[0] << " [lengthlimit] [arealimit] [input] [output]" << endl;
     return 1;
   }
 
@@ -63,7 +64,8 @@ int main(int argc, char *argv[]) {
   {
     string filename = inname + ".node";
     ifstream in(filename.c_str());
-    if (!in) {
+    if (!in)
+    {
       cerr << "Error: Could not open " << filename << " for reading" << endl;
       return 1;
     }
@@ -71,20 +73,22 @@ int main(int argc, char *argv[]) {
 
     long number_of_nodes, number_of_attributes, dummy;
     in >> number_of_nodes >> dummy >> number_of_attributes >> dummy;
-    if (number_of_attributes != 1) {
-      cerr << "Error: " << filename
-           << " must contain exactly one attribute field" << endl;
+    if (number_of_attributes != 1)
+    {
+      cerr << "Error: " << filename << " must contain exactly one attribute field" << endl;
       return 1;
     }
 
     cout << "Reading " << number_of_nodes << " nodes from " << filename << endl;
-    for (long i = 1; i <= number_of_nodes && !in.fail(); i++) {
+    for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
+    {
       long node, id;
       double x, y;
       in >> node >> x >> y >> id;
       static_cast<void>(inodes.add(Point(x, y), id));
     }
-    if (in.fail()) {
+    if (in.fail())
+    {
       cerr << "Error: Error reading " << filename << endl;
       return 1;
     }
@@ -97,7 +101,8 @@ int main(int argc, char *argv[]) {
   {
     string filename = inname + ".poly";
     ifstream in(filename.c_str());
-    if (!in) {
+    if (!in)
+    {
       cerr << "Error: Could not open " << filename << " for reading" << endl;
       return 1;
     }
@@ -105,19 +110,21 @@ int main(int argc, char *argv[]) {
     // number_of_boundary_markers
     long number_of_nodes, dummy;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
-    if (number_of_nodes != 0) {
-      cerr << "Error: .poly file also containing nodes is not supported"
-           << endl;
+    if (number_of_nodes != 0)
+    {
+      cerr << "Error: .poly file also containing nodes is not supported" << endl;
       return 1;
     }
     // Second row: number_of_edges number_of_boundary_markers
     long number_of_edges;
     in >> number_of_edges >> dummy;
     cout << "Reading " << number_of_edges << " edges from " << filename << endl;
-    for (long i = 1; i <= number_of_edges && !in.fail(); i++) {
+    for (long i = 1; i <= number_of_edges && !in.fail(); i++)
+    {
       long edge, idx1, idx2;
       in >> edge >> idx1 >> idx2;
-      if (edge != i) {
+      if (edge != i)
+      {
         cerr << "Error: Edges must be numbered sequentially starting from 1 in "
                 "file "
              << filename << endl;
@@ -126,7 +133,8 @@ int main(int argc, char *argv[]) {
       constraints.add(Edge(idx1, idx2));
     }
 
-    if (in.fail()) {
+    if (in.fail())
+    {
       cerr << "Error: Error reading " << filename << endl;
       return 1;
     }
@@ -139,7 +147,8 @@ int main(int argc, char *argv[]) {
   {
     string filename = inname + ".ele";
     ifstream in(filename.c_str());
-    if (!in) {
+    if (!in)
+    {
       cerr << "Error: Could not open " << filename << " for reading" << endl;
       return 1;
     }
@@ -147,18 +156,18 @@ int main(int argc, char *argv[]) {
 
     long number_of_triangles, number_of_points, dummy;
     in >> number_of_triangles >> number_of_points >> dummy;
-    if (number_of_points != 3) {
-      cerr << "Error: " << filename << " must have 3 points per line only"
-           << endl;
+    if (number_of_points != 3)
+    {
+      cerr << "Error: " << filename << " must have 3 points per line only" << endl;
       return 1;
     }
-    cout << "Reading " << number_of_triangles << " triangles from " << filename
-         << endl;
+    cout << "Reading " << number_of_triangles << " triangles from " << filename << endl;
 
     string debug_buffer;
     long debug_triangles = 0;
 
-    for (long i = 1; i <= number_of_triangles && !in.fail(); i++) {
+    for (long i = 1; i <= number_of_triangles && !in.fail(); i++)
+    {
       long edge, idx1, idx2, idx3, region;
       in >> edge >> idx1 >> idx2 >> idx3 >> region;
 
@@ -170,21 +179,21 @@ int main(int argc, char *argv[]) {
       const Point &pt2 = inodes.point(idx2);
       const Point &pt3 = inodes.point(idx3);
 
-      if (region == 0) {
+      if (region == 0)
+      {
         triangle_ok &= (pt1.geodistance(pt2) <= lengthlimit);
         triangle_ok &= (pt2.geodistance(pt3) <= lengthlimit);
         triangle_ok &= (pt3.geodistance(pt1) <= lengthlimit);
       }
 
-      if (triangle_ok) {
-        edges.Add(
-            Imagine::NFmiEdge(pt1.x(), pt1.y(), pt2.x(), pt2.y(), true, false));
-        edges.Add(
-            Imagine::NFmiEdge(pt2.x(), pt2.y(), pt3.x(), pt3.y(), true, false));
-        edges.Add(
-            Imagine::NFmiEdge(pt3.x(), pt3.y(), pt1.x(), pt1.y(), true, false));
+      if (triangle_ok)
+      {
+        edges.Add(Imagine::NFmiEdge(pt1.x(), pt1.y(), pt2.x(), pt2.y(), true, false));
+        edges.Add(Imagine::NFmiEdge(pt2.x(), pt2.y(), pt3.x(), pt3.y(), true, false));
+        edges.Add(Imagine::NFmiEdge(pt3.x(), pt3.y(), pt1.x(), pt1.y(), true, false));
 
-        if (debug) {
+        if (debug)
+        {
           ++debug_triangles;
           debug_buffer += static_cast<char *>(NFmiValueString(debug_triangles));
           debug_buffer += '\t';
@@ -199,13 +208,15 @@ int main(int argc, char *argv[]) {
         }
       }
     }
-    if (in.fail()) {
+    if (in.fail())
+    {
       cerr << "Error: Error reading " << filename << endl;
       return 1;
     }
     in.close();
 
-    if (debug) {
+    if (debug)
+    {
       cout << "Writing " << filename << endl;
       ofstream out(filename.c_str());
       out << debug_triangles << " 3 1" << endl << debug_buffer << endl;
@@ -227,22 +238,25 @@ int main(int argc, char *argv[]) {
     const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
     const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 
-    for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;) {
+    for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;)
+    {
       bool doflush = false;
       // Huom! Jostain syystä g++ kääntää väärin (iter++==end), pakko
       // tehdä näin
       if ((*iter).Oper() == Imagine::kFmiMoveTo)
         doflush = true;
-      else if (++iter == end) {
+      else if (++iter == end)
+      {
         --iter;
         poly.add(Point((*iter).X(), (*iter).Y()));
         doflush = true;
-      } else
+      }
+      else
         --iter;
 
-      if (doflush && !poly.empty()) {
-        if (arealimit <= 0 || poly.geoarea() >= arealimit)
-          polygons.push_back(poly);
+      if (doflush && !poly.empty())
+      {
+        if (arealimit <= 0 || poly.geoarea() >= arealimit) polygons.push_back(poly);
         poly.clear();
       }
 
@@ -260,12 +274,12 @@ int main(int argc, char *argv[]) {
     const vector<Polygon>::const_iterator begin = polygons.begin();
     const vector<Polygon>::const_iterator end = polygons.end();
     unsigned long idx = 0;
-    for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter) {
+    for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
+    {
       ++idx;
       const Polygon::DataType::const_iterator pbegin = iter->data().begin();
       const Polygon::DataType::const_iterator pend = iter->data().end();
-      for (Polygon::DataType::const_iterator piter = pbegin; piter != pend;
-           ++piter)
+      for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
         static_cast<void>(nodes.add(*piter, idx));
     }
   }
@@ -273,10 +287,12 @@ int main(int argc, char *argv[]) {
 
   // Output .node
 
-  if (!debug) {
+  if (!debug)
+  {
     string nodefile = outname + ".node";
     ofstream out(nodefile.c_str());
-    if (!out) {
+    if (!out)
+    {
       cerr << "Error: Could not open " << nodefile << " for writing" << endl;
       return 1;
     }
@@ -292,58 +308,60 @@ int main(int argc, char *argv[]) {
       for (Nodes::DataType::const_iterator iter = begin; iter != end; ++iter)
         sortednodes.insert(make_pair(iter->second.first, iter->first));
     }
-    cout << "Writing " << nodefile << " with " << data.size() << " nodes"
-         << endl;
+    cout << "Writing " << nodefile << " with " << data.size() << " nodes" << endl;
     out << data.size() << " 2 0 0" << endl;
     {
-      const map<unsigned long, Point>::const_iterator begin =
-          sortednodes.begin();
+      const map<unsigned long, Point>::const_iterator begin = sortednodes.begin();
       const map<unsigned long, Point>::const_iterator end = sortednodes.end();
-      for (map<unsigned long, Point>::const_iterator iter = begin; iter != end;
-           ++iter)
-        out << iter->first << '\t' << iter->second.x() << '\t'
-            << iter->second.y() << endl;
+      for (map<unsigned long, Point>::const_iterator iter = begin; iter != end; ++iter)
+        out << iter->first << '\t' << iter->second.x() << '\t' << iter->second.y() << endl;
     }
     out.close();
   }
 
   // Output .poly
 
-  if (!debug) {
+  if (!debug)
+  {
     string polyfile = outname + ".poly";
     cout << "Writing " << polyfile << endl;
     ofstream out(polyfile.c_str());
-    if (!out) {
+    if (!out)
+    {
       cerr << "Error: Could not open " << polyfile << " for writing" << endl;
       return 1;
     }
 
     long number_of_edges = 0;
-    for (unsigned int pass = 1; pass <= 2; pass++) {
+    for (unsigned int pass = 1; pass <= 2; pass++)
+    {
       long edge = 0;
-      if (pass == 2) {
-        out << "0 2 0 0" << endl; // no nodes in .poly
+      if (pass == 2)
+      {
+        out << "0 2 0 0" << endl;  // no nodes in .poly
         out << number_of_edges << " 0" << endl;
       }
 
       const vector<Polygon>::const_iterator begin = polygons.begin();
       const vector<Polygon>::const_iterator end = polygons.end();
-      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter) {
+      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
+      {
         Point previous_point(0, 0);
         const Polygon::DataType::const_iterator pbegin = iter->data().begin();
         const Polygon::DataType::const_iterator pend = iter->data().end();
-        for (Polygon::DataType::const_iterator piter = pbegin; piter != pend;
-             ++piter) {
-          if (piter != pbegin) {
+        for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
+        {
+          if (piter != pbegin)
+          {
             if (pass == 1)
               number_of_edges++;
-            else {
-              out << ++edge << '\t' << nodes.number(previous_point) << '\t'
-                  << nodes.number(*piter) << endl;
+            else
+            {
+              out << ++edge << '\t' << nodes.number(previous_point) << '\t' << nodes.number(*piter)
+                  << endl;
             }
           }
-          if (pass == 2)
-            previous_point = *piter;
+          if (pass == 2) previous_point = *piter;
         }
       }
     }

@@ -21,8 +21,9 @@
 
 //! A simple point class
 
-class Point {
-public:
+class Point
+{
+ public:
   //! Destructor
   ~Point(void) {}
   //! Constructor
@@ -32,8 +33,10 @@ public:
   //! Construction from NFmiPoint
   Point(const NFmiPoint &pt) : itsX(pt.X()), itsY(pt.Y()) {}
   //! Assignment operator
-  Point &operator=(const Point &pt) {
-    if (this != &pt) {
+  Point &operator=(const Point &pt)
+  {
+    if (this != &pt)
+    {
       itsX = pt.itsX;
       itsY = pt.itsY;
     }
@@ -48,31 +51,28 @@ public:
   //! Set y-coordinate
   void y(double value) { itsY = value; }
   //! Equality comparison
-  bool operator==(const Point &pt) const {
-    return (itsX == pt.itsX && itsY == pt.itsY);
-  }
+  bool operator==(const Point &pt) const { return (itsX == pt.itsX && itsY == pt.itsY); }
   //! Inequality comparison
-  bool operator!=(const Point &pt) const {
-    return (itsX != pt.itsX || itsY != pt.itsY);
-  }
+  bool operator!=(const Point &pt) const { return (itsX != pt.itsX || itsY != pt.itsY); }
   //! Lexical comparison
-  bool operator<(const Point &pt) const {
+  bool operator<(const Point &pt) const
+  {
     return (itsX != pt.itsX ? itsX < pt.itsX : itsY < pt.itsY);
   }
   //! Euclidian distance between two points
-  double distance(const Point &pt) const {
-    return sqrt((x() - pt.x()) * (x() - pt.x()) +
-                (y() - pt.y()) * (y() - pt.y()));
+  double distance(const Point &pt) const
+  {
+    return sqrt((x() - pt.x()) * (x() - pt.x()) + (y() - pt.y()) * (y() - pt.y()));
   }
   //! Cartographic distance between two points
   double geodistance(const Point &pt) const;
 
-private:
-  double itsX; //!< The x-coordinate
-  double itsY; //!< The y-coordinate
+ private:
+  double itsX;  //!< The x-coordinate
+  double itsY;  //!< The y-coordinate
 
-}; // class Point
+};  // class Point
 
-#endif // POINT_H
+#endif  // POINT_H
 
 // ======================================================================

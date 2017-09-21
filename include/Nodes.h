@@ -29,8 +29,9 @@
 #include <vector>
 
 //! Nodes is a collection of uniquely numbered points
-class Nodes {
-public:
+class Nodes
+{
+ public:
   //! Destructor
   ~Nodes(void) {}
 
@@ -55,7 +56,7 @@ public:
   //! Return the data
   const DataType &data(void) const { return itsData; }
 
-private:
+ private:
   //! Copy constructor is disabled
   Nodes(const Nodes &theNodes);
 
@@ -68,8 +69,8 @@ private:
   //! An extra ordinal sorted container
   std::vector<Point> itsOrderedData;
 
-}; // class Nodes
+};  // class Nodes
 
-#endif // NODES_H
+#endif  // NODES_H
 
 // ======================================================================

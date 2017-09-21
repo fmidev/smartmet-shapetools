@@ -20,26 +20,27 @@
 
 #include "Nodes.h"
 #include "Polygon.h"
-#include <newbase/NFmiValueString.h>
-#include <newbase/NFmiFileSystem.h>
-#include <newbase/NFmiArea.h>
-#include <newbase/NFmiValueString.h>
-#include <imagine/NFmiPath.h>
 #include <imagine/NFmiGeoShape.h>
+#include <imagine/NFmiPath.h>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiFileSystem.h>
+#include <newbase/NFmiValueString.h>
 // system
 #include <cstdlib>
 #include <fstream>
-#include <string>
 #include <map>
+#include <string>
 
 using namespace std;
 
 // ----------------------------------------------------------------------
 // The main program
 // ----------------------------------------------------------------------
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[])
+{
   // Read the command line arguments
-  if (argc != 4) {
+  if (argc != 4)
+  {
     cerr << "Usage: " << argv[0] << " [arealimit] [shape] [outname]" << endl;
     return 1;
   }
@@ -60,21 +61,24 @@ int main(int argc, const char *argv[]) {
     const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
     const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
 
-    for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;) {
+    for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;)
+    {
       bool doflush = false;
       // Huom! Jostain syystä g++ kääntää väärin (iter++==end), pakko tehdä näin
       if ((*iter).Oper() == Imagine::kFmiMoveTo)
         doflush = true;
-      else if (++iter == end) {
+      else if (++iter == end)
+      {
         --iter;
         poly.add(Point((*iter).X(), (*iter).Y()));
         doflush = true;
-      } else
+      }
+      else
         --iter;
 
-      if (doflush && !poly.empty()) {
-        if (arealimit <= 0 || poly.geoarea() >= arealimit)
-          polygons.push_back(poly);
+      if (doflush && !poly.empty())
+      {
+        if (arealimit <= 0 || poly.geoarea() >= arealimit) polygons.push_back(poly);
         poly.clear();
       }
 
@@ -92,12 +96,12 @@ int main(int argc, const char *argv[]) {
     const vector<Polygon>::const_iterator begin = polygons.begin();
     const vector<Polygon>::const_iterator end = polygons.end();
     unsigned long idx = 0;
-    for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter) {
+    for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
+    {
       ++idx;
       const Polygon::DataType::const_iterator pbegin = iter->data().begin();
       const Polygon::DataType::const_iterator pend = iter->data().end();
-      for (Polygon::DataType::const_iterator piter = pbegin; piter != pend;
-           ++piter)
+      for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
         static_cast<void>(nodes.add(*piter, idx));
     }
   }
@@ -108,7 +112,8 @@ int main(int argc, const char *argv[]) {
     string nodefile = outname + ".node";
     cout << "Writing " << nodefile << endl;
     ofstream out(nodefile.c_str());
-    if (!out) {
+    if (!out)
+    {
       cerr << "Error: Could not open " << nodefile << " for writing" << endl;
       return 1;
     }
@@ -130,10 +135,9 @@ int main(int argc, const char *argv[]) {
       const map<long, Point>::const_iterator begin = sortednodes.begin();
       const map<long, Point>::const_iterator end = sortednodes.end();
       for (map<long, Point>::const_iterator iter = begin; iter != end; ++iter)
-        out << iter->first << '\t'
-            << NFmiValueString(iter->second.x()).CharPtr() << '\t'
-            << NFmiValueString(iter->second.y()).CharPtr() << '\t'
-            << nodes.id(iter->second) << endl;
+        out << iter->first << '\t' << NFmiValueString(iter->second.x()).CharPtr() << '\t'
+            << NFmiValueString(iter->second.y()).CharPtr() << '\t' << nodes.id(iter->second)
+            << endl;
     }
     out.close();
   }
@@ -143,37 +147,42 @@ int main(int argc, const char *argv[]) {
     string polyfile = outname + ".poly";
     cout << "Writing " << polyfile << endl;
     ofstream out(polyfile.c_str());
-    if (!out) {
+    if (!out)
+    {
       cerr << "Error: Could not open " << polyfile << " for writing" << endl;
       return 1;
     }
 
     long number_of_edges = 0;
-    for (unsigned int pass = 1; pass <= 2; pass++) {
+    for (unsigned int pass = 1; pass <= 2; pass++)
+    {
       long edge = 0;
-      if (pass == 2) {
-        out << "0 2 0 0" << endl; // no nodes in .poly
+      if (pass == 2)
+      {
+        out << "0 2 0 0" << endl;  // no nodes in .poly
         out << number_of_edges << " 0" << endl;
       }
 
       const vector<Polygon>::const_iterator begin = polygons.begin();
       const vector<Polygon>::const_iterator end = polygons.end();
-      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter) {
+      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
+      {
         Point previous_point(0, 0);
         const Polygon::DataType::const_iterator pbegin = iter->data().begin();
         const Polygon::DataType::const_iterator pend = iter->data().end();
-        for (Polygon::DataType::const_iterator piter = pbegin; piter != pend;
-             ++piter) {
-          if (piter != pbegin) {
+        for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
+        {
+          if (piter != pbegin)
+          {
             if (pass == 1)
               number_of_edges++;
-            else {
-              out << ++edge << '\t' << nodes.number(previous_point) << '\t'
-                  << nodes.number(*piter) << endl;
+            else
+            {
+              out << ++edge << '\t' << nodes.number(previous_point) << '\t' << nodes.number(*piter)
+                  << endl;
             }
           }
-          if (pass == 2)
-            previous_point = *piter;
+          if (pass == 2) previous_point = *piter;
         }
       }
     }
@@ -188,13 +197,13 @@ int main(int argc, const char *argv[]) {
     // polygon, provided no polygon encloses another one.
 
     {
-      cout << "Finding an inside point for " << polygons.size() << " polygons"
-           << endl;
+      cout << "Finding an inside point for " << polygons.size() << " polygons" << endl;
       out << polygons.size() << endl;
       const vector<Polygon>::const_iterator begin = polygons.begin();
       const vector<Polygon>::const_iterator end = polygons.end();
       long poly = 0;
-      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter) {
+      for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
+      {
         ++poly;
         Point pt = iter->someInsidePoint();
         out << poly << '\t' << NFmiValueString(pt.x()).CharPtr() << '\t'

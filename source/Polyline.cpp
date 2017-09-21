@@ -8,8 +8,8 @@
 #include "Polyline.h"
 #include <newbase/NFmiValueString.h>
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -17,13 +17,14 @@ using namespace std;
 //				HIDDEN INTERNAL FUNCTIONS
 // ======================================================================
 
-namespace {
+namespace
+{
 //! The number identifying the region within the rectangle
 const int central_quadrant = 4;
 
 //! Test the position of given point with respect to a rectangle.
-int quadrant(double x, double y, double x1, double y1, double x2, double y2,
-             double margin) {
+int quadrant(double x, double y, double x1, double y1, double x2, double y2, double margin)
+{
   int value = central_quadrant;
   if (x < x1 - margin)
     value--;
@@ -37,14 +38,15 @@ int quadrant(double x, double y, double x1, double y1, double x2, double y2,
 }
 
 //! Test whether two rectangles intersect
-bool intersects(double x1, double y1, double x2, double y2, double X1,
-                double Y1, double X2, double Y2) {
+bool intersects(
+    double x1, double y1, double x2, double y2, double X1, double Y1, double X2, double Y2)
+{
   bool xoutside = (x1 > X2 || x2 < X1);
   bool youtside = (y1 > Y2 || y2 < Y1);
   return (!xoutside && !youtside);
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
 // ======================================================================
 //				METHOD IMPLEMENTATIONS
@@ -60,17 +62,18 @@ bool intersects(double x1, double y1, double x2, double y2, double X1,
  */
 // ----------------------------------------------------------------------
 
-string Polyline::path(const string &moveto, const string &lineto,
-                      const string &closepath) const {
+string Polyline::path(const string &moveto, const string &lineto, const string &closepath) const
+{
   ostringstream out;
   unsigned int n = size() - 1;
   bool isclosed = (size() > 1 && itsPoints[0] == itsPoints[n]);
-  for (unsigned int i = 0; i <= n; i++) {
+  for (unsigned int i = 0; i <= n; i++)
+  {
     if (isclosed && i == n && !closepath.empty())
       out << closepath;
-    else {
-      out << itsPoints[i].x() << ' ' << itsPoints[i].y() << ' '
-          << (i == 0 ? moveto : lineto);
+    else
+    {
+      out << itsPoints[i].x() << ' ' << itsPoints[i].y() << ' ' << (i == 0 ? moveto : lineto);
     }
     out << endl;
   }
@@ -84,10 +87,9 @@ string Polyline::path(const string &moveto, const string &lineto,
  */
 // ----------------------------------------------------------------------
 
-void Polyline::clip(double theX1, double theY1, double theX2, double theY2,
-                    double margin) {
-  if (empty())
-    return;
+void Polyline::clip(double theX1, double theY1, double theX2, double theY2, double margin)
+{
+  if (empty()) return;
 
   DataType newpts;
 
@@ -101,15 +103,15 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2,
   double maxx = itsPoints[0].x();
   double maxy = itsPoints[0].y();
 
-  next_quadrant = quadrant(itsPoints[0].x(), itsPoints[0].y(), theX1, theY1,
-                           theX2, theY2, margin);
+  next_quadrant = quadrant(itsPoints[0].x(), itsPoints[0].y(), theX1, theY1, theX2, theY2, margin);
 
-  for (unsigned int i = 0; i < size(); i++) {
+  for (unsigned int i = 0; i < size(); i++)
+  {
     last_quadrant = this_quadrant;
     this_quadrant = next_quadrant;
     if (i < size() - 1)
-      next_quadrant = quadrant(itsPoints[i + 1].x(), itsPoints[i + 1].y(),
-                               theX1, theY1, theX2, theY2, margin);
+      next_quadrant =
+          quadrant(itsPoints[i + 1].x(), itsPoints[i + 1].y(), theX1, theY1, theX2, theY2, margin);
 
     bool pushit = true;
 
@@ -126,7 +128,8 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2,
     else
       pushit = false;
 
-    if (pushit) {
+    if (pushit)
+    {
       newpts.push_back(itsPoints[i]);
 
       // Update bounding box if point was accepted
@@ -142,8 +145,8 @@ void Polyline::clip(double theX1, double theY1, double theX2, double theY2,
   // replace old points with clipped ones
 
   if (newpts.size() <= 1 ||
-      !intersects(minx, miny, maxx, maxy, theX1 - margin, theY1 - margin,
-                  theX2 + margin, theY2 + margin))
+      !intersects(
+          minx, miny, maxx, maxy, theX1 - margin, theY1 - margin, theX2 + margin, theY2 + margin))
     itsPoints.clear();
   else
     itsPoints = newpts;

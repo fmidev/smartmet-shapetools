@@ -86,13 +86,13 @@
 
 // internal
 #include "Polyline.h"
-#include <imagine/NFmiCardinalBezierFit.h>
 #include <imagine/NFmiApproximateBezierFit.h>
-#include <imagine/NFmiTightBezierFit.h>
+#include <imagine/NFmiCardinalBezierFit.h>
 #include <imagine/NFmiContourTree.h>
 #include <imagine/NFmiGeoShape.h>
 #include <imagine/NFmiGshhsTools.h>
 #include <imagine/NFmiPath.h>
+#include <imagine/NFmiTightBezierFit.h>
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiAreaTools.h>
@@ -102,8 +102,8 @@
 #include <newbase/NFmiLocationFinder.h>
 #include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiPreProcessor.h>
-#include <newbase/NFmiSettings.h>
 #include <newbase/NFmiSaveBaseFactory.h>
+#include <newbase/NFmiSettings.h>
 #include <newbase/NFmiSmoother.h>
 #include <newbase/NFmiStreamQueryData.h>
 #include <newbase/NFmiValueString.h>
@@ -111,9 +111,9 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
-#include <string>
 #include <memory>
 #include <sstream>
+#include <string>
 
 #include <boost/lexical_cast.hpp>
 
@@ -123,22 +123,26 @@ using namespace std;
 // Clamp PostScript path elements to within this range
 const double clamp_limit = 10000;
 
-struct BezierSettings {
-  BezierSettings(const string &theName, const string theMode,
-                 double theSmoothness, double theMaxError)
-      : name(theName), mode(theMode), smoothness(theSmoothness),
-        maxerror(theMaxError) {}
+struct BezierSettings
+{
+  BezierSettings(const string &theName,
+                 const string theMode,
+                 double theSmoothness,
+                 double theMaxError)
+      : name(theName), mode(theMode), smoothness(theSmoothness), maxerror(theMaxError)
+  {
+  }
 
-  bool operator==(const BezierSettings &theOther) const {
+  bool operator==(const BezierSettings &theOther) const
+  {
     return (mode == theOther.mode && smoothness == theOther.smoothness &&
             maxerror == theOther.maxerror);
   }
 
-  bool operator<(const BezierSettings &theOther) const {
-    if (mode != theOther.mode)
-      return (mode < theOther.mode);
-    if (smoothness != theOther.smoothness)
-      return (smoothness < theOther.smoothness);
+  bool operator<(const BezierSettings &theOther) const
+  {
+    if (mode != theOther.mode) return (mode < theOther.mode);
+    if (smoothness != theOther.smoothness) return (smoothness < theOther.smoothness);
     return (maxerror < theOther.maxerror);
   }
 
@@ -158,11 +162,12 @@ struct BezierSettings {
  */
 // ----------------------------------------------------------------------
 
-void replace(string &theString, const string &theMatch,
-             const string &theReplacement) {
+void replace(string &theString, const string &theMatch, const string &theReplacement)
+{
   string::size_type pos;
 
-  while ((pos = theString.find(theMatch)) != string::npos) {
+  while ((pos = theString.find(theMatch)) != string::npos)
+  {
     theString.replace(pos, theMatch.size(), theReplacement);
   }
 }
@@ -176,9 +181,9 @@ void replace(string &theString, const string &theMatch,
  */
 // ----------------------------------------------------------------------
 
-string ContourName(unsigned long theIndex) {
-  return ("% shape2ps: path " + lexical_cast<string>(theIndex) +
-          " place holder");
+string ContourName(unsigned long theIndex)
+{
+  return ("% shape2ps: path " + lexical_cast<string>(theIndex) + " place holder");
 }
 
 // ----------------------------------------------------------------------
@@ -192,7 +197,8 @@ string ContourName(unsigned long theIndex) {
  */
 // ----------------------------------------------------------------------
 
-NFmiTime toutctime(const NFmiTime &theLocalTime) {
+NFmiTime toutctime(const NFmiTime &theLocalTime)
+{
   ::tm tlocal;
   tlocal.tm_sec = theLocalTime.GetSec();
   tlocal.tm_min = theLocalTime.GetMin();
@@ -208,8 +214,12 @@ NFmiTime toutctime(const NFmiTime &theLocalTime) {
 
   ::tm *tutc = ::gmtime(&tsec);
 
-  NFmiTime out(tutc->tm_year + 1900, tutc->tm_mon + 1, tutc->tm_mday,
-               tutc->tm_hour, tutc->tm_min, tutc->tm_sec);
+  NFmiTime out(tutc->tm_year + 1900,
+               tutc->tm_mon + 1,
+               tutc->tm_mday,
+               tutc->tm_hour,
+               tutc->tm_min,
+               tutc->tm_sec);
 
   return out;
 }
@@ -220,17 +230,21 @@ NFmiTime toutctime(const NFmiTime &theLocalTime) {
  */
 // ----------------------------------------------------------------------
 
-string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
-                    double theClipMargin, const string &theMoveto,
-                    const string &theLineto, const string &theClosepath = "") {
-  const Imagine::NFmiPathData::const_iterator begin =
-      thePath.Elements().begin();
+string pathtostring(const Imagine::NFmiPath &thePath,
+                    const NFmiArea &theArea,
+                    double theClipMargin,
+                    const string &theMoveto,
+                    const string &theLineto,
+                    const string &theClosepath = "")
+{
+  const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
   const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
 
   string out;
 
   Polyline polyline;
-  for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;) {
+  for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;)
+  {
     double X = (*iter).X();
     double Y = theArea.Bottom() - ((*iter).Y() - theArea.Top());
 
@@ -239,23 +253,19 @@ string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
     X = std::max(X, -clamp_limit);
     Y = std::max(Y, -clamp_limit);
 
-    if ((*iter).Oper() == Imagine::kFmiMoveTo ||
-        (*iter).Oper() == Imagine::kFmiLineTo ||
+    if ((*iter).Oper() == Imagine::kFmiMoveTo || (*iter).Oper() == Imagine::kFmiLineTo ||
         (*iter).Oper() == Imagine::kFmiGhostLineTo)
       polyline.add(X, Y);
     else
-      throw runtime_error(
-          "Only moveto and lineto commands are supported in paths");
+      throw runtime_error("Only moveto and lineto commands are supported in paths");
 
     // Advance to next point. If end or moveto, flush previous polyline out
     ++iter;
-    if (!polyline.empty() &&
-        (iter == end || (*iter).Oper() == Imagine::kFmiMoveTo)) {
-      polyline.clip(theArea.Left(), theArea.Top(), theArea.Right(),
-                    theArea.Bottom(), theClipMargin);
-      if (!polyline.empty())
-
-        out += polyline.path(theMoveto, theLineto, theClosepath);
+    if (!polyline.empty() && (iter == end || (*iter).Oper() == Imagine::kFmiMoveTo))
+    {
+      polyline.clip(
+          theArea.Left(), theArea.Top(), theArea.Right(), theArea.Bottom(), theClipMargin);
+      if (!polyline.empty()) out += polyline.path(theMoveto, theLineto, theClosepath);
       polyline.clear();
     }
   }
@@ -269,14 +279,16 @@ string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
  */
 // ----------------------------------------------------------------------
 
-string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
-                    double theClipMargin, const string &theMoveto,
-                    const string &theLineto, const string &theCurveto,
-                    const string &theClosepath) {
-
+string pathtostring(const Imagine::NFmiPath &thePath,
+                    const NFmiArea &theArea,
+                    double theClipMargin,
+                    const string &theMoveto,
+                    const string &theLineto,
+                    const string &theCurveto,
+                    const string &theClosepath)
+{
   Imagine::NFmiPath path =
-      thePath.Clip(theArea.Left(), theArea.Top(), theArea.Right(),
-                   theArea.Bottom(), theClipMargin);
+      thePath.Clip(theArea.Left(), theArea.Top(), theArea.Right(), theArea.Bottom(), theClipMargin);
 
   const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
   const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
@@ -285,8 +297,8 @@ string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
 
   unsigned int cubic_count = 0;
 
-  for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;
-       ++iter) {
+  for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end; ++iter)
+  {
     double X = iter->X();
     double Y = theArea.Bottom() - (iter->Y() - theArea.Top());
 
@@ -297,23 +309,23 @@ string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
 
     out << X << ' ' << Y << ' ';
 
-    switch (iter->Oper()) {
-    case Imagine::kFmiMoveTo:
-      out << theMoveto << endl;
-      cubic_count = 0;
-      break;
-    case Imagine::kFmiLineTo:
-    case Imagine::kFmiGhostLineTo:
-      out << theLineto << endl;
-      cubic_count = 0;
-      break;
-    case Imagine::kFmiCubicTo:
-      ++cubic_count;
-      if (cubic_count % 3 == 0)
-        out << theCurveto << endl;
-      break;
-    case Imagine::kFmiConicTo:
-      throw runtime_error("Conic segments not supported");
+    switch (iter->Oper())
+    {
+      case Imagine::kFmiMoveTo:
+        out << theMoveto << endl;
+        cubic_count = 0;
+        break;
+      case Imagine::kFmiLineTo:
+      case Imagine::kFmiGhostLineTo:
+        out << theLineto << endl;
+        cubic_count = 0;
+        break;
+      case Imagine::kFmiCubicTo:
+        ++cubic_count;
+        if (cubic_count % 3 == 0) out << theCurveto << endl;
+        break;
+      case Imagine::kFmiConicTo:
+        throw runtime_error("Conic segments not supported");
     }
   }
 
@@ -331,15 +343,15 @@ string pathtostring(const Imagine::NFmiPath &thePath, const NFmiArea &theArea,
  */
 // ----------------------------------------------------------------------
 
-void set_level(NFmiFastQueryInfo &theInfo, int theLevel) {
+void set_level(NFmiFastQueryInfo &theInfo, int theLevel)
+{
   if (theLevel < 0)
     theInfo.FirstLevel();
-  else {
+  else
+  {
     for (theInfo.ResetLevel(); theInfo.NextLevel();)
-      if (theInfo.Level()->LevelValue() == static_cast<unsigned int>(theLevel))
-        return;
-    throw runtime_error("Level value " + NFmiStringTools::Convert(theLevel) +
-                        " is not available");
+      if (theInfo.Level()->LevelValue() == static_cast<unsigned int>(theLevel)) return;
+    throw runtime_error("Level value " + NFmiStringTools::Convert(theLevel) + " is not available");
   }
 }
 
@@ -347,7 +359,8 @@ void set_level(NFmiFastQueryInfo &theInfo, int theLevel) {
 // The main driver
 // ----------------------------------------------------------------------
 
-int domain(int argc, const char *argv[]) {
+int domain(int argc, const char *argv[])
+{
   bool verbose = false;
 
   NFmiCmdLine cmdline(argc, argv, "v");
@@ -355,11 +368,9 @@ int domain(int argc, const char *argv[]) {
   if (cmdline.NumberofParameters() != 1)
     throw runtime_error("Usage: shape2ps [options] <filename>");
 
-  if (cmdline.Status().IsError())
-    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
-  if (cmdline.isOption('v'))
-    verbose = true;
+  if (cmdline.isOption('v')) verbose = true;
 
   string scriptfile = cmdline.Parameter(1);
 
@@ -430,10 +441,8 @@ int domain(int argc, const char *argv[]) {
 
   // Prepare the location finder for "location" token
 
-  string coordfile = NFmiSettings::Optional<string>("qdpoint::coordinates_file",
-                                                    "default.txt");
-  string coordpath =
-      NFmiSettings::Optional<string>("qdpoint::coordinates_path", ".");
+  string coordfile = NFmiSettings::Optional<string>("qdpoint::coordinates_file", "default.txt");
+  string coordpath = NFmiSettings::Optional<string>("qdpoint::coordinates_path", ".");
 
   NFmiLocationFinder locfinder;
   locfinder.AddFile(NFmiFileSystem::FileComplete(coordfile, coordpath), false);
@@ -448,18 +457,18 @@ int domain(int argc, const char *argv[]) {
   string token;
   ostringstream buffer;
 
-  while (script >> token) {
-
+  while (script >> token)
+  {
     // ------------------------------------------------------------
     // Handle script comments
     // ------------------------------------------------------------
-    if (token == "#")
-      script.ignore(1000000, '\n');
+    if (token == "#") script.ignore(1000000, '\n');
 
     // ------------------------------------------------------------
     // Handle PostScript comments
     // ------------------------------------------------------------
-    else if (token == "%") {
+    else if (token == "%")
+    {
       getline(script, token);
       buffer << '%' << token << endl;
     }
@@ -473,7 +482,8 @@ int domain(int argc, const char *argv[]) {
     // ------------------------------------------------------------
     // Handle the area command
     // ------------------------------------------------------------
-    else if (token == "area") {
+    else if (token == "area")
+    {
       cerr << "Warning: The area command is deprecated, use projection command "
               "instead"
            << endl;
@@ -481,15 +491,13 @@ int domain(int argc, const char *argv[]) {
       // Invalidate coordinate matrix
       coords.reset(0);
 
-      if (theArea.get())
-        throw runtime_error("Area given twice");
+      if (theArea.get()) throw runtime_error("Area given twice");
 
       unsigned long classID;
       string className;
       script >> classID >> className;
       theArea.reset(static_cast<NFmiArea *>(CreateSaveBase(classID)));
-      if (!theArea.get())
-        throw runtime_error("Unrecognized area in the script");
+      if (!theArea.get()) throw runtime_error("Unrecognized area in the script");
 
       script >> *theArea;
 
@@ -503,13 +511,15 @@ int domain(int argc, const char *argv[]) {
       if (x2 - x1 == 1 && y2 - y1 == 1)
         throw runtime_error("Error: No decent XY-area given in projection");
       // Recalculate x-range from y-range if necessary
-      if (x2 - x1 == 1) {
+      if (x2 - x1 == 1)
+      {
         x1 = 0;
         x2 = (y2 - y1) * theArea->WorldXYAspectRatio();
         theArea->SetXYArea(NFmiRect(x1, y2, x2, y1));
       }
       // Recalculate y-range from x-range if necessary
-      if (y2 - y1 == 1) {
+      if (y2 - y1 == 1)
+      {
         y1 = 0;
         y2 = (x2 - x1) / theArea->WorldXYAspectRatio();
         theArea->SetXYArea(NFmiRect(x1, y2, x2, y1));
@@ -520,7 +530,8 @@ int domain(int argc, const char *argv[]) {
     // Handle the projectioncenter command
     // ------------------------------------------------------------
 
-    else if (token == "projectioncenter") {
+    else if (token == "projectioncenter")
+    {
       cerr << "Warning: The projectioncenter command is deprecated, use "
               "projection command instead"
            << endl;
@@ -528,8 +539,9 @@ int domain(int argc, const char *argv[]) {
       coords.reset(0);
 
       if (!theArea.get())
-        throw runtime_error("projectioncenter must be used after a projection "
-                            "has been specified");
+        throw runtime_error(
+            "projectioncenter must be used after a projection "
+            "has been specified");
 
       float lon, lat, scale;
       script >> lon >> lat >> scale;
@@ -545,30 +557,28 @@ int domain(int argc, const char *argv[]) {
 
       NFmiPoint c = theArea->LatLonToWorldXY(center);
 
-      NFmiPoint bl(c.X() - scale * 1000 * (x2 - x1),
-                   c.Y() - scale * 1000 * (y2 - y1));
-      NFmiPoint tr(c.X() + scale * 1000 * (x2 - x1),
-                   c.Y() + scale * 1000 * (y2 - y1));
+      NFmiPoint bl(c.X() - scale * 1000 * (x2 - x1), c.Y() - scale * 1000 * (y2 - y1));
+      NFmiPoint tr(c.X() + scale * 1000 * (x2 - x1), c.Y() + scale * 1000 * (y2 - y1));
       NFmiPoint bottomleft = theArea->WorldXYToLatLon(bl);
       NFmiPoint topright = theArea->WorldXYToLatLon(tr);
       theArea.reset(theArea->NewArea(bottomleft, topright));
 
-      if (verbose) {
+      if (verbose)
+      {
         cerr << "Calculated new area to be" << endl << *theArea << endl;
       }
-
     }
 
     // ------------------------------------------------------------
     // Handle the projection command
     // ------------------------------------------------------------
 
-    else if (token == "projection") {
+    else if (token == "projection")
+    {
       // Invalidate coordinate matrix
       coords.reset(0);
 
-      if (theArea.get())
-        throw runtime_error("Projection given twice");
+      if (theArea.get()) throw runtime_error("Projection given twice");
 
       string specs;
       script >> specs;
@@ -584,19 +594,22 @@ int domain(int argc, const char *argv[]) {
       if (x2 - x1 == 1 && y2 - y1 == 1)
         throw runtime_error("Error: No decent XY-area given in projection");
       // Recalculate x-range from y-range if necessary
-      if (x2 - x1 == 1) {
+      if (x2 - x1 == 1)
+      {
         x1 = 0;
         x2 = (y2 - y1) * theArea->WorldXYAspectRatio();
         theArea->SetXYArea(NFmiRect(x1, y2, x2, y1));
       }
       // Recalculate y-range from x-range if necessary
-      if (y2 - y1 == 1) {
+      if (y2 - y1 == 1)
+      {
         y1 = 0;
         y2 = (x2 - x1) / theArea->WorldXYAspectRatio();
         theArea->SetXYArea(NFmiRect(x1, y2, x2, y1));
       }
 
-      if (verbose) {
+      if (verbose)
+      {
         cerr << "The new projection is" << endl << *theArea << endl;
       }
     }
@@ -604,12 +617,11 @@ int domain(int argc, const char *argv[]) {
     // ------------------------------------------------------------
     // Handle the body command
     // ------------------------------------------------------------
-    else if (token == "body") {
-      if (body)
-        throw runtime_error("body command given twice in script");
+    else if (token == "body")
+    {
+      if (body) throw runtime_error("body command given twice in script");
 
-      if (!theArea.get())
-        throw runtime_error("No area specified before body");
+      if (!theArea.get()) throw runtime_error("No area specified before body");
 
       body = true;
 
@@ -622,8 +634,7 @@ int domain(int argc, const char *argv[]) {
              << "%%Creator: shape2ps" << endl
              << "%%Pages: 1" << endl
              << "%%BoundingBox: " << static_cast<int>(theArea->Left()) << " "
-             << static_cast<int>(theArea->Top()) << " "
-             << static_cast<int>(theArea->Right()) << " "
+             << static_cast<int>(theArea->Top()) << " " << static_cast<int>(theArea->Right()) << " "
              << static_cast<int>(theArea->Bottom()) << endl
              << "%%EndComments" << endl
              << "%%BeginProcSet: shape2ps" << endl
@@ -641,45 +652,39 @@ int domain(int argc, const char *argv[]) {
              << "mydict begin" << endl
              << "%%EndPageSetup" << endl
              << "gsave " << static_cast<int>(theArea->Left()) << " "
-             << static_cast<int>(theArea->Top()) << " "
-             << static_cast<int>(theArea->Right()) << " "
-             << static_cast<int>(theArea->Bottom()) << " rectclip newpath"
-             << endl;
+             << static_cast<int>(theArea->Top()) << " " << static_cast<int>(theArea->Right()) << " "
+             << static_cast<int>(theArea->Bottom()) << " rectclip newpath" << endl;
     }
 
     // ----------------------------------------------------------------------
     // Handle a boundingbox command
     // ----------------------------------------------------------------------
 
-    else if (token == "boundingbox") {
-      if (!theArea.get())
-        throw runtime_error("Using boundingbox before area");
+    else if (token == "boundingbox")
+    {
+      if (!theArea.get()) throw runtime_error("Using boundingbox before area");
 
-      buffer << static_cast<int>(theArea->Left()) << " "
-             << static_cast<int>(theArea->Bottom()) << " moveto "
-             << static_cast<int>(theArea->Left()) << " "
-             << static_cast<int>(theArea->Top()) << " lineto "
-             << static_cast<int>(theArea->Right()) << " "
-             << static_cast<int>(theArea->Top()) << " lineto "
-             << static_cast<int>(theArea->Right()) << " "
-             << static_cast<int>(theArea->Bottom()) << " lineto closepath"
-             << endl;
+      buffer << static_cast<int>(theArea->Left()) << " " << static_cast<int>(theArea->Bottom())
+             << " moveto " << static_cast<int>(theArea->Left()) << " "
+             << static_cast<int>(theArea->Top()) << " lineto " << static_cast<int>(theArea->Right())
+             << " " << static_cast<int>(theArea->Top()) << " lineto "
+             << static_cast<int>(theArea->Right()) << " " << static_cast<int>(theArea->Bottom())
+             << " lineto closepath" << endl;
     }
 
     // ------------------------------------------------------------
     // Handle a project command
     // ------------------------------------------------------------
 
-    else if (token == "project") {
-      if (!theArea.get())
-        throw runtime_error("Using project before area");
+    else if (token == "project")
+    {
+      if (!theArea.get()) throw runtime_error("Using project before area");
 
       double x, y;
       script >> x >> y;
       NFmiPoint pt = theArea->ToXY(NFmiPoint(x, y));
       buffer << static_cast<char *>(NFmiValueString(pt.X())) << ' '
-             << static_cast<char *>(NFmiValueString(theArea->Bottom() -
-                                                    (pt.Y() - theArea->Top())))
+             << static_cast<char *>(NFmiValueString(theArea->Bottom() - (pt.Y() - theArea->Top())))
              << ' ';
     }
 
@@ -687,22 +692,20 @@ int domain(int argc, const char *argv[]) {
     // Handle a location command
     // ------------------------------------------------------------
 
-    else if (token == "location") {
-      if (!theArea.get())
-        throw runtime_error("Using location before area");
+    else if (token == "location")
+    {
+      if (!theArea.get()) throw runtime_error("Using location before area");
 
       string placename;
       script >> placename;
 
       NFmiPoint lonlat = locfinder.Find(placename);
       if (locfinder.LastSearchFailed())
-        throw runtime_error("Location " + placename +
-                            " is not in the database");
+        throw runtime_error("Location " + placename + " is not in the database");
 
       NFmiPoint pt = theArea->ToXY(lonlat);
       buffer << static_cast<char *>(NFmiValueString(pt.X())) << ' '
-             << static_cast<char *>(NFmiValueString(theArea->Bottom() -
-                                                    (pt.Y() - theArea->Top())))
+             << static_cast<char *>(NFmiValueString(theArea->Bottom() - (pt.Y() - theArea->Top())))
              << ' ';
     }
 
@@ -710,9 +713,9 @@ int domain(int argc, const char *argv[]) {
     // Handle a system command
     // ------------------------------------------------------------
 
-    else if (token == "system") {
-      if (!body)
-        throw runtime_error("system command does not work in the header");
+    else if (token == "system")
+    {
+      if (!body) throw runtime_error("system command does not work in the header");
 
       getline(script, token);
       buffer << "% " << token << endl;
@@ -722,18 +725,16 @@ int domain(int argc, const char *argv[]) {
     // ------------------------------------------------------------
     // Handle the shape and exec commands
     // ------------------------------------------------------------
-    else if (token == "shape" || token == "subshape" || token == "exec") {
-      if (!body)
-        throw runtime_error("Cannot have " + token + " command in header");
+    else if (token == "shape" || token == "subshape" || token == "exec")
+    {
+      if (!body) throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto, closepath;
-      if (token == "shape" || token == "subshape")
-        script >> moveto >> lineto >> closepath;
+      if (token == "shape" || token == "subshape") script >> moveto >> lineto >> closepath;
 
       string shapefile, condition;
 
-      if (token == "subshape")
-        script >> condition;
+      if (token == "subshape") script >> condition;
 
       script >> shapefile;
 
@@ -744,25 +745,23 @@ int domain(int argc, const char *argv[]) {
       buffer << endl;
 
       // Read the shape, project and get as path
-      try {
-        Imagine::NFmiGeoShape geo(shapefile, Imagine::kFmiGeoShapeEsri,
-                                  condition);
+      try
+      {
+        Imagine::NFmiGeoShape geo(shapefile, Imagine::kFmiGeoShapeEsri, condition);
         // geo.ProjectXY(*theArea);
 
         Imagine::NFmiPath path = geo.Path().PacificView(theArea->PacificView());
         path.Project(theArea.get());
 
         if (token == "shape" || token == "subshape")
-          buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto,
-                                 closepath);
+          buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto, closepath);
         else
           buffer << pathtostring(path, *theArea, theClipMargin, "e3", "e2");
-        if (token == "exec")
-          buffer << "pop pop" << endl;
-
-      } catch (std::exception &e) {
-        if (token != "shape")
-          throw e;
+        if (token == "exec") buffer << "pop pop" << endl;
+      }
+      catch (std::exception &e)
+      {
+        if (token != "shape") throw e;
         string msg = "Failed at command shape ";
         msg += moveto + ' ';
         msg += lineto + ' ';
@@ -772,19 +771,17 @@ int domain(int argc, const char *argv[]) {
         msg += e.what();
         throw runtime_error(msg);
       }
-
     }
 
     // ------------------------------------------------------------
     // Handle the qdexec command
     // ------------------------------------------------------------
 
-    else if (token == "qdexec") {
-      if (!body)
-        throw runtime_error("Cannot have " + token + " command in header");
+    else if (token == "qdexec")
+    {
+      if (!body) throw runtime_error("Cannot have " + token + " command in header");
 
-      if (!theArea.get())
-        throw runtime_error("Using qdexec before projection specified");
+      if (!theArea.get()) throw runtime_error("Using qdexec before projection specified");
 
       string queryfile;
       script >> queryfile;
@@ -795,12 +792,13 @@ int domain(int argc, const char *argv[]) {
       NFmiFastQueryInfo *qi = qd.QueryInfoIter();
       qi->First();
 
-      for (qi->ResetLocation(); qi->NextLocation();) {
+      for (qi->ResetLocation(); qi->NextLocation();)
+      {
         const NFmiPoint lonlat = qi->LatLon();
         const NFmiPoint pt = theArea->ToXY(lonlat);
         buffer << static_cast<char *>(NFmiValueString(pt.X())) << ' '
-               << static_cast<char *>(NFmiValueString(
-                      theArea->Bottom() - (pt.Y() - theArea->Top())))
+               << static_cast<char *>(
+                      NFmiValueString(theArea->Bottom() - (pt.Y() - theArea->Top())))
                << " e2" << endl;
       }
       buffer << "pop" << endl;
@@ -810,9 +808,9 @@ int domain(int argc, const char *argv[]) {
     // Handle the gshhs command
     // ------------------------------------------------------------
 
-    else if (token == "gshhs") {
-      if (!body)
-        throw runtime_error("Cannot have " + token + " command in header");
+    else if (token == "gshhs")
+    {
+      if (!body) throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto, closepath;
       script >> moveto >> lineto >> closepath;
@@ -823,20 +821,20 @@ int domain(int argc, const char *argv[]) {
       buffer << "% " << token << ' ' << gshhsfile << endl;
 
       // Read the gshhs, project and get as path
-      try {
+      try
+      {
         double minlon, minlat, maxlon, maxlat;
-        NFmiAreaTools::LatLonBoundingBox(*theArea, minlon, minlat, maxlon,
-                                         maxlat);
+        NFmiAreaTools::LatLonBoundingBox(*theArea, minlon, minlat, maxlon, maxlat);
 
-        Imagine::NFmiPath path = Imagine::NFmiGshhsTools::ReadPath(
-            gshhsfile, minlon, minlat, maxlon, maxlat);
+        Imagine::NFmiPath path =
+            Imagine::NFmiGshhsTools::ReadPath(gshhsfile, minlon, minlat, maxlon, maxlat);
 
         path.Project(theArea.get());
 
-        buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto,
-                               closepath);
-
-      } catch (std::exception &e) {
+        buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto, closepath);
+      }
+      catch (std::exception &e)
+      {
         string msg = "Failed at command gshhs ";
         msg += moveto + ' ';
         msg += lineto + ' ';
@@ -846,7 +844,6 @@ int domain(int argc, const char *argv[]) {
         msg += e.what();
         throw runtime_error(e.what());
       }
-
     }
 
     // ------------------------------------------------------------
@@ -854,9 +851,9 @@ int domain(int argc, const char *argv[]) {
     // <dy> command
     // ------------------------------------------------------------
 
-    else if (token == "graticule") {
-      if (!body)
-        throw runtime_error("Cannot have " + token + " command in header");
+    else if (token == "graticule")
+    {
+      if (!body) throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto;
       script >> moveto >> lineto;
@@ -864,22 +861,19 @@ int domain(int argc, const char *argv[]) {
       double lon1, lon2, dx, lat1, lat2, dy;
       script >> lon1 >> lon2 >> dx >> lat1 >> lat2 >> dy;
 
-      if (lon1 > lon2)
-        throw runtime_error("Graticule lon1>lon2");
-      if (lat1 > lat2)
-        throw runtime_error("Graticule lat1>lat2");
-      if (dx <= 0)
-        throw runtime_error("Graticule dx<=0");
-      if (dy <= 0)
-        throw runtime_error("Graticule dy<=0");
+      if (lon1 > lon2) throw runtime_error("Graticule lon1>lon2");
+      if (lat1 > lat2) throw runtime_error("Graticule lat1>lat2");
+      if (dx <= 0) throw runtime_error("Graticule dx<=0");
+      if (dy <= 0) throw runtime_error("Graticule dy<=0");
 
-      buffer << "% graticule " << lon1 << ' ' << lon2 << ' ' << dx << ' '
-             << lat1 << ' ' << lat2 << ' ' << dy << endl;
+      buffer << "% graticule " << lon1 << ' ' << lon2 << ' ' << dx << ' ' << lat1 << ' ' << lat2
+             << ' ' << dy << endl;
 
       Imagine::NFmiPath path;
 
       for (double x = lon1; x <= lon2; x += dx)
-        for (double y = lat1; y <= lat2; y += dy) {
+        for (double y = lat1; y <= lat2; y += dy)
+        {
           if (y == lat1)
             path.MoveTo(x, y);
           else
@@ -887,7 +881,8 @@ int domain(int argc, const char *argv[]) {
         }
 
       for (double y = lat1; y <= lat2; y += dy)
-        for (double x = lon1; x <= lon2; x += dx) {
+        for (double x = lon1; x <= lon2; x += dx)
+        {
           if (x == lon1)
             path.MoveTo(x, y);
           else
@@ -896,43 +891,42 @@ int domain(int argc, const char *argv[]) {
 
       path.Project(theArea.get());
 
-      buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto,
-                             "closepath");
-
+      buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto, "closepath");
     }
 
     // ------------------------------------------------------------
     // Handle the querydata <filename> command
     // ------------------------------------------------------------
 
-    else if (token == "querydata") {
+    else if (token == "querydata")
+    {
       coords.reset(0);
       values.reset(0);
       script >> theQueryDataName;
       if (!theQueryData.SafeReadLatestData(theQueryDataName))
-        throw runtime_error("Failed to read querydata from " +
-                            theQueryDataName);
+        throw runtime_error("Failed to read querydata from " + theQueryDataName);
     }
 
     // ------------------------------------------------------------
     // Handle the parameter <name> command
     // ----------------------------------------------------------------------
 
-    else if (token == "parameter") {
+    else if (token == "parameter")
+    {
       values.reset(0);
       script >> theParameterName;
       NFmiEnumConverter converter;
       theParameter = FmiParameterName(converter.ToEnum(theParameterName));
       if (theParameter == kFmiBadParameter)
-        throw runtime_error("Parameter name " + theParameterName +
-                            " is not recognized by newbase");
+        throw runtime_error("Parameter name " + theParameterName + " is not recognized by newbase");
     }
 
     // ------------------------------------------------------------
     // Handle the level <levelvalue> command
     // ----------------------------------------------------------------------
 
-    else if (token == "level") {
+    else if (token == "level")
+    {
       values.reset(0);
       script >> theLevel;
     }
@@ -941,7 +935,8 @@ int domain(int argc, const char *argv[]) {
     // Handle the timemode <local|utc> command
     // ------------------------------------------------------------
 
-    else if (token == "timemode") {
+    else if (token == "timemode")
+    {
       values.reset(0);
       string name;
       script >> name;
@@ -958,26 +953,23 @@ int domain(int argc, const char *argv[]) {
     // Handle the time <day> <hour> command
     // ------------------------------------------------------------
 
-    else if (token == "time") {
+    else if (token == "time")
+    {
       values.reset(0);
       script >> theTimeOrigin >> theDay >> theHour;
-      if (theTimeOrigin != "now" && theTimeOrigin != "origintime" &&
-          theTimeOrigin != "firsttime")
-        throw runtime_error("Time mode " + theTimeOrigin +
-                            " is not recognized");
-      if (theDay < 0)
-        throw runtime_error(
-            "First argument of time-command must be nonnegative");
+      if (theTimeOrigin != "now" && theTimeOrigin != "origintime" && theTimeOrigin != "firsttime")
+        throw runtime_error("Time mode " + theTimeOrigin + " is not recognized");
+      if (theDay < 0) throw runtime_error("First argument of time-command must be nonnegative");
       if (theHour < 0 || theHour > 24)
-        throw runtime_error(
-            "Second argument of time-command must be in range 0-23");
+        throw runtime_error("Second argument of time-command must be in range 0-23");
     }
 
     // ------------------------------------------------------------
     // Handle the bezier command
     // ------------------------------------------------------------
 
-    else if (token == "bezier") {
+    else if (token == "bezier")
+    {
       script >> theBezierMode;
       if (theBezierMode == "none")
         ;
@@ -988,23 +980,20 @@ int domain(int argc, const char *argv[]) {
       else if (theBezierMode == "tight")
         script >> theBezierMaxError;
       else
-        throw runtime_error("Bezier mode " + theBezierMode +
-                            " is not recognized");
+        throw runtime_error("Bezier mode " + theBezierMode + " is not recognized");
     }
 
     // ------------------------------------------------------------
     // Handle the smoother command
     // ------------------------------------------------------------
 
-    else if (token == "smoother") {
+    else if (token == "smoother")
+    {
       values.reset(0);
       script >> theSmoother;
-      if (theSmoother != "None")
-        script >> theSmootherFactor >> theSmootherRadius;
-      if (NFmiSmoother::SmootherValue(theSmoother) ==
-          NFmiSmoother::kFmiSmootherMissing)
-        throw runtime_error("Smoother mode " + theSmoother +
-                            " is not recognized");
+      if (theSmoother != "None") script >> theSmootherFactor >> theSmootherRadius;
+      if (NFmiSmoother::SmootherValue(theSmoother) == NFmiSmoother::kFmiSmootherMissing)
+        throw runtime_error("Smoother mode " + theSmoother + " is not recognized");
     }
 
     // ------------------------------------------------------------
@@ -1012,33 +1001,30 @@ int domain(int argc, const char *argv[]) {
     // command
     // ------------------------------------------------------------
 
-    else if (token == "contourcommands") {
-      script >> theMovetoCommand >> theLinetoCommand >> theCurvetoCommand >>
-          theClosepathCommand;
+    else if (token == "contourcommands")
+    {
+      script >> theMovetoCommand >> theLinetoCommand >> theCurvetoCommand >> theClosepathCommand;
     }
 
     // ----------------------------------------------------------------------
     // Handle the windarrows <dx> <dy> command
     // ----------------------------------------------------------------------
 
-    else if (token == "windarrows") {
-      if (!body)
-        throw runtime_error(token + " command is not allowed in the header");
+    else if (token == "windarrows")
+    {
+      if (!body) throw runtime_error(token + " command is not allowed in the header");
 
       int dx, dy;
       script >> dx >> dy;
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
       if (q == 0)
-        throw runtime_error(
-            "querydata must be specified before using any windarrows commands");
+        throw runtime_error("querydata must be specified before using any windarrows commands");
       if (!q->Param(kFmiWindDirection))
-        throw runtime_error("parameter WindDirection is not available in " +
-                            theQueryDataName);
+        throw runtime_error("parameter WindDirection is not available in " + theQueryDataName);
 
       if (theDay < 0 || theHour < 0)
-        throw runtime_error(
-            "time must be specified before using any contouring commands");
+        throw runtime_error("time must be specified before using any contouring commands");
 
       // Try to set the proper level on
       set_level(*q, theLevel);
@@ -1048,15 +1034,19 @@ int domain(int argc, const char *argv[]) {
       NFmiTime t;
       t.SetMin(0);
       t.SetSec(0);
-      if (theTimeOrigin == "now") {
+      if (theTimeOrigin == "now")
+      {
         t.ChangeByDays(theDay);
         t.SetHour(theHour);
       }
-      if (theTimeOrigin == "origintime") {
+      if (theTimeOrigin == "origintime")
+      {
         t = q->OriginTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
-      } else if (theTimeOrigin == "firsttime") {
+      }
+      else if (theTimeOrigin == "firsttime")
+      {
         q->FirstTime();
         t = q->ValidTime();
         t.ChangeByDays(theDay);
@@ -1065,13 +1055,15 @@ int domain(int argc, const char *argv[]) {
 
       // Get the data to be contoured
 
-      if (coords.get() == 0) {
+      if (coords.get() == 0)
+      {
         coords.reset(new NFmiDataMatrix<NFmiPoint>);
         q->LocationsXY(*coords, *theArea);
       }
 
       values.reset();
-      if (values.get() == 0) {
+      if (values.get() == 0)
+      {
         values.reset(new NFmiDataMatrix<float>);
         q->Values(*values, t);
       }
@@ -1079,7 +1071,8 @@ int domain(int argc, const char *argv[]) {
       // Loop through the data and render arrows
 
       for (unsigned int j = 0; j < values->NY(); j += dy)
-        for (unsigned int i = 0; i < values->NX(); i += dx) {
+        for (unsigned int i = 0; i < values->NX(); i += dx)
+        {
           float wdir = (*values)[i][j];
           NFmiPoint xy = (*coords)[i][j];
 
@@ -1087,9 +1080,9 @@ int domain(int argc, const char *argv[]) {
           double y = theArea->Bottom() - (xy.Y() - theArea->Top());
 
           if ((x > theArea->Left() && x < theArea->Right()) ||
-              (y > theArea->Top() && y < theArea->Bottom())) {
-            buffer << wdir << ' ' << x << ' ' << y << ' ' << " windarrow"
-                   << endl;
+              (y > theArea->Top() && y < theArea->Bottom()))
+          {
+            buffer << wdir << ' ' << x << ' ' << y << ' ' << " windarrow" << endl;
           }
         }
     }
@@ -1099,115 +1092,124 @@ int domain(int argc, const char *argv[]) {
     // Handle the contourfill <lolimit> <hilimit> command
     // ------------------------------------------------------------
 
-    else if (token == "contourline" || token == "contourfill") {
-      if (!body)
-        throw runtime_error(token + " command is not allowed in the header");
+    else if (token == "contourline" || token == "contourfill")
+    {
+      if (!body) throw runtime_error(token + " command is not allowed in the header");
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
       if (q == 0)
-        throw runtime_error(
-            "querydata must be specified before using any contouring commands");
+        throw runtime_error("querydata must be specified before using any contouring commands");
 
       if (theParameter == kFmiBadParameter)
-        throw runtime_error(
-            "parameter must be specified before using any contouring commands");
+        throw runtime_error("parameter must be specified before using any contouring commands");
 
       if (!q->Param(theParameter))
-        throw runtime_error("parameter " + theParameterName +
-                            " is not available in " + theQueryDataName);
+        throw runtime_error("parameter " + theParameterName + " is not available in " +
+                            theQueryDataName);
 
       // Try to set the proper level on
       set_level(*q, theLevel);
 
       if (theDay < 0 || theHour < 0)
-        throw runtime_error(
-            "time must be specified before using any contouring commands");
+        throw runtime_error("time must be specified before using any contouring commands");
 
       // Try to set the proper time on
 
       NFmiTime t;
       t.SetMin(0);
       t.SetSec(0);
-      if (theTimeOrigin == "now") {
+      if (theTimeOrigin == "now")
+      {
         t.ChangeByDays(theDay);
         t.SetHour(theHour);
       }
-      if (theTimeOrigin == "origintime") {
+      if (theTimeOrigin == "origintime")
+      {
         t = q->OriginTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
-      } else if (theTimeOrigin == "firsttime") {
+      }
+      else if (theTimeOrigin == "firsttime")
+      {
         q->FirstTime();
         t = q->ValidTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
       }
 
-      if (theLocalTimeMode)
-        t = toutctime(t);
+      if (theLocalTimeMode) t = toutctime(t);
 
       cerr << "Time = " << t << endl;
 
       float lolimit, hilimit;
-      if (token == "contourline") {
+      if (token == "contourline")
+      {
         script >> lolimit;
         hilimit = kFloatMissing;
-      } else {
+      }
+      else
+      {
         script >> lolimit >> hilimit;
-        if (lolimit != kFloatMissing && hilimit != kFloatMissing &&
-            lolimit >= hilimit)
-          throw runtime_error("contourfill first argument must be smaller than "
-                              "second argument");
+        if (lolimit != kFloatMissing && hilimit != kFloatMissing && lolimit >= hilimit)
+          throw runtime_error(
+              "contourfill first argument must be smaller than "
+              "second argument");
       }
 
       // Get the data to be contoured
 
-      if (coords.get() == 0) {
+      if (coords.get() == 0)
+      {
         coords.reset(new NFmiDataMatrix<NFmiPoint>);
         q->LocationsXY(*coords, *theArea);
       }
 
-      if (values.get() == 0) {
+      if (values.get() == 0)
+      {
         values.reset(new NFmiDataMatrix<float>);
         q->Values(*values, t);
 
-        if (theSmoother != "None") {
-          NFmiSmoother smoother(theSmoother, theSmootherFactor,
-                                theSmootherRadius);
+        if (theSmoother != "None")
+        {
+          NFmiSmoother smoother(theSmoother, theSmootherFactor, theSmootherRadius);
           *values = smoother.Smoothen(*coords, *values);
         }
       }
 
       Imagine::NFmiContourTree tree(lolimit, hilimit);
-      if (token == "contourline")
-        tree.LinesOnly(true);
+      if (token == "contourline") tree.LinesOnly(true);
 
-      tree.Contour(*coords, *values,
-                   Imagine::NFmiContourTree::kFmiContourLinear);
+      tree.Contour(*coords, *values, Imagine::NFmiContourTree::kFmiContourLinear);
 
       Imagine::NFmiPath path = tree.Path();
 
       // We don't bother to store non-smoothed contours at all
-      if (theBezierMode == "none") {
-        buffer << pathtostring(path, *theArea, theClipMargin, theMovetoCommand,
-                               theLinetoCommand, theCurvetoCommand,
+      if (theBezierMode == "none")
+      {
+        buffer << pathtostring(path,
+                               *theArea,
+                               theClipMargin,
+                               theMovetoCommand,
+                               theLinetoCommand,
+                               theCurvetoCommand,
                                theClosepathCommand);
-      } else {
+      }
+      else
+      {
         const string name = ContourName(theContours.size() + 1);
-        BezierSettings bset(name, theBezierMode, theBezierSmoothness,
-                            theBezierMaxError);
+        BezierSettings bset(name, theBezierMode, theBezierSmoothness, theBezierMaxError);
         theContourSettings.insert(bset);
         theContours.push_back(make_pair(bset, path));
         buffer << name << endl;
       }
-
     }
 
     // ------------------------------------------------------------
     // Handle a regular PostScript token line
     // ------------------------------------------------------------
 
-    else {
+    else
+    {
       buffer << token;
       getline(script, token);
       buffer << token << endl;
@@ -1216,7 +1218,8 @@ int domain(int argc, const char *argv[]) {
 
   // The script finished
 
-  if (!body) {
+  if (!body)
+  {
     cerr << "Error: There was no body in the script" << endl;
     return 1;
   }
@@ -1229,14 +1232,18 @@ int domain(int argc, const char *argv[]) {
 
   string output = buffer.str();
 
-  if (!theContours.empty()) {
+  if (!theContours.empty())
+  {
     for (set<BezierSettings>::const_iterator sit = theContourSettings.begin();
-         sit != theContourSettings.end(); ++sit) {
+         sit != theContourSettings.end();
+         ++sit)
+    {
       list<string> names;
       Imagine::NFmiBezierTools::NFmiPaths paths;
-      for (Contours::const_iterator it = theContours.begin();
-           it != theContours.end(); ++it) {
-        if (*sit == it->first) {
+      for (Contours::const_iterator it = theContours.begin(); it != theContours.end(); ++it)
+      {
+        if (*sit == it->first)
+        {
           paths.push_back(it->second);
           names.push_back(it->first.name);
         }
@@ -1250,16 +1257,20 @@ int domain(int argc, const char *argv[]) {
       else if (sit->mode == "tight")
         outpaths = Imagine::NFmiTightBezierFit::Fit(paths, sit->maxerror);
       else
-        throw runtime_error("Unknown Bezier mode " + sit->mode +
-                            " while fitting contours");
+        throw runtime_error("Unknown Bezier mode " + sit->mode + " while fitting contours");
 
       list<string>::const_iterator nit = names.begin();
       Imagine::NFmiBezierTools::NFmiPaths::const_iterator it = outpaths.begin();
-      for (; nit != names.end() && it != outpaths.end(); ++nit, ++it) {
+      for (; nit != names.end() && it != outpaths.end(); ++nit, ++it)
+      {
         const string name = *nit;
-        const string path = pathtostring(
-            *it, *theArea, theClipMargin, theMovetoCommand, theLinetoCommand,
-            theCurvetoCommand, theClosepathCommand);
+        const string path = pathtostring(*it,
+                                         *theArea,
+                                         theClipMargin,
+                                         theMovetoCommand,
+                                         theLinetoCommand,
+                                         theCurvetoCommand,
+                                         theClosepathCommand);
         replace(output, name, path);
       }
     }
@@ -1277,14 +1288,19 @@ int domain(int argc, const char *argv[]) {
 // Main program.
 // ----------------------------------------------------------------------
 
-int main(int argc, const char *argv[]) {
-  try {
+int main(int argc, const char *argv[])
+{
+  try
+  {
     return domain(argc, argv);
-  } catch (runtime_error &e) {
-    cerr << "Error: shape2ps failed due to" << endl
-         << "--> " << e.what() << endl;
+  }
+  catch (runtime_error &e)
+  {
+    cerr << "Error: shape2ps failed due to" << endl << "--> " << e.what() << endl;
     return 1;
-  } catch (...) {
+  }
+  catch (...)
+  {
     cerr << "Error: shape2ps failed due to an unknown exception" << endl;
     return 1;
   }

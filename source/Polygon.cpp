@@ -6,8 +6,8 @@
 // ======================================================================
 
 #include "Polygon.h"
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 
@@ -17,10 +17,10 @@ using namespace std;
  */
 // ======================================================================
 
-void Polygon::close(void) const {
+void Polygon::close(void) const
+{
   if (!itsData.empty())
-    if (itsData[0] != itsData[itsData.size() - 1])
-      itsData.push_back(itsData[0]);
+    if (itsData[0] != itsData[itsData.size() - 1]) itsData.push_back(itsData[0]);
 }
 
 // ----------------------------------------------------------------------
@@ -31,14 +31,13 @@ void Polygon::close(void) const {
  */
 // ----------------------------------------------------------------------
 
-double Polygon::area(void) const {
+double Polygon::area(void) const
+{
   close();
-  if (itsData.size() <= 2)
-    return 0.0;
+  if (itsData.size() <= 2) return 0.0;
   double sum = 0;
   for (unsigned int i = 0; i < itsData.size() - 1; i++)
-    sum += itsData[i].x() * itsData[i + 1].y() -
-           itsData[i + 1].x() * itsData[i].y();
+    sum += itsData[i].x() * itsData[i + 1].y() - itsData[i + 1].x() * itsData[i].y();
   return abs(0.5 * sum);
 }
 
@@ -56,34 +55,36 @@ double Polygon::area(void) const {
  */
 // ----------------------------------------------------------------------
 
-double Polygon::geoarea(void) const {
+double Polygon::geoarea(void) const
+{
   // The last point must be the same as the first point, make sure it is
   close();
 
   // Safety against strange input
-  if (itsData.size() <= 2)
-    return 0.0;
+  if (itsData.size() <= 2) return 0.0;
 
   // Angle constants for projection
   const double kpi = 3.14159265358979323 / 180;
   const double k90 = kpi * 90;
   const double k360 = kpi * 360;
 
-  double sum = 0; // The accumulated area so far
+  double sum = 0;  // The accumulated area so far
 
-  double dx1 = 0; // X-offsets for longitudes are multiples
-  double dx2 = 0; // of 360 (in radians)
+  double dx1 = 0;  // X-offsets for longitudes are multiples
+  double dx2 = 0;  // of 360 (in radians)
 
-  double x1 = 0; // the previous point is not defined yet
+  double x1 = 0;  // the previous point is not defined yet
   double y1 = 0;
 
-  for (unsigned int i = 0; i < itsData.size(); i++) {
+  for (unsigned int i = 0; i < itsData.size(); i++)
+  {
     // Establish new current projected point
     double x2 = kpi * itsData[i].x();
     double y2 = sin(kpi * itsData[i].y());
 
     // If we are at the second point, we can start calculating
-    if (i > 0) {
+    if (i > 0)
+    {
       // Update dx2 if the 180 meridian is crossed
       if (x1 < -k90 && x2 > k90)
         dx2 -= k360;
@@ -106,7 +107,8 @@ double Polygon::geoarea(void) const {
   // x1,pole -> x1,y1
   // where pole is +-90 depending on which pole we're nearest to
 
-  if (dx2 != 0) {
+  if (dx2 != 0)
+  {
     double x2 = x1;
     double y2 = sin(y1 < 0 ? -k90 : k90);
     sum += (x1 + dx1) * y2 - (x2 + dx2) * y1;
@@ -134,11 +136,11 @@ double Polygon::geoarea(void) const {
  */
 // ----------------------------------------------------------------------
 
-bool Polygon::isInside(const Point &pt) const {
+bool Polygon::isInside(const Point &pt) const
+{
   close();
 
-  if (itsData.size() <= 2)
-    return false;
+  if (itsData.size() <= 2) return false;
 
   // Saattaa nopeuttaa koodia, riippuu kääntäjästä:
   const double x = pt.x();
@@ -151,10 +153,12 @@ bool Polygon::isInside(const Point &pt) const {
 
   const DataType::const_iterator begin = itsData.begin();
   const DataType::const_iterator end = itsData.end();
-  for (DataType::const_iterator iter = begin; iter != end; ++iter) {
+  for (DataType::const_iterator iter = begin; iter != end; ++iter)
+  {
     x2 = iter->x();
     y2 = iter->y();
-    if (iter != begin) {
+    if (iter != begin)
+    {
       if (y > min(y1, y2) && y <= max(y1, y2) && x <= max(x1, x2) && y1 != y2 &&
           (x1 == x2 || x < (y - y1) * (x2 - x1) / (y2 - y1) + x1))
         inside = !inside;
@@ -198,19 +202,22 @@ bool Polygon::isInside(const Point &pt) const {
  */
 // ----------------------------------------------------------------------
 
-Point Polygon::someInsidePoint(void) const {
+Point Polygon::someInsidePoint(void) const
+{
   close();
-  if (itsData.size() < 3)
-    return Point(0, 0);
+  if (itsData.size() < 3) return Point(0, 0);
 
   const long max_iterations = 10000;
   long iterations = 0;
 
   double shapelimit = 10;
 
-  while (true) {
-    for (unsigned int i = 0; i < itsData.size() - 2; i++) {
-      if (++iterations > max_iterations) {
+  while (true)
+  {
+    for (unsigned int i = 0; i < itsData.size() - 2; i++)
+    {
+      if (++iterations > max_iterations)
+      {
         cerr << "Error: Could not find a point inside polygon" << endl;
         exit(1);
       }
@@ -239,8 +246,7 @@ Point Polygon::someInsidePoint(void) const {
       // too strict shape requirements, we gradually loosen the
       // shape requirement
       shapelimit *= 1.01;
-      if (shape > shapelimit)
-        continue;
+      if (shape > shapelimit) continue;
 
       // We limit the scales to 0.2-0.8 to guarantee numerical stability
       // For example a1=0.999x is known to have caused trouble
@@ -253,8 +259,7 @@ Point Polygon::someInsidePoint(void) const {
 
       Point tmp(x, y);
 
-      if (isInside(tmp))
-        return tmp;
+      if (isInside(tmp)) return tmp;
     }
   }
 }

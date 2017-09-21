@@ -27,8 +27,9 @@
 
 //! A simple polyline container
 
-class Polyline {
-public:
+class Polyline
+{
+ public:
   //! Default destructor
   ~Polyline(void) {}
 
@@ -51,26 +52,27 @@ public:
   void add(const Point &thePoint) { itsPoints.push_back(thePoint); }
 
   //! Clip the polyline with the given rectangle
-  void clip(double theX1, double theY1, double theX2, double theY2,
-            double margin = 0);
+  void clip(double theX1, double theY1, double theX2, double theY2, double margin = 0);
 
   //! Clip the polyline with the given bounding box
-  void clip(const Point &lowleft, const Point &topright, double margin = 0) {
+  void clip(const Point &lowleft, const Point &topright, double margin = 0)
+  {
     clip(lowleft.x(), lowleft.y(), topright.x(), topright.y(), margin);
   }
 
   //! Return a string representation of the polyline
-  std::string path(const std::string &moveto, const std::string &lineto,
+  std::string path(const std::string &moveto,
+                   const std::string &lineto,
                    const std::string &closepath = "") const;
 
-private:
+ private:
   typedef std::vector<Point> DataType;
 
   //! The actual data container
   DataType itsPoints;
 
-}; // class Polyline
+};  // class Polyline
 
-#endif // POLYLINE_H
+#endif  // POLYLINE_H
 
 // ======================================================================

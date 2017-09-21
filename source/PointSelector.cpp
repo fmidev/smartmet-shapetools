@@ -59,13 +59,13 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
-struct PointData {
+struct PointData
+{
   int id;
   double x;
   double y;
 
-  PointData(int theID, double theX, double theY)
-      : id(theID), x(theX), y(theY) {}
+  PointData(int theID, double theX, double theY) : id(theID), x(theX), y(theY) {}
 };
 
 // ----------------------------------------------------------------------
@@ -74,15 +74,16 @@ struct PointData {
  */
 // ----------------------------------------------------------------------
 
-class PointSelector::Pimple {
-public:
+class PointSelector::Pimple
+{
+ public:
   double itsMinDistance;
   double itsX1;
   double itsY1;
   double itsX2;
   double itsY2;
 
-private:
+ private:
   typedef multimap<double, PointData, greater<double>> Candidates;
   const NFmiArea &itsArea;
   const bool itsNegateFlag;
@@ -91,7 +92,7 @@ private:
   mutable IndexList itsResults;
   void reduce() const;
 
-public:
+ public:
   Pimple(const NFmiArea &theArea, bool theNegateFlag);
   bool add(int theID, double theValue, double theLon, double theLat);
   bool empty() const;
@@ -99,7 +100,7 @@ public:
   const_iterator begin() const;
   const_iterator end() const;
 
-}; // class PointSelector::Pimple
+};  // class PointSelector::Pimple
 
 // ----------------------------------------------------------------------
 /*!
@@ -111,12 +112,19 @@ public:
 // ----------------------------------------------------------------------
 
 PointSelector::Pimple::Pimple(const NFmiArea &theArea, bool theNegateFlag)
-    : itsMinDistance(10), itsX1(theArea.Left()), itsY1(theArea.Top()),
-      itsX2(theArea.Right()), itsY2(theArea.Bottom()), itsArea(theArea),
+    : itsMinDistance(10),
+      itsX1(theArea.Left()),
+      itsY1(theArea.Top()),
+      itsX2(theArea.Right()),
+      itsY2(theArea.Bottom()),
+      itsArea(theArea),
       itsNegateFlag(theNegateFlag),
-      itsReduced(true) // empty selector is in reduced state
+      itsReduced(true)  // empty selector is in reduced state
       ,
-      itsCandidates(), itsResults() {}
+      itsCandidates(),
+      itsResults()
+{
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -124,7 +132,8 @@ PointSelector::Pimple::Pimple(const NFmiArea &theArea, bool theNegateFlag)
  */
 // ----------------------------------------------------------------------
 
-bool PointSelector::Pimple::empty() const {
+bool PointSelector::Pimple::empty() const
+{
   reduce();
   return itsResults.empty();
 }
@@ -135,7 +144,8 @@ bool PointSelector::Pimple::empty() const {
  */
 // ----------------------------------------------------------------------
 
-PointSelector::size_type PointSelector::Pimple::size() const {
+PointSelector::size_type PointSelector::Pimple::size() const
+{
   reduce();
   return itsResults.size();
 }
@@ -146,7 +156,8 @@ PointSelector::size_type PointSelector::Pimple::size() const {
  */
 // ----------------------------------------------------------------------
 
-PointSelector::const_iterator PointSelector::Pimple::begin() const {
+PointSelector::const_iterator PointSelector::Pimple::begin() const
+{
   reduce();
   return itsResults.begin();
 }
@@ -157,7 +168,8 @@ PointSelector::const_iterator PointSelector::Pimple::begin() const {
  */
 // ----------------------------------------------------------------------
 
-PointSelector::const_iterator PointSelector::Pimple::end() const {
+PointSelector::const_iterator PointSelector::Pimple::end() const
+{
   reduce();
   return itsResults.end();
 }
@@ -174,12 +186,11 @@ PointSelector::const_iterator PointSelector::Pimple::end() const {
  */
 // ----------------------------------------------------------------------
 
-bool PointSelector::Pimple::add(int theID, double theValue, double theLon,
-                                double theLat) {
+bool PointSelector::Pimple::add(int theID, double theValue, double theLon, double theLat)
+{
   // Convert to image points
   NFmiPoint xy = itsArea.ToXY(NFmiPoint(theLon, theLat));
-  if (xy.X() < itsX1 || xy.X() > itsX2 || xy.Y() < itsY1 || xy.Y() > itsY2)
-    return false;
+  if (xy.X() < itsX1 || xy.X() > itsX2 || xy.Y() < itsY1 || xy.Y() > itsY2) return false;
 
   // Invalidate the results
 
@@ -203,9 +214,9 @@ bool PointSelector::Pimple::add(int theID, double theValue, double theLon,
  */
 // ----------------------------------------------------------------------
 
-void PointSelector::Pimple::reduce() const {
-  if (itsReduced)
-    return;
+void PointSelector::Pimple::reduce() const
+{
+  if (itsReduced) return;
 
   // Go through all the candidate points in descending order
 
@@ -215,12 +226,15 @@ void PointSelector::Pimple::reduce() const {
   NFmiNearTree<NFmiPoint> ntree;
   NFmiPoint nearest;
 
-  for (Candidates::const_iterator it = itsCandidates.begin();
-       it != itsCandidates.end(); ++it) {
+  for (Candidates::const_iterator it = itsCandidates.begin(); it != itsCandidates.end(); ++it)
+  {
     const NFmiPoint xy(it->second.x, it->second.y);
-    if (ntree.NearestPoint(nearest, xy, itsMinDistance)) {
+    if (ntree.NearestPoint(nearest, xy, itsMinDistance))
+    {
       // There was an earlier point too close - discard the candidate
-    } else {
+    }
+    else
+    {
       // Accept the candidate
       itsResults.push_back(it->second.id);
       ntree.Insert(xy);
@@ -248,7 +262,9 @@ PointSelector::~PointSelector() {}
 // ----------------------------------------------------------------------
 
 PointSelector::PointSelector(const NFmiArea &theArea, bool theNegateFlag)
-    : itsPimple(new Pimple(theArea, theNegateFlag)) {}
+    : itsPimple(new Pimple(theArea, theNegateFlag))
+{
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -260,9 +276,9 @@ PointSelector::PointSelector(const NFmiArea &theArea, bool theNegateFlag)
  */
 // ----------------------------------------------------------------------
 
-void PointSelector::minDistance(double theDistance) {
-  if (theDistance < 0)
-    throw runtime_error("PointSelector::minDistance must be nonnegative");
+void PointSelector::minDistance(double theDistance)
+{
+  if (theDistance < 0) throw runtime_error("PointSelector::minDistance must be nonnegative");
   itsPimple->itsMinDistance = theDistance;
 }
 
@@ -281,8 +297,8 @@ void PointSelector::minDistance(double theDistance) {
  */
 // ----------------------------------------------------------------------
 
-void PointSelector::boundingBox(double theX1, double theY1, double theX2,
-                                double theY2) {
+void PointSelector::boundingBox(double theX1, double theY1, double theX2, double theY2)
+{
   itsPimple->itsX1 = theX1;
   itsPimple->itsY1 = theY1;
   itsPimple->itsX2 = theX2;
@@ -302,8 +318,8 @@ void PointSelector::boundingBox(double theX1, double theY1, double theX2,
  */
 // ----------------------------------------------------------------------
 
-bool PointSelector::add(int theID, double theValue, double theLon,
-                        double theLat) {
+bool PointSelector::add(int theID, double theValue, double theLon, double theLat)
+{
   return itsPimple->add(theID, theValue, theLon, theLat);
 }
 
@@ -321,9 +337,7 @@ bool PointSelector::empty() const { return itsPimple->empty(); }
  */
 // ----------------------------------------------------------------------
 
-PointSelector::size_type PointSelector::size() const {
-  return itsPimple->size();
-}
+PointSelector::size_type PointSelector::size() const { return itsPimple->size(); }
 
 // ----------------------------------------------------------------------
 /*!
@@ -333,9 +347,7 @@ PointSelector::size_type PointSelector::size() const {
  */
 // ----------------------------------------------------------------------
 
-PointSelector::const_iterator PointSelector::begin() const {
-  return itsPimple->begin();
-}
+PointSelector::const_iterator PointSelector::begin() const { return itsPimple->begin(); }
 
 // ----------------------------------------------------------------------
 /*!
@@ -345,8 +357,6 @@ PointSelector::const_iterator PointSelector::begin() const {
  */
 // ----------------------------------------------------------------------
 
-PointSelector::const_iterator PointSelector::end() const {
-  return itsPimple->end();
-}
+PointSelector::const_iterator PointSelector::end() const { return itsPimple->end(); }
 
 // ======================================================================

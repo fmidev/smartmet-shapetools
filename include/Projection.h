@@ -50,8 +50,9 @@ class NFmiArea;
 struct ProjectionPimple;
 
 //! Define a projection
-class Projection {
-public:
+class Projection
+{
+ public:
   ~Projection(void);
   Projection(void);
   Projection(const Projection &theProjection);
@@ -74,11 +75,11 @@ public:
 
   NFmiArea *createArea(void) const;
 
-private:
+ private:
   std::auto_ptr<ProjectionPimple> itsPimple;
 
-}; // class Projection
+};  // class Projection
 
-#endif // PROJECTION_H
+#endif  // PROJECTION_H
 
 // ======================================================================

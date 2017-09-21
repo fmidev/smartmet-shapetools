@@ -18,8 +18,9 @@
 #include <set>
 
 //! Edges maintains a set of unique edges
-class Edges {
-public:
+class Edges
+{
+ public:
   //! Destructor
   ~Edges(void) {}
 
@@ -33,16 +34,14 @@ public:
   bool add(const Edge &edge) { return itsData.insert(edge).second; }
 
   //! Testing if the given edge is in the set
-  bool contains(const Edge &edge) const {
-    return (itsData.find(edge) != itsData.end());
-  }
+  bool contains(const Edge &edge) const { return (itsData.find(edge) != itsData.end()); }
 
-private:
+ private:
   //! The actual data
   DataType itsData;
 
-}; // class Edges
+};  // class Edges
 
-#endif // EDGES_H
+#endif  // EDGES_H
 
 // ======================================================================

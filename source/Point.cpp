@@ -9,9 +9,10 @@
 
 // Pirun g++-3.0.4 on buginen, min ei toimi
 // #include <algorithm>
-template <typename T> inline const T &min(const T &a, const T &b) {
-  if (b < a)
-    return b;
+template <typename T>
+inline const T &min(const T &a, const T &b)
+{
+  if (b < a) return b;
   return a;
 }
 
@@ -22,7 +23,8 @@ template <typename T> inline const T &min(const T &a, const T &b) {
  */
 // ----------------------------------------------------------------------
 
-double Point::geodistance(const Point &pt) const {
+double Point::geodistance(const Point &pt) const
+{
   const double kpi = 3.14159265358979323848 / 180;
   const double R = 6371.220;
 

@@ -13,13 +13,14 @@
 
 class NFmiArea;
 
-class PointSelector {
-public:
+class PointSelector
+{
+ public:
   typedef std::list<int> IndexList;
   typedef IndexList::const_iterator const_iterator;
   typedef IndexList::size_type size_type;
 
-public:
+ public:
   ~PointSelector();
   PointSelector(const NFmiArea &theArea, bool theNegateFlag = false);
 
@@ -34,7 +35,7 @@ public:
   const_iterator begin() const;
   const_iterator end() const;
 
-private:
+ private:
   class Pimple;
   boost::shared_ptr<Pimple> itsPimple;
 
@@ -42,8 +43,8 @@ private:
   PointSelector(const PointSelector &theSelector);
   PointSelector &operator=(const PointSelector &theSelector);
 
-}; // class PointSelector
+};  // class PointSelector
 
-#endif // POINTSELECTOR_H
+#endif  // POINTSELECTOR_H
 
 // ======================================================================

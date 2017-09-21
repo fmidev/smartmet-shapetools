@@ -10,9 +10,9 @@
  */
 // ======================================================================
 
-#include <newbase/NFmiStringTools.h>
 #include <imagine/NFmiColorTools.h>
 #include <imagine/NFmiImage.h>
+#include <newbase/NFmiStringTools.h>
 
 #include <iomanip>
 #include <iostream>
@@ -26,10 +26,11 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
-int main(int argc, const char *argv[]) {
-
+int main(int argc, const char *argv[])
+{
   // Read the arguments
-  if (argc != 4) {
+  if (argc != 4)
+  {
     cerr << "Error: Expecting three filenames as input" << endl;
     return 1;
   }
@@ -40,7 +41,8 @@ int main(int argc, const char *argv[]) {
 
   const string suffix = NFmiStringTools::Suffix(outfile);
 
-  if (suffix.empty()) {
+  if (suffix.empty())
+  {
     cerr << "Error: No suffix in output filename" << endl;
     return 1;
   }
@@ -48,8 +50,8 @@ int main(int argc, const char *argv[]) {
   Imagine::NFmiImage inputimage(infile);
   Imagine::NFmiImage maskimage(maskfile);
 
-  if (inputimage.Width() != maskimage.Width() ||
-      inputimage.Height() != maskimage.Height()) {
+  if (inputimage.Width() != maskimage.Width() || inputimage.Height() != maskimage.Height())
+  {
     cerr << "Error: Image sizes differ" << endl;
     return 1;
   }
@@ -61,13 +63,12 @@ int main(int argc, const char *argv[]) {
 
   cout.setf(std::ios::hex, std::ios::basefield);
   for (unsigned int j = 0; j < ny; j++)
-    for (unsigned int i = 0; i < nx; i++) {
-
+    for (unsigned int i = 0; i < nx; i++)
+    {
       Imagine::NFmiColorTools::Color c = inputimage(i, j);
-      unsigned int intensity =
-          Imagine::NFmiColorTools::Intensity(maskimage(i, j));
-      unsigned int alpha = intensity * Imagine::NFmiColorTools::MaxAlpha /
-                           Imagine::NFmiColorTools::MaxRGB;
+      unsigned int intensity = Imagine::NFmiColorTools::Intensity(maskimage(i, j));
+      unsigned int alpha =
+          intensity * Imagine::NFmiColorTools::MaxAlpha / Imagine::NFmiColorTools::MaxRGB;
 
       c = Imagine::NFmiColorTools::ReplaceAlpha(inputimage(i, j), alpha);
       c = Imagine::NFmiColorTools::Simplify(c, -1, false);

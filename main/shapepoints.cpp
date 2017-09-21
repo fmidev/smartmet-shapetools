@@ -37,13 +37,13 @@
 // ======================================================================
 
 #include "PointSelector.h"
+#include <boost/shared_ptr.hpp>
+#include <imagine/NFmiEsriPoint.h>
+#include <imagine/NFmiEsriShape.h>
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiCmdLine.h>
 #include <newbase/NFmiSettings.h>
-#include <imagine/NFmiEsriPoint.h>
-#include <imagine/NFmiEsriShape.h>
-#include <boost/shared_ptr.hpp>
 #include <memory>
 #include <string>
 
@@ -56,7 +56,8 @@ using namespace Imagine;
  */
 // ----------------------------------------------------------------------
 
-void usage() {
+void usage()
+{
   cout << "Usage: shapepoints [options] <inputshape> <outputshape>" << endl
        << endl
        << "Choose evenly spaced points from the input shape." << endl
@@ -84,7 +85,8 @@ void usage() {
  */
 // ----------------------------------------------------------------------
 
-struct Options {
+struct Options
+{
   bool verbose;
   bool negate;
   double mindistance;
@@ -95,8 +97,16 @@ struct Options {
   string outputshape;
 
   Options()
-      : verbose(false), negate(false), mindistance(10), minborderdistance(0),
-        projection(), fieldname("TYPE"), inputshape(), outputshape() {}
+      : verbose(false),
+        negate(false),
+        mindistance(10),
+        minborderdistance(0),
+        projection(),
+        fieldname("TYPE"),
+        inputshape(),
+        outputshape()
+  {
+  }
 };
 
 //! The sole instance of command line options
@@ -111,15 +121,16 @@ Options options;
  */
 // ----------------------------------------------------------------------
 
-bool parse_command_line(int argc, const char *argv[]) {
+bool parse_command_line(int argc, const char *argv[])
+{
   using namespace NFmiStringTools;
 
   NFmiCmdLine cmdline(argc, argv, "vhnd!D!f!p!");
 
-  if (cmdline.Status().IsError())
-    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
-  if (cmdline.isOption('h')) {
+  if (cmdline.isOption('h'))
+  {
     usage();
     return false;
   }
@@ -130,18 +141,12 @@ bool parse_command_line(int argc, const char *argv[]) {
   options.inputshape = cmdline.Parameter(1);
   options.outputshape = cmdline.Parameter(2);
 
-  if (cmdline.isOption('v'))
-    options.verbose = true;
-  if (cmdline.isOption('d'))
-    options.mindistance = Convert<double>(cmdline.OptionValue('d'));
-  if (cmdline.isOption('D'))
-    options.minborderdistance = Convert<double>(cmdline.OptionValue('D'));
-  if (cmdline.isOption('p'))
-    options.projection = cmdline.OptionValue('p');
-  if (cmdline.isOption('f'))
-    options.fieldname = cmdline.OptionValue('f');
-  if (cmdline.isOption('n'))
-    options.negate = true;
+  if (cmdline.isOption('v')) options.verbose = true;
+  if (cmdline.isOption('d')) options.mindistance = Convert<double>(cmdline.OptionValue('d'));
+  if (cmdline.isOption('D')) options.minborderdistance = Convert<double>(cmdline.OptionValue('D'));
+  if (cmdline.isOption('p')) options.projection = cmdline.OptionValue('p');
+  if (cmdline.isOption('f')) options.fieldname = cmdline.OptionValue('f');
+  if (cmdline.isOption('n')) options.negate = true;
 
   // Final checks
 
@@ -160,50 +165,46 @@ bool parse_command_line(int argc, const char *argv[]) {
  */
 // ----------------------------------------------------------------------
 
-void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape) {
+void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape)
+{
   // Establish the correct attribute
 
   const NFmiEsriAttributeName *name = theShape.AttributeName(options.fieldname);
   if (name == 0)
-    throw runtime_error("The input shape does not have a field named '" +
-                        options.fieldname + "'");
+    throw runtime_error("The input shape does not have a field named '" + options.fieldname + "'");
 
   const NFmiEsriAttributeType atype = name->Type();
 
   if (atype != kFmiEsriInteger && atype != kFmiEsriDouble)
-    throw runtime_error("The input shape field named '" + options.fieldname +
-                        "' is not numeric");
+    throw runtime_error("The input shape field named '" + options.fieldname + "' is not numeric");
 
   // Start processing the points
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
   int candidates = 0;
-  for (NFmiEsriShape::elements_type::size_type i = 0; i < elements.size();
-       i++) {
+  for (NFmiEsriShape::elements_type::size_type i = 0; i < elements.size(); i++)
+  {
     // Ignore empty elements
-    if (elements[i] == 0)
-      continue;
+    if (elements[i] == 0) continue;
 
     // Ignore invalid element types
-    if (elements[i]->Type() != kFmiEsriPoint)
-      continue;
+    if (elements[i]->Type() != kFmiEsriPoint) continue;
 
     const NFmiEsriPoint *elem = static_cast<const NFmiEsriPoint *>(elements[i]);
     const int id = i;
     const double lon = elem->X();
     const double lat = elem->Y();
-    const double value =
-        (atype == kFmiEsriInteger ? elements[i]->GetInteger(options.fieldname)
-                                  : elements[i]->GetDouble(options.fieldname));
+    const double value = (atype == kFmiEsriInteger ? elements[i]->GetInteger(options.fieldname)
+                                                   : elements[i]->GetDouble(options.fieldname));
 
-    if (theSelector.add(id, value, lon, lat))
-      ++candidates;
+    if (theSelector.add(id, value, lon, lat)) ++candidates;
   }
 
-  if (options.verbose) {
-    cout << "Accepted " << candidates << " candidates out of "
-         << elements.size() << " points in the input shape" << endl;
+  if (options.verbose)
+  {
+    cout << "Accepted " << candidates << " candidates out of " << elements.size()
+         << " points in the input shape" << endl;
   }
 }
 
@@ -216,37 +217,36 @@ void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape) {
  */
 // ----------------------------------------------------------------------
 
-void create_shape(const PointSelector &theSelector,
-                  const NFmiEsriShape &theShape) {
+void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShape)
+{
   // The output shape
 
   NFmiEsriShape shape(theShape.Type());
 
   // Copy the attribute type information
 
-  for (NFmiEsriShape::attributes_type::const_iterator ait =
-           theShape.Attributes().begin();
-       ait != theShape.Attributes().end(); ++ait) {
+  for (NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
+       ait != theShape.Attributes().end();
+       ++ait)
+  {
     shape.Add(new NFmiEsriAttributeName(**ait));
   }
 
   // Then copy the desired elements in the order of importance
 
-  if (options.verbose)
-    cout << "Selected " << theSelector.size() << " points" << endl;
+  if (options.verbose) cout << "Selected " << theSelector.size() << " points" << endl;
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  for (PointSelector::const_iterator it = theSelector.begin();
-       it != theSelector.end(); ++it) {
+  for (PointSelector::const_iterator it = theSelector.begin(); it != theSelector.end(); ++it)
+  {
     NFmiEsriElement *tmp = elements[*it]->Clone();
     shape.Add(tmp);
   }
 
   // And finally save the shape
 
-  if (options.verbose)
-    cout << "Saving shapefile '" << options.outputshape << "'" << endl;
+  if (options.verbose) cout << "Saving shapefile '" << options.outputshape << "'" << endl;
 
   shape.Write(options.outputshape);
 }
@@ -267,20 +267,19 @@ void create_shape(const PointSelector &theSelector,
  */
 // ----------------------------------------------------------------------
 
-int domain(int argc, const char *argv[]) {
+int domain(int argc, const char *argv[])
+{
   // Init global settings to make sure shapepath is initialized
 
   NFmiSettings::Init();
 
   // Parse command line options
 
-  if (!parse_command_line(argc, argv))
-    return 0;
+  if (!parse_command_line(argc, argv)) return 0;
 
   // Read the shape
 
-  if (options.verbose)
-    cout << "Reading shapefile '" << options.inputshape << "'" << endl;
+  if (options.verbose) cout << "Reading shapefile '" << options.inputshape << "'" << endl;
 
   NFmiEsriShape inputshape;
   if (!inputshape.Read(options.inputshape, true))
@@ -291,8 +290,7 @@ int domain(int argc, const char *argv[]) {
 
   // Setup the selector
 
-  boost::shared_ptr<NFmiArea> area =
-      NFmiAreaFactory::Create(options.projection);
+  boost::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
   PointSelector selector(*area, options.negate);
   selector.minDistance(options.mindistance);
   selector.boundingBox(area->Left() + options.minborderdistance,
@@ -317,13 +315,19 @@ int domain(int argc, const char *argv[]) {
  */
 // ----------------------------------------------------------------------
 
-int main(int argc, const char *argv[]) {
-  try {
+int main(int argc, const char *argv[])
+{
+  try
+  {
     return domain(argc, argv);
-  } catch (const exception &e) {
+  }
+  catch (const exception &e)
+  {
     cerr << "Error: " << e.what() << endl;
     return 1;
-  } catch (...) {
+  }
+  catch (...)
+  {
     cerr << "Error: Caught an unknown exception" << endl;
     return 1;
   }

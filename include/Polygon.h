@@ -26,8 +26,9 @@
 
 //! A simple polygon container
 
-class Polygon {
-public:
+class Polygon
+{
+ public:
   //! Destructor
   ~Polygon(void) {}
 
@@ -62,7 +63,7 @@ public:
 
   const DataType &data(void) const { return itsData; }
 
-private:
+ private:
   //! Close the polygon by making sure the last point is equal to the first
   //! point
   void close(void) const;
@@ -70,8 +71,8 @@ private:
   //! The actual data is mutable, since we want close to be const
   mutable DataType itsData;
 
-}; // class Polygon
+};  // class Polygon
 
-#endif // class Polygon
+#endif  // class Polygon
 
 // ======================================================================

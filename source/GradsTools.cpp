@@ -12,15 +12,16 @@
 
 using namespace std;
 
-namespace GradsTools {
-
+namespace GradsTools
+{
 // ----------------------------------------------------------------------
 /*!
  * \brief Print coodinate as 3-byte integer
  */
 // ----------------------------------------------------------------------
 
-void print_double(ostream &out, double theValue) {
+void print_double(ostream &out, double theValue)
+{
   int value = static_cast<int>(theValue * 1e4 + 0.5);
   out << static_cast<unsigned char>((value >> 16) & 0xFF);
   out << static_cast<unsigned char>((value >> 8) & 0xFF);
@@ -33,10 +34,10 @@ void print_double(ostream &out, double theValue) {
  */
 // ----------------------------------------------------------------------
 
-void print_lon(ostream &out, double theLon) {
+void print_lon(ostream &out, double theLon)
+{
   // Make sure value is in range [0-360[
-  if (theLon < 0)
-    theLon += 360;
+  if (theLon < 0) theLon += 360;
   print_double(out, theLon);
 }
 
@@ -46,7 +47,8 @@ void print_lon(ostream &out, double theLon) {
  */
 // ----------------------------------------------------------------------
 
-void print_lat(ostream &out, double theLat) {
+void print_lat(ostream &out, double theLat)
+{
   // Make sure value is in shifted range [0-180[
   print_double(out, theLat + 90);
 }
@@ -64,25 +66,25 @@ void print_lat(ostream &out, double theLat) {
  */
 // ----------------------------------------------------------------------
 
-void print_line(ostream &out, int theLevel,
-                const vector<NFmiPoint> &thePoints) {
-  if (thePoints.empty())
-    return;
+void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
+{
+  if (thePoints.empty()) return;
 
   typedef vector<NFmiPoint>::size_type size_type;
 
   size_type pos1 = 0;
-  while (pos1 < thePoints.size()) {
+  while (pos1 < thePoints.size())
+  {
     size_type pos2 = min(pos1 + 254, thePoints.size() - 1);
-    if (pos1 == pos2)
-      break;
+    if (pos1 == pos2) break;
 
     // Must not cross the meridian during one segment
 
     const double x = thePoints[pos1].X();
-    for (size_type i = pos1 + 1; i <= pos2; i++) {
-      if ((x < 0 && thePoints[i].X() >= 0) ||
-          (x >= 0 && thePoints[i].X() < 0)) {
+    for (size_type i = pos1 + 1; i <= pos2; i++)
+    {
+      if ((x < 0 && thePoints[i].X() >= 0) || (x >= 0 && thePoints[i].X() < 0))
+      {
         pos2 = max(pos1, i - 1);
         break;
       }
@@ -95,7 +97,8 @@ void print_line(ostream &out, int theLevel,
     // Byte 2:
     out << static_cast<unsigned char>(pos2 - pos1 + 1);
     // The coordinates
-    for (unsigned int i = pos1; i <= pos2; i++) {
+    for (unsigned int i = pos1; i <= pos2; i++)
+    {
       print_lon(out, thePoints[i].X());
       print_lat(out, thePoints[i].Y());
     }
@@ -116,7 +119,8 @@ void print_line(ostream &out, int theLevel,
  */
 // ----------------------------------------------------------------------
 
-int read_int(istream &in) {
+int read_int(istream &in)
+{
   unsigned char ch1, ch2, ch3;
   in >> noskipws >> ch1 >> ch2 >> ch3;
   return ((ch1 << 16) | (ch2 << 8) | ch3);
@@ -128,11 +132,11 @@ int read_int(istream &in) {
  */
 // ----------------------------------------------------------------------
 
-double read_lon(istream &in) {
+double read_lon(istream &in)
+{
   int value = read_int(in);
   double lon = (value / 1e4);
-  if (lon >= 180)
-    lon -= 360;
+  if (lon >= 180) lon -= 360;
   return lon;
 }
 
@@ -142,7 +146,8 @@ double read_lon(istream &in) {
  */
 // ----------------------------------------------------------------------
 
-double read_lat(istream &in) {
+double read_lat(istream &in)
+{
   int value = read_int(in);
   double lat = value / 1e4 - 90;
   return lat;
@@ -154,12 +159,13 @@ double read_lat(istream &in) {
  */
 // ----------------------------------------------------------------------
 
-unsigned int read_length(istream &in) {
+unsigned int read_length(istream &in)
+{
   unsigned char ch1, ch2, ch3, ch4;
   in >> noskipws >> ch1 >> ch2 >> ch3 >> ch4;
   return ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
 }
 
-} // namespace GradsTools
+}  // namespace GradsTools
 
 // ======================================================================

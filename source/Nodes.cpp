@@ -5,9 +5,9 @@
  */
 // ======================================================================
 #ifdef _MSC_VER
-#pragma warning(disable : 4786) // poistaa n kpl VC++ kääntäjän varoitusta
-                                // (liian pitkä nimi >255 merkkiä joka johtuu
-                                // 'puretuista' STL-template nimistä)
+#pragma warning(disable : 4786)  // poistaa n kpl VC++ kääntäjän varoitusta
+                                 // (liian pitkä nimi >255 merkkiä joka johtuu
+                                 // 'puretuista' STL-template nimistä)
 #endif
 
 // internal
@@ -35,12 +35,11 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
-long Nodes::add(const Point &pt, long theId) {
+long Nodes::add(const Point &pt, long theId)
+{
   unsigned long idx =
-      itsData.insert(make_pair(pt, make_pair(itsData.size() + 1, theId)))
-          .first->second.first;
-  if (idx > itsOrderedData.size())
-    itsOrderedData.push_back(pt);
+      itsData.insert(make_pair(pt, make_pair(itsData.size() + 1, theId))).first->second.first;
+  if (idx > itsOrderedData.size()) itsOrderedData.push_back(pt);
   return idx;
 }
 
@@ -51,7 +50,8 @@ long Nodes::add(const Point &pt, long theId) {
  */
 // ----------------------------------------------------------------------
 
-unsigned long Nodes::number(const Point &pt) const {
+unsigned long Nodes::number(const Point &pt) const
+{
   DataType::const_iterator pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
@@ -66,7 +66,8 @@ unsigned long Nodes::number(const Point &pt) const {
  */
 // ----------------------------------------------------------------------
 
-long Nodes::id(const Point &pt) const {
+long Nodes::id(const Point &pt) const
+{
   DataType::const_iterator pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
@@ -80,9 +81,9 @@ long Nodes::id(const Point &pt) const {
  */
 // ----------------------------------------------------------------------
 
-Point Nodes::point(long ordinal) const {
-  if (ordinal <= 0 ||
-      static_cast<unsigned long>(ordinal) > itsOrderedData.size())
+Point Nodes::point(long ordinal) const
+{
+  if (ordinal <= 0 || static_cast<unsigned long>(ordinal) > itsOrderedData.size())
     return Point(0, 0);
   else
     return itsOrderedData[ordinal - 1];
