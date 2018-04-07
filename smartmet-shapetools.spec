@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 17.9.22
+Version: 18.4.7
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -15,12 +15,12 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 17.9.22
-BuildRequires: smartmet-library-newbase-devel >= 17.9.14
-BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
-Requires: smartmet-library-imagine >= 17.9.22
-Requires: smartmet-library-newbase >= 17.9.14
-Requires: smartmet-library-macgyver >= 17.8.28
+BuildRequires: smartmet-library-imagine-devel >= 18.4.7
+BuildRequires: smartmet-library-newbase-devel >= 18.4.7
+BuildRequires: smartmet-library-macgyver-devel >= 18.4.7
+Requires: smartmet-library-imagine >= 18.4.7
+Requires: smartmet-library-newbase >= 18.4.7
+Requires: smartmet-library-macgyver >= 18.4.7
 Requires: boost-iostreams
 Requires: boost-filesystem
 Requires: boost-program-options
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Sat Apr  7 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.4.7-1.fmi
+- Upgrade to boost 1.66
+
 * Fri Sep 22 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.9.22-1.fmi
 - Proper handling of M- and Z-type ESRI shapes
 
