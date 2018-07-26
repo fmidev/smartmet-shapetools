@@ -272,7 +272,7 @@ set<string> find_unique_attributes(const NFmiEsriShape &theShape, const string &
        it != theShape.Elements().end();
        ++it)
   {
-    if (*it == NULL) continue;
+    if (*it == nullptr) continue;
     string value = get_attribute_value(**it, **at);
     values.insert(value);
   }
@@ -390,7 +390,7 @@ void render_image(NFmiImage &theImage,
        it != theShape.Elements().end();
        ++it)
   {
-    if (*it == NULL) continue;
+    if (*it == nullptr) continue;
 
     const string value = get_attribute_value(**it, **at);
     NFmiColorTools::Color color = theValues.find(value)->second;

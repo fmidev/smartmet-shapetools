@@ -151,7 +151,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
 
   for (; it != theShape.Elements().end(); ++it)
   {
-    if (*it == NULL) continue;
+    if (*it == nullptr) continue;
 
     switch ((*it)->Type())
     {

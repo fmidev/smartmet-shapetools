@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 18.5.2
+Version: 18.7.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -16,12 +16,12 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 18.4.7
-BuildRequires: smartmet-library-newbase-devel >= 18.5.2
-BuildRequires: smartmet-library-macgyver-devel >= 18.4.7
-Requires: smartmet-library-imagine >= 18.4.7
-Requires: smartmet-library-newbase >= 18.5.2
-Requires: smartmet-library-macgyver >= 18.4.7
+BuildRequires: smartmet-library-imagine-devel >= 18.7.26
+BuildRequires: smartmet-library-newbase-devel >= 18.7.23
+BuildRequires: smartmet-library-macgyver-devel >= 18.7.26
+Requires: smartmet-library-imagine >= 18.7.26
+Requires: smartmet-library-newbase >= 18.7.23
+Requires: smartmet-library-macgyver >= 18.7.26
 Requires: boost-iostreams
 Requires: boost-filesystem
 Requires: boost-program-options
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Thu Jul 26 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.7.26-1.fmi
+- Prefer nullptr over NULL
+
 * Wed May  2 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.5.2-1.fmi
 - Repackaged since newbase NFmiEnumConverter ABI changed
 

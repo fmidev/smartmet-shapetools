@@ -395,7 +395,7 @@ NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
   NFmiEsriShape::const_iterator it = theShape.Elements().begin();
   for (; it != theShape.Elements().end(); ++it)
   {
-    if (*it == NULL) continue;
+    if (*it == nullptr) continue;
 
     switch ((*it)->Type())
     {
