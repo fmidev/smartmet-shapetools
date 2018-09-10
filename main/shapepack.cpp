@@ -411,6 +411,16 @@ void render_image(NFmiImage &theImage,
 
 bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
 {
+  // Check bounding box first
+  const NFmiEsriBox &box = thePoly.Box();
+
+  if (!box.IsValid()) return false;
+
+  if (theX < box.Xmin() || theX > box.Xmax() || theY < box.Ymin() || theY > box.Ymax())
+    return false;
+
+  // Then do an actual inside-test if it is possible the point is inside
+
   int counter = 0;
 
   for (int part = 0; part < thePoly.NumParts(); part++)
