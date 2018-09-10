@@ -527,6 +527,25 @@ inline bool is_boundary_pixel(const NFmiImage &theImage, int i, int j)
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Guess timezone from nearest pixels if filling fails
+ *
+ * This is needed mostly to get values for pixels at -180/+180 longitudes
+ * since those coordinates are not strictly inside polygons. We only
+ * check horizontally or vertically adjacent pixels.
+ */
+// ----------------------------------------------------------------------
+
+inline int find_nearest_zone(const NFmiImage &theImage, int i, int j)
+{
+  if (i - 1 >= 0 && theImage(i - 1, j) >= 0) return theImage(i, j);
+  if (i + 1 < theImage.Width() && theImage(i + 1, j) >= 0) return theImage(i + 1, j);
+  if (j - 1 >= 0 && theImage(i, j - 1) >= 0) return theImage(i, j - 1);
+  if (j + 1 < theImage.Height() && theImage(i, j + 1) >= 0) return theImage(i, j + 1);
+  return -1;
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Check accuracy of image near borders
  */
 // ----------------------------------------------------------------------
@@ -572,6 +591,18 @@ void refine_image(NFmiImage &theImage,
             ++changes;
             theImage(i, j) = idx;
           }
+        }
+      }
+
+      if (theImage(i, j) < 0)
+      {
+        auto idx = find_nearest_zone(theImage, i, j);
+        if (idx > 0)
+        {
+          theImage(i, j) = idx;
+          ++changes;
+          if (options.verbose)
+            cout << "Changed " << i << "," << j << " value from -1 to " << idx << endl;
         }
       }
     }
