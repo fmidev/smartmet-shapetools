@@ -555,7 +555,7 @@ void refine_image(NFmiImage &theImage,
         if (options.verbose) cout << "\t" << percentage << "%" << endl;
       }
 
-      if (is_boundary_pixel(theImage, i, j))
+      if (theImage(i, j) < 0 || is_boundary_pixel(theImage, i, j))
       {
         ++checks;
 
