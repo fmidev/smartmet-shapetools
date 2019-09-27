@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 18.9.10
+Version: 19.9.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -16,12 +16,12 @@ BuildRequires: boost-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 18.7.26
-BuildRequires: smartmet-library-newbase-devel >= 18.9.10
-BuildRequires: smartmet-library-macgyver-devel >= 18.9.5
-Requires: smartmet-library-imagine >= 18.7.26
-Requires: smartmet-library-newbase >= 18.9.10
-Requires: smartmet-library-macgyver >= 18.9.5
+BuildRequires: smartmet-library-imagine-devel >= 19.9.27
+BuildRequires: smartmet-library-newbase-devel >= 19.9.26
+BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
+Requires: smartmet-library-imagine >= 19.9.27
+Requires: smartmet-library-newbase >= 19.9.26
+Requires: smartmet-library-macgyver >= 19.9.26
 Requires: boost-iostreams
 Requires: boost-filesystem
 Requires: boost-program-options
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Fri Sep 27 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.27-1.fmi
+- Repackaged due to ABI changes in SmartMet libraries
+
 * Mon Sep 10 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.9.10-1.fmi
 - Optimized shapepack for speed
 
