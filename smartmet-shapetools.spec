@@ -208,7 +208,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Mar  4 2009 mheiskan <mika.heiskanen@fmi.fi> - 9.3.4-1.el5.fmi
 - Newbase preprocessor fixes
 
-* Fri Nov 18 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.11.18-1.el5.fmi
+* Tue Nov 18 2008 mheiskan <mika.heiskanen@fmi.fi> - 8.11.18-1.el5.fmi
 - Fixed polygon clipping in Polyline
 
 * Thu Nov 13 2008 pkeranen <pekka.keranen@fmi.fi> - 8.11.13-1.el5.fmi

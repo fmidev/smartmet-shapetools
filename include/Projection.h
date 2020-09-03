@@ -76,7 +76,7 @@ class Projection
   NFmiArea *createArea(void) const;
 
  private:
-  std::auto_ptr<ProjectionPimple> itsPimple;
+  std::unique_ptr<ProjectionPimple> itsPimple;
 
 };  // class Projection
 
