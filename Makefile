@@ -65,7 +65,8 @@ LIBS += -L$(libdir) \
 	-lboost_iostreams \
 	-lboost_filesystem \
 	-lboost_program_options \
-	-lboost_system
+	-lboost_system \
+	-lstdc++ -lm
 
 # Common library compiling template
 
@@ -149,7 +150,7 @@ profile: objdir $(MAINPROGS)
 
 .SECONDEXPANSION:
 $(MAINPROGS): % : obj/%.o $(OBJFILES)
-	$(CXX) $(LDFLAGS) -o $@ obj/$@.o $(OBJFILES) $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ obj/$@.o $(OBJFILES) $(LIBS)
 
 clean:
 	rm -f $(MAINPROGS) source/*~ include/*~
