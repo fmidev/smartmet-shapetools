@@ -450,8 +450,8 @@ int domain(int argc, const char *argv[])
   // We try to cache the matrices for best speed.
   // Some tokens will invalidate the matrices
 
-  auto_ptr<NFmiDataMatrix<float>> values;
-  auto_ptr<NFmiDataMatrix<NFmiPoint>> coords;
+  unique_ptr<NFmiDataMatrix<float>> values;
+  unique_ptr<NFmiDataMatrix<NFmiPoint>> coords;
 
   // Do the deed
   string token;
