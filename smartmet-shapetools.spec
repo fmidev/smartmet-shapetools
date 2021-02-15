@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 21.1.25
+Version: 21.2.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -16,12 +16,12 @@ BuildRequires: boost169-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 21.1.14
-BuildRequires: smartmet-library-newbase-devel >= 21.1.14
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.14
-Requires: smartmet-library-imagine >= 21.1.14
-Requires: smartmet-library-newbase >= 21.1.14
-Requires: smartmet-library-macgyver >= 21.1.14
+BuildRequires: smartmet-library-imagine-devel >= 21.2.15
+BuildRequires: smartmet-library-newbase-devel >= 21.2.15
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
+Requires: smartmet-library-imagine >= 21.2.15
+Requires: smartmet-library-newbase >= 21.2.15
+Requires: smartmet-library-macgyver >= 21.1.25
 Requires: boost169-iostreams
 Requires: boost169-filesystem
 Requires: boost169-program-options
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Feb 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.15-1.fmi
+- Ported to use new interpolation APIs
+
 * Mon Jan 25 2021 Andris Pavenis <andris.pavenis@fmi.fi> - 21.1.25-1.fmi
 - Build update: use makefile.inc
 
