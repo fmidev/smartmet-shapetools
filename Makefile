@@ -17,6 +17,7 @@ LIBS += -L$(libdir) \
 	-lsmartmet-imagine \
 	-lsmartmet-newbase \
 	-lsmartmet-macgyver \
+	-lsmartmet-gis \
 	-lboost_iostreams \
 	-lboost_filesystem \
 	-lboost_program_options \
