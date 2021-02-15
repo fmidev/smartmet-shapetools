@@ -1,6 +1,8 @@
 MODULE = shapetools
 SPEC = smartmet-shapetools
 
+REQUIRES = gdal
+
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 # Default compiler flags
@@ -11,6 +13,7 @@ INCLUDES += \
 	-I$(includedir)/smartmet
 
 LIBS += -L$(libdir) \
+	$(REQUIRED_LIBS) \
 	-lsmartmet-imagine \
 	-lsmartmet-newbase \
 	-lsmartmet-macgyver \
