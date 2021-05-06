@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 21.2.19
+Version: 21.5.6
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -17,14 +17,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal32-devel
-BuildRequires: smartmet-library-imagine-devel >= 21.2.18
-BuildRequires: smartmet-library-newbase-devel >= 21.2.18
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
-BuildRequires: smartmet-library-gis-devel >= 21.2.11
-Requires: smartmet-library-imagine >= 21.2.18
-Requires: smartmet-library-newbase >= 21.2.18
-Requires: smartmet-library-macgyver >= 21.1.25
-Requires: smartmet-library-gis >= 21.2.11
+BuildRequires: smartmet-library-imagine-devel >= 21.5.6
+BuildRequires: smartmet-library-newbase-devel >= 21.5.6
+BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
+BuildRequires: smartmet-library-gis-devel >= 21.5.5
+Requires: smartmet-library-imagine >= 21.5.6
+Requires: smartmet-library-newbase >= 21.5.6
+Requires: smartmet-library-macgyver >= 21.2.25
+Requires: smartmet-library-gis >= 21.5.5
 Requires: boost169-iostreams
 Requires: boost169-filesystem
 Requires: boost169-program-options
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Thu May  6 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.6-1.fmi
+- Repackaged due to ABI changes in NFmiAzimuthalArea
+
 * Fri Feb 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.19-1.fmi
 - Repackaged due to newbase ABI changes
 
