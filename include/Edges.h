@@ -22,10 +22,10 @@ class Edges
 {
  public:
   //! Destructor
-  ~Edges(void) {}
+  ~Edges() {}
 
   //! Default constructor
-  Edges(void) {}
+  Edges() {}
 
   //! The type of the contained data
   typedef std::set<Edge> DataType;

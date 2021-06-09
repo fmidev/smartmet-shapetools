@@ -53,8 +53,8 @@ struct ProjectionPimple;
 class Projection
 {
  public:
-  ~Projection(void);
-  Projection(void);
+  ~Projection();
+  Projection();
   Projection(const Projection &theProjection);
   Projection &operator=(const Projection &theProjection);
 
@@ -73,7 +73,7 @@ class Projection
   void height(float theHeight);
   void origin(float theLon, float theLat);
 
-  NFmiArea *createArea(void) const;
+  NFmiArea *createArea() const;
 
  private:
   std::unique_ptr<ProjectionPimple> itsPimple;

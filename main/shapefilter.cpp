@@ -89,7 +89,8 @@ void parse_command_line(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "oehvf!b!");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if (cmdline.isOption('h'))
   {
@@ -105,7 +106,8 @@ void parse_command_line(int argc, const char *argv[])
 
   unsigned int filtercount = 0;
 
-  if (cmdline.isOption('v')) options.verbose = true;
+  if (cmdline.isOption('v'))
+    options.verbose = true;
 
   if (cmdline.isOption('o'))
   {
@@ -131,7 +133,8 @@ void parse_command_line(int argc, const char *argv[])
     options.filter_boundingbox = cmdline.OptionValue('b');
   }
 
-  if (filtercount > 1) throw runtime_error("Only one filtering method allowed at a time");
+  if (filtercount > 1)
+    throw runtime_error("Only one filtering method allowed at a time");
 
   if (options.input_shape == options.output_shape)
     throw runtime_error("Input and output names are equal");
@@ -145,13 +148,15 @@ void parse_command_line(int argc, const char *argv[])
 
 void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts)
 {
-  if (options.verbose) cout << "Counting edges in shape..." << endl;
+  if (options.verbose)
+    cout << "Counting edges in shape..." << endl;
 
   NFmiEsriShape::const_iterator it = theShape.Elements().begin();
 
   for (; it != theShape.Elements().end(); ++it)
   {
-    if (*it == nullptr) continue;
+    if (*it == nullptr)
+      continue;
 
     switch ((*it)->Type())
     {
@@ -238,7 +243,8 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
 
 void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
 {
-  if (options.verbose) cout << "Converting path to shape..." << endl;
+  if (options.verbose)
+    cout << "Converting path to shape..." << endl;
 
   const NFmiEsriElementType etype = theShape.Type();
 
@@ -259,12 +265,14 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
       --it;
       if (etype == kFmiEsriPolygon)
       {
-        if (polygon == 0) polygon = new NFmiEsriPolygon;
+        if (polygon == 0)
+          polygon = new NFmiEsriPolygon;
         polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       }
       else
       {
-        if (polyline == 0) polyline = new NFmiEsriPolyLine;
+        if (polyline == 0)
+          polyline = new NFmiEsriPolyLine;
         polyline->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       }
       doflush = true;
@@ -276,12 +284,14 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
     {
       if (etype == kFmiEsriPolygon)
       {
-        if (polygon != 0) theShape.Add(polygon);
+        if (polygon != 0)
+          theShape.Add(polygon);
         polygon = new NFmiEsriPolygon;
       }
       else
       {
-        if (polyline != 0) theShape.Add(polyline);
+        if (polyline != 0)
+          theShape.Add(polyline);
         polyline = new NFmiEsriPolyLine;
       }
     }
@@ -302,7 +312,8 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
 
 const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
 {
-  if (options.verbose) cout << "Filtering even numbered edges..." << endl;
+  if (options.verbose)
+    cout << "Filtering even numbered edges..." << endl;
 
   // Count the edges
 
@@ -314,10 +325,12 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
   NFmiEdgeTree tree;
   for (NFmiCounter<NFmiEdge>::const_iterator it = counts.begin(); it != counts.end(); ++it)
   {
-    if (it->second % 2 == 0) tree.Add(it->first);
+    if (it->second % 2 == 0)
+      tree.Add(it->first);
   }
 
-  if (options.verbose) cout << "Converting surviving edges to a path..." << endl;
+  if (options.verbose)
+    cout << "Converting surviving edges to a path..." << endl;
   NFmiPath path = tree.Path();
 
   // Convert the tree to a shape
@@ -336,7 +349,8 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
 
 const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
 {
-  if (options.verbose) cout << "Filtering odd numbered edges..." << endl;
+  if (options.verbose)
+    cout << "Filtering odd numbered edges..." << endl;
 
   // Count the edges
 
@@ -348,10 +362,12 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
   NFmiEdgeTree tree;
   for (NFmiCounter<NFmiEdge>::const_iterator it = counts.begin(); it != counts.end(); ++it)
   {
-    if (it->second % 2 != 0) tree.Add(it->first);
+    if (it->second % 2 != 0)
+      tree.Add(it->first);
   }
 
-  if (options.verbose) cout << "Converting surviving edges to a path..." << endl;
+  if (options.verbose)
+    cout << "Converting surviving edges to a path..." << endl;
   NFmiPath path = tree.Path();
 
   // Convert the tree to a shape
@@ -360,7 +376,8 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
 
   const NFmiEsriElementType oldtype = theShape.Type();
   NFmiEsriElementType newtype = oldtype;
-  if (oldtype != kFmiEsriPolygon) newtype = kFmiEsriPolyLine;
+  if (oldtype != kFmiEsriPolygon)
+    newtype = kFmiEsriPolyLine;
 
   NFmiEsriShape *shape = new NFmiEsriShape(newtype);
   path_to_shape(path, *shape);
@@ -376,7 +393,8 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
 
 const NFmiEsriShape *filter_field(const NFmiEsriShape &theShape)
 {
-  if (options.verbose) cout << "Filtering based on field value..." << endl;
+  if (options.verbose)
+    cout << "Filtering based on field value..." << endl;
 
   return NFmiEsriTools::filter(theShape, options.filter_field);
 }
@@ -389,12 +407,14 @@ const NFmiEsriShape *filter_field(const NFmiEsriShape &theShape)
 
 const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
 {
-  if (options.verbose) cout << "Filtering based on bounding box..." << endl;
+  if (options.verbose)
+    cout << "Filtering based on bounding box..." << endl;
 
   // Parse the bounding box
 
   const vector<double> values = NFmiStringTools::Split<vector<double>>(options.filter_boundingbox);
-  if (values.size() != 4) throw runtime_error("Bounding box must consist of 4 values");
+  if (values.size() != 4)
+    throw runtime_error("Bounding box must consist of 4 values");
 
   const double x1 = values[0];
   const double y1 = values[1];
@@ -403,7 +423,8 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
 
   // Check bounding box validity
 
-  if (x1 >= x2 || y1 >= y2) throw runtime_error("Bounding box is empty");
+  if (x1 >= x2 || y1 >= y2)
+    throw runtime_error("Bounding box is empty");
 
   if (x1 < -180 || x1 > 180 || x2 < -180 || x2 > 180 || y1 < -90 || y1 > 90 || y2 < -90 || y2 > 90)
     throw runtime_error("The bounding box exceeds geographic coordinate limits");
@@ -427,7 +448,8 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
        ++it)
   {
     // Skip empty elements
-    if (*it == 0) continue;
+    if (*it == 0)
+      continue;
 
     // Establish bounding box of the element
     NFmiEsriBox box;
@@ -459,10 +481,14 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
 
 const NFmiEsriShape *filter_shape(const NFmiEsriShape &theShape)
 {
-  if (!options.filter_field.empty()) return filter_field(theShape);
-  if (options.filter_even_count) return filter_even_count(theShape);
-  if (options.filter_odd_count) return filter_odd_count(theShape);
-  if (!options.filter_boundingbox.empty()) return filter_boundingbox(theShape);
+  if (!options.filter_field.empty())
+    return filter_field(theShape);
+  if (options.filter_even_count)
+    return filter_even_count(theShape);
+  if (options.filter_odd_count)
+    return filter_odd_count(theShape);
+  if (!options.filter_boundingbox.empty())
+    return filter_boundingbox(theShape);
 
   return &theShape;
 }
@@ -485,7 +511,8 @@ int domain(int argc, const char *argv[])
 
   // Read the shapefile
 
-  if (options.verbose) cout << "Reading input shapefile '" + options.input_shape + "'" << endl;
+  if (options.verbose)
+    cout << "Reading input shapefile '" + options.input_shape + "'" << endl;
 
   NFmiEsriShape inputshape;
   if (!inputshape.Read(options.input_shape, true))
@@ -493,12 +520,14 @@ int domain(int argc, const char *argv[])
 
   // Process the shapefile
 
-  if (options.verbose) cout << "Filtering..." << endl;
+  if (options.verbose)
+    cout << "Filtering..." << endl;
   const NFmiEsriShape *outputshape = filter_shape(inputshape);
 
   // And write it
 
-  if (options.verbose) cout << "Writing output shapefile '" + options.output_shape + "'" << endl;
+  if (options.verbose)
+    cout << "Writing output shapefile '" + options.output_shape + "'" << endl;
   outputshape->Write(options.output_shape);
 
   return 0;

@@ -28,7 +28,7 @@ using namespace std;
 //! The implementation hiding pimple for class Projection
 struct ProjectionPimple
 {
-  ProjectionPimple(void)
+  ProjectionPimple()
       : itsType(""),
         itsCentralLatitude(kFloatMissing),
         itsCentralLongitude(kFloatMissing),
@@ -62,7 +62,7 @@ struct ProjectionPimple
  */
 // ----------------------------------------------------------------------
 
-Projection::~Projection(void) {}
+Projection::~Projection() {}
 
 // ----------------------------------------------------------------------
 /*!
@@ -70,7 +70,7 @@ Projection::~Projection(void) {}
  */
 // ----------------------------------------------------------------------
 
-Projection::Projection(void)
+Projection::Projection()
 {
 #ifdef _MSC_VER
   itsPimple = auto_ptr<ProjectionPimple>(new ProjectionPimple());
@@ -125,7 +125,10 @@ Projection &Projection::operator=(const Projection &theProjection)
  */
 // ----------------------------------------------------------------------
 
-void Projection::type(const std::string &theType) { itsPimple->itsType = theType; }
+void Projection::type(const std::string &theType)
+{
+  itsPimple->itsType = theType;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -148,7 +151,10 @@ void Projection::centralLongitude(float theLongitude)
  */
 // ----------------------------------------------------------------------
 
-void Projection::centralLatitude(float theLatitude) { itsPimple->itsCentralLatitude = theLatitude; }
+void Projection::centralLatitude(float theLatitude)
+{
+  itsPimple->itsCentralLatitude = theLatitude;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -158,7 +164,10 @@ void Projection::centralLatitude(float theLatitude) { itsPimple->itsCentralLatit
  */
 // ----------------------------------------------------------------------
 
-void Projection::trueLatitude(float theLatitude) { itsPimple->itsTrueLatitude = theLatitude; }
+void Projection::trueLatitude(float theLatitude)
+{
+  itsPimple->itsTrueLatitude = theLatitude;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -210,7 +219,10 @@ void Projection::center(float theLon, float theLat)
  */
 // ----------------------------------------------------------------------
 
-void Projection::scale(float theScale) { itsPimple->itsScale = theScale; }
+void Projection::scale(float theScale)
+{
+  itsPimple->itsScale = theScale;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -220,7 +232,10 @@ void Projection::scale(float theScale) { itsPimple->itsScale = theScale; }
  */
 // ----------------------------------------------------------------------
 
-void Projection::width(float theWidth) { itsPimple->itsWidth = theWidth; }
+void Projection::width(float theWidth)
+{
+  itsPimple->itsWidth = theWidth;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -230,7 +245,10 @@ void Projection::width(float theWidth) { itsPimple->itsWidth = theWidth; }
  */
 // ----------------------------------------------------------------------
 
-void Projection::height(float theHeight) { itsPimple->itsHeight = theHeight; }
+void Projection::height(float theHeight)
+{
+  itsPimple->itsHeight = theHeight;
+}
 
 void Projection::origin(float theLon, float theLat)
 {
@@ -247,7 +265,7 @@ void Projection::origin(float theLon, float theLat)
  */
 // ----------------------------------------------------------------------
 
-NFmiArea *Projection::createArea(void) const
+NFmiArea *Projection::createArea() const
 {
   if (itsPimple->itsWidth < 0 && itsPimple->itsHeight < 0)
     throw std::runtime_error("Must specify atleast one of width/height");
@@ -331,8 +349,10 @@ NFmiArea *Projection::createArea(void) const
     float w = itsPimple->itsWidth;
     float h = itsPimple->itsHeight;
 
-    if (w < 0) w = h * area->WorldXYAspectRatio();
-    if (h < 0) h = w / area->WorldXYAspectRatio();
+    if (w < 0)
+      w = h * area->WorldXYAspectRatio();
+    if (h < 0)
+      h = w / area->WorldXYAspectRatio();
 
     area->SetXYArea(NFmiRect(itsPimple->itsOrigin.X(), h, w, itsPimple->itsOrigin.Y()));
   }

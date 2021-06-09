@@ -157,7 +157,8 @@ bool parse_options(int argc, char *argv[])
     return false;
   }
 
-  if (opt.count("shapefile") == 0) throw runtime_error("shapefile name not specified");
+  if (opt.count("shapefile") == 0)
+    throw runtime_error("shapefile name not specified");
 
   if ((opt.count("lon") > 0 || opt.count("lat") > 0) && (opt.count("coordinatefile") > 0))
     throw runtime_error("-l and -x,-y options are mutually exclusive");
@@ -170,9 +171,11 @@ bool parse_options(int argc, char *argv[])
   if (options.longitude < -180 || options.longitude > 180)
     throw runtime_error("Search longitude outside -180...180");
 
-  if (options.searchradius < 0) throw runtime_error("Search radius cannot be negative");
+  if (options.searchradius < 0)
+    throw runtime_error("Search radius cannot be negative");
 
-  if (options.maxcount <= 0) throw runtime_error("maxcount must be nonnegative");
+  if (options.maxcount <= 0)
+    throw runtime_error("maxcount must be nonnegative");
 
   return true;
 }
@@ -193,14 +196,16 @@ LocationList read_locationlist(const string &theFile)
 
   const bool strip_pound = true;
   NFmiPreProcessor processor(strip_pound);
-  if (!processor.ReadAndStripFile(theFile)) throw runtime_error("Unable to preprocess " + theFile);
+  if (!processor.ReadAndStripFile(theFile))
+    throw runtime_error("Unable to preprocess " + theFile);
 
   string text = processor.GetString();
   istringstream input(text);
   string line;
   while (getline(input, line))
   {
-    if (line.empty()) continue;
+    if (line.empty())
+      continue;
     vector<string> parts = NFmiStringTools::Split(line, ",");
     if (parts.size() != 3)
       cerr << "Warning: Invalid line '" + line + "' in file '" + theFile + "'" << endl;
@@ -231,7 +236,8 @@ LocationList read_locationlist(const string &theFile)
 
 void parse_condition(string &theVariable, string &theComparison, string &theValue)
 {
-  if (options.condition.empty()) return;
+  if (options.condition.empty())
+    return;
 
   // Possible operations
 
@@ -258,7 +264,8 @@ void parse_condition(string &theVariable, string &theComparison, string &theValu
     }
   }
 
-  if (theComparison.empty()) throw runtime_error("Unable to parse search condition");
+  if (theComparison.empty())
+    throw runtime_error("Unable to parse search condition");
 }
 
 // ----------------------------------------------------------------------
@@ -272,7 +279,8 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
                          const std::string &theComparison,
                          const std::string &theValue)
 {
-  if (theComparison.empty()) return true;
+  if (theComparison.empty())
+    return true;
 
   NFmiEsriAttributeType atype = theElement.GetType(theVariable);
 
@@ -337,7 +345,8 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
 
 void establish_projection()
 {
-  if (options.projection == "latlon") return;
+  if (options.projection == "latlon")
+    return;
 
   projection = NFmiAreaFactory::Create(options.projection);
 }
@@ -352,7 +361,8 @@ void establish_attribute(const NFmiEsriShape &theShape)
 {
   const NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  if (attributes.size() == 0) throw runtime_error("shapefile does not contain any attributes");
+  if (attributes.size() == 0)
+    throw runtime_error("shapefile does not contain any attributes");
 
   // If no attribute option was given, we accept it as long as
   // the shape contains exactly one attribute
@@ -368,7 +378,8 @@ void establish_attribute(const NFmiEsriShape &theShape)
            at != attributes.end();
            ++at, ++pos)
       {
-        if (pos > 0) out << ",";
+        if (pos > 0)
+          out << ",";
         out << (*at)->Name();
       }
 
@@ -386,7 +397,8 @@ void establish_attribute(const NFmiEsriShape &theShape)
 
 NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
 {
-  if (theShape.Elements().size() == 0) throw runtime_error("The shape is empty!");
+  if (theShape.Elements().size() == 0)
+    throw runtime_error("The shape is empty!");
 
   NFmiEsriElementType type = kFmiEsriNull;
   bool found_one = false;
@@ -395,7 +407,8 @@ NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
   NFmiEsriShape::const_iterator it = theShape.Elements().begin();
   for (; it != theShape.Elements().end(); ++it)
   {
-    if (*it == nullptr) continue;
+    if (*it == nullptr)
+      continue;
 
     switch ((*it)->Type())
     {
@@ -441,10 +454,12 @@ NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
       }
     }
 
-    if (multiple_types) throw runtime_error("Shape contains elements of different types");
+    if (multiple_types)
+      throw runtime_error("Shape contains elements of different types");
   }
 
-  if (!found_one) throw runtime_error("Shape contains only null elements");
+  if (!found_one)
+    throw runtime_error("Shape contains only null elements");
 
   return type;
 }
@@ -514,7 +529,8 @@ float isosegment_distance(
 
   float m = NFmiGeoTools::GeoDistance(theX, theY, xc, yc);
 
-  if (m > m1 && m > m2) return min(m1, m2);
+  if (m > m1 && m > m2)
+    return min(m1, m2);
 
   // Recursion should happen pretty seldom
 
@@ -585,7 +601,8 @@ NFmiEsriAttributeType establish_attribute_type(const NFmiEsriShape &theShape, co
        ait != attributes.end();
        ++ait)
   {
-    if ((*ait)->Name() == theName) return (*ait)->Type();
+    if ((*ait)->Name() == theName)
+      return (*ait)->Type();
   }
   throw runtime_error("No attribute named '" + theName + "' in the shape");
 }
@@ -602,7 +619,8 @@ void print_attributes(const NFmiEsriElement &theElement)
 
   for (unsigned int i = 0; i < attribs.size(); i++)
   {
-    if (i > 0) cout << options.delimiter;
+    if (i > 0)
+      cout << options.delimiter;
 
     switch (theElement.GetType(attribs[i]))
     {
@@ -630,7 +648,8 @@ void print_attributes(const NFmiEsriElement &theElement)
 
 void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &theData)
 {
-  if (options.uniqueattribute.empty()) return;
+  if (options.uniqueattribute.empty())
+    return;
 
   multimap<float, int> newdata;
 
@@ -718,7 +737,8 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
   NFmiPoint worldxy;
 
-  if (options.projection != "latlon") worldxy = projection->LatLonToWorldXY(theLatLon);
+  if (options.projection != "latlon")
+    worldxy = projection->LatLonToWorldXY(theLatLon);
 
   // Search results in sorted order
 
@@ -766,7 +786,8 @@ void find_nearest_points(const NFmiEsriShape &theShape,
   unsigned int num = 0;
   for (DistanceMap::const_iterator it = distance_map.begin(); it != distance_map.end(); ++it)
   {
-    if (num >= options.maxcount) break;
+    if (num >= options.maxcount)
+      break;
 
     int pos = it->second;
     const NFmiEsriPoint *elem = static_cast<const NFmiEsriPoint *>(elements[pos]);
@@ -781,7 +802,8 @@ void find_nearest_points(const NFmiEsriShape &theShape,
       y = p.Y();
     }
 
-    if (!theName.empty()) cout << theName << options.delimiter;
+    if (!theName.empty())
+      cout << theName << options.delimiter;
 
     cout << ++num << options.delimiter << it->first << options.delimiter << x << options.delimiter
          << y << options.delimiter;
@@ -805,7 +827,8 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
   NFmiPoint worldxy;
 
-  if (options.projection != "latlon") worldxy = projection->LatLonToWorldXY(theLatLon);
+  if (options.projection != "latlon")
+    worldxy = projection->LatLonToWorldXY(theLatLon);
 
   // Search results in sorted order
 
@@ -858,7 +881,8 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
                                        elem->Points()[ii - 1].Y(),
                                        elem->Points()[ii].X(),
                                        elem->Points()[ii].Y());
-          if (mindist < 0 || dist < mindist) mindist = dist;
+          if (mindist < 0 || dist < mindist)
+            mindist = dist;
         }
       }
     }
@@ -880,12 +904,14 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
   unsigned int num = 0;
   for (DistanceMap::const_iterator it = distance_map.begin(); it != distance_map.end(); ++it)
   {
-    if (num >= options.maxcount) break;
+    if (num >= options.maxcount)
+      break;
 
     int pos = it->second;
     const NFmiEsriElement *elem = static_cast<const NFmiEsriElement *>(elements[pos]);
 
-    if (!theName.empty()) cout << theName << options.delimiter;
+    if (!theName.empty())
+      cout << theName << options.delimiter;
 
     cout << ++num << options.delimiter << it->first << options.delimiter;
     print_attributes(*elem);
@@ -927,7 +953,8 @@ bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
             y1 != y2)
         {
           const double xinters = (theY - y1) * (x2 - x1) / (y2 - y1) + x1;
-          if (x1 == x2 || theX <= xinters) counter++;
+          if (x1 == x2 || theX <= xinters)
+            counter++;
         }
         x1 = x2;
         y1 = y2;
@@ -952,7 +979,8 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
 
   NFmiPoint worldxy;
 
-  if (options.projection != "latlon") worldxy = projection->LatLonToWorldXY(theLatLon);
+  if (options.projection != "latlon")
+    worldxy = projection->LatLonToWorldXY(theLatLon);
 
   // Search conditions
 
@@ -981,7 +1009,8 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
         enclosed = is_inside(*elem, worldxy.X(), worldxy.Y());
     }
 
-    if (enclosed) break;
+    if (enclosed)
+      break;
   }
 
   // Print the results.
@@ -990,7 +1019,8 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
   {
     const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
 
-    if (!theName.empty()) cout << theName << options.delimiter;
+    if (!theName.empty())
+      cout << theName << options.delimiter;
 
     print_attributes(*elem);
     cout << endl;
@@ -998,12 +1028,14 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
   else
   {
     // No match, print name,-,-,-,-,....
-    if (!theName.empty()) cout << theName << options.delimiter << "-";
+    if (!theName.empty())
+      cout << theName << options.delimiter << "-";
 
     vector<string> attribs = NFmiStringTools::Split(options.attributes, ",");
     for (unsigned j = 0; j < attribs.size(); j++)
     {
-      if (!theName.empty() || j > 0) cout << options.delimiter;
+      if (!theName.empty() || j > 0)
+        cout << options.delimiter;
       cout << "-";
     }
     cout << endl;
@@ -1018,7 +1050,8 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
 
 int domain(int argc, char *argv[])
 {
-  if (!parse_options(argc, argv)) return 0;
+  if (!parse_options(argc, argv))
+    return 0;
 
   // Read the shape
 

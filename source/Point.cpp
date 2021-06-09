@@ -12,7 +12,8 @@
 template <typename T>
 inline const T &min(const T &a, const T &b)
 {
-  if (b < a) return b;
+  if (b < a)
+    return b;
   return a;
 }
 

@@ -17,10 +17,11 @@ using namespace std;
  */
 // ======================================================================
 
-void Polygon::close(void) const
+void Polygon::close() const
 {
   if (!itsData.empty())
-    if (itsData[0] != itsData[itsData.size() - 1]) itsData.push_back(itsData[0]);
+    if (itsData[0] != itsData[itsData.size() - 1])
+      itsData.push_back(itsData[0]);
 }
 
 // ----------------------------------------------------------------------
@@ -31,10 +32,11 @@ void Polygon::close(void) const
  */
 // ----------------------------------------------------------------------
 
-double Polygon::area(void) const
+double Polygon::area() const
 {
   close();
-  if (itsData.size() <= 2) return 0.0;
+  if (itsData.size() <= 2)
+    return 0.0;
   double sum = 0;
   for (unsigned int i = 0; i < itsData.size() - 1; i++)
     sum += itsData[i].x() * itsData[i + 1].y() - itsData[i + 1].x() * itsData[i].y();
@@ -55,13 +57,14 @@ double Polygon::area(void) const
  */
 // ----------------------------------------------------------------------
 
-double Polygon::geoarea(void) const
+double Polygon::geoarea() const
 {
   // The last point must be the same as the first point, make sure it is
   close();
 
   // Safety against strange input
-  if (itsData.size() <= 2) return 0.0;
+  if (itsData.size() <= 2)
+    return 0.0;
 
   // Angle constants for projection
   const double kpi = 3.14159265358979323 / 180;
@@ -140,7 +143,8 @@ bool Polygon::isInside(const Point &pt) const
 {
   close();
 
-  if (itsData.size() <= 2) return false;
+  if (itsData.size() <= 2)
+    return false;
 
   // Saattaa nopeuttaa koodia, riippuu kääntäjästä:
   const double x = pt.x();
@@ -202,10 +206,11 @@ bool Polygon::isInside(const Point &pt) const
  */
 // ----------------------------------------------------------------------
 
-Point Polygon::someInsidePoint(void) const
+Point Polygon::someInsidePoint() const
 {
   close();
-  if (itsData.size() < 3) return Point(0, 0);
+  if (itsData.size() < 3)
+    return Point(0, 0);
 
   const long max_iterations = 10000;
   long iterations = 0;
@@ -246,7 +251,8 @@ Point Polygon::someInsidePoint(void) const
       // too strict shape requirements, we gradually loosen the
       // shape requirement
       shapelimit *= 1.01;
-      if (shape > shapelimit) continue;
+      if (shape > shapelimit)
+        continue;
 
       // We limit the scales to 0.2-0.8 to guarantee numerical stability
       // For example a1=0.999x is known to have caused trouble
@@ -259,7 +265,8 @@ Point Polygon::someInsidePoint(void) const
 
       Point tmp(x, y);
 
-      if (isInside(tmp)) return tmp;
+      if (isInside(tmp))
+        return tmp;
     }
   }
 }

@@ -31,19 +31,19 @@ class Polyline
 {
  public:
   //! Default destructor
-  ~Polyline(void) {}
+  ~Polyline() {}
 
   //! Default constructor
-  Polyline(void) {}
+  Polyline() {}
 
   //! Return the size of the polyline
-  unsigned int size(void) const { return itsPoints.size(); }
+  unsigned int size() const { return itsPoints.size(); }
 
   //! Test whether the polyline is empty
-  bool empty(void) const { return itsPoints.empty(); }
+  bool empty() const { return itsPoints.empty(); }
 
   //! Clear the polyline
-  void clear(void) { itsPoints.clear(); }
+  void clear() { itsPoints.clear(); }
 
   //! Add a point to the polyline
   void add(double x, double y) { itsPoints.push_back(Point(x, y)); }

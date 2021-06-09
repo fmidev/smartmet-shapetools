@@ -20,7 +20,7 @@ class Edge
 {
  public:
   //! Destructor
-  ~Edge(void) {}
+  ~Edge() {}
 
   //! Constructor from the given indices
   Edge(long idx1, long idx2)
@@ -43,7 +43,7 @@ class Edge
 
  private:
   //! Default constructor is disabled
-  Edge(void);
+  Edge();
 
   //! The smaller of the indices
   long itsIndex1;

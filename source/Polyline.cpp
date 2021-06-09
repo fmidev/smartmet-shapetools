@@ -89,7 +89,8 @@ string Polyline::path(const string &moveto, const string &lineto, const string &
 
 void Polyline::clip(double theX1, double theY1, double theX2, double theY2, double margin)
 {
-  if (empty()) return;
+  if (empty())
+    return;
 
   DataType newpts;
 

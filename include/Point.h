@@ -25,7 +25,7 @@ class Point
 {
  public:
   //! Destructor
-  ~Point(void) {}
+  ~Point() {}
   //! Constructor
   Point(double theX = 0, double theY = 0) : itsX(theX), itsY(theY) {}
   //! Copy constructor
@@ -43,9 +43,9 @@ class Point
     return *this;
   }
   //! Return x-coordinate
-  double x(void) const { return itsX; }
+  double x() const { return itsX; }
   //! Return y-coordinate
-  double y(void) const { return itsY; }
+  double y() const { return itsY; }
   //! Set x-coordinate
   void x(double value) { itsX = value; }
   //! Set y-coordinate

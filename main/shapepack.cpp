@@ -181,9 +181,11 @@ bool parse_options(int argc, char *argv[])
     return false;
   }
 
-  if (opt.count("shapefile") == 0) throw runtime_error("shapefile name not specified");
+  if (opt.count("shapefile") == 0)
+    throw runtime_error("shapefile name not specified");
 
-  if (opt.count("output") == 0) throw runtime_error("output name not specified");
+  if (opt.count("output") == 0)
+    throw runtime_error("output name not specified");
 
   // Check bounding box
 
@@ -247,7 +249,8 @@ NFmiEsriShape::attributes_type::const_iterator find_attribute(
   NFmiEsriShape::attributes_type::const_iterator it = theAttributes.begin();
   for (; it != theAttributes.end(); ++it)
   {
-    if ((*it)->Name() == theName) break;
+    if ((*it)->Name() == theName)
+      break;
   }
   if (it == theAttributes.end())
     throw runtime_error("No attribute named '" + theName + "' in the shape");
@@ -272,7 +275,8 @@ set<string> find_unique_attributes(const NFmiEsriShape &theShape, const string &
        it != theShape.Elements().end();
        ++it)
   {
-    if (*it == nullptr) continue;
+    if (*it == nullptr)
+      continue;
     string value = get_attribute_value(**it, **at);
     values.insert(value);
   }
@@ -319,13 +323,25 @@ map<string, int> make_attribute_map(const set<string> &theSet)
  */
 // ----------------------------------------------------------------------
 
-inline float xpixel(float x) { return (x + 180) / 360 * options.width; }
+inline float xpixel(float x)
+{
+  return (x + 180) / 360 * options.width;
+}
 
-inline float ypixel(float y) { return (y + 90) / 180 * options.height; }
+inline float ypixel(float y)
+{
+  return (y + 90) / 180 * options.height;
+}
 
-inline float lonpixel(int x) { return (360.0 * x / options.width - 180); }
+inline float lonpixel(int x)
+{
+  return (360.0 * x / options.width - 180);
+}
 
-inline float latpixel(int y) { return (180.0 * y / options.height - 90); }
+inline float latpixel(int y)
+{
+  return (180.0 * y / options.height - 90);
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -390,7 +406,8 @@ void render_image(NFmiImage &theImage,
        it != theShape.Elements().end();
        ++it)
   {
-    if (*it == nullptr) continue;
+    if (*it == nullptr)
+      continue;
 
     const string value = get_attribute_value(**it, **at);
     NFmiColorTools::Color color = theValues.find(value)->second;
@@ -414,7 +431,8 @@ bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
   // Check bounding box first
   const NFmiEsriBox &box = thePoly.Box();
 
-  if (!box.IsValid()) return false;
+  if (!box.IsValid())
+    return false;
 
   if (theX < box.Xmin() || theX > box.Xmax() || theY < box.Ymin() || theY > box.Ymax())
     return false;
@@ -445,7 +463,8 @@ bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
             y1 != y2)
         {
           const double xinters = (theY - y1) * (x2 - x1) / (y2 - y1) + x1;
-          if (x1 == x2 || theX <= xinters) counter++;
+          if (x1 == x2 || theX <= xinters)
+            counter++;
         }
         x1 = x2;
         y1 = y2;
@@ -478,7 +497,8 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
 
     bool enclosed = is_inside(*elem, theLon, theLat);
 
-    if (enclosed) break;
+    if (enclosed)
+      break;
   }
 
   // Print the results.
@@ -537,10 +557,14 @@ inline bool is_boundary_pixel(const NFmiImage &theImage, int i, int j)
 
 inline int find_nearest_zone(const NFmiImage &theImage, int i, int j)
 {
-  if (i - 1 >= 0 && theImage(i - 1, j) >= 0) return theImage(i, j);
-  if (i + 1 < theImage.Width() && theImage(i + 1, j) >= 0) return theImage(i + 1, j);
-  if (j - 1 >= 0 && theImage(i, j - 1) >= 0) return theImage(i, j - 1);
-  if (j + 1 < theImage.Height() && theImage(i, j + 1) >= 0) return theImage(i, j + 1);
+  if (i - 1 >= 0 && theImage(i - 1, j) >= 0)
+    return theImage(i, j);
+  if (i + 1 < theImage.Width() && theImage(i + 1, j) >= 0)
+    return theImage(i + 1, j);
+  if (j - 1 >= 0 && theImage(i, j - 1) >= 0)
+    return theImage(i, j - 1);
+  if (j + 1 < theImage.Height() && theImage(i, j + 1) >= 0)
+    return theImage(i, j + 1);
   return -1;
 }
 
@@ -562,7 +586,8 @@ void refine_image(NFmiImage &theImage,
   int perstep = 1;
   int total_pixels = theImage.Width() * theImage.Height();
 
-  if (options.verbose) cout << "Validating border areas..." << endl;
+  if (options.verbose)
+    cout << "Validating border areas..." << endl;
 
   for (int i = 0; i < theImage.Width(); i++)
     for (int j = 0; j < theImage.Height(); j++)
@@ -571,7 +596,8 @@ void refine_image(NFmiImage &theImage,
       if (pixels * 100.0 / total_pixels - percentage > perstep)
       {
         percentage += perstep;
-        if (options.verbose) cout << "\t" << percentage << "%" << endl;
+        if (options.verbose)
+          cout << "\t" << percentage << "%" << endl;
       }
 
       if (theImage(i, j) < 0 || is_boundary_pixel(theImage, i, j))
@@ -673,14 +699,16 @@ string compress_image(const NFmiImage &theImage, const map<string, int> &theMap)
   for (int i = 0; i < theImage.Width(); i++)
     for (int j = 0; j < theImage.Height(); j++)
     {
-      if (theImage(i, j) != last) uniques.insert(theImage(i, j));
+      if (theImage(i, j) != last)
+        uniques.insert(theImage(i, j));
       last = theImage(i, j);
     }
   BOOST_FOREACH (int c, uniques)
     std::cout << c << std::endl;
 #endif
 
-  if (options.verbose) std::cout << "Compressing the image data" << std::endl;
+  if (options.verbose)
+    std::cout << "Compressing the image data" << std::endl;
 
   for (int i = 0; i < theImage.Width(); i++)
     for (int j = 0; j < theImage.Height(); j++)
@@ -724,7 +752,8 @@ void render_shapepack(NFmiImage &img,
                       const Fmi::WorldTimeZones &zones,
                       const map<string, int> &attmap)
 {
-  if (options.verbose) std::cout << "Rendering background shapepack" << std::endl;
+  if (options.verbose)
+    std::cout << "Rendering background shapepack" << std::endl;
 
   for (int i = 0; i < img.Width(); i++)
     for (int j = 0; j < img.Height(); j++)
@@ -762,7 +791,8 @@ void render_shapepack(NFmiImage &img,
 
 int domain(int argc, char *argv[])
 {
-  if (!parse_options(argc, argv)) return 0;
+  if (!parse_options(argc, argv))
+    return 0;
 
   // Read the shape
 
@@ -772,7 +802,8 @@ int domain(int argc, char *argv[])
 
   const NFmiEsriShape::attributes_type &attributes = shape.Attributes();
 
-  if (attributes.size() == 0) throw runtime_error("shapefile does not contain any attributes");
+  if (attributes.size() == 0)
+    throw runtime_error("shapefile does not contain any attributes");
 
   // If no attribute option was given, we accept it as long as
   // the shape contains exactly one attribute
@@ -788,7 +819,8 @@ int domain(int argc, char *argv[])
            at != attributes.end();
            ++at, ++pos)
       {
-        if (pos > 0) out << ",";
+        if (pos > 0)
+          out << ",";
         out << (*at)->Name();
       }
 
@@ -800,13 +832,15 @@ int domain(int argc, char *argv[])
   // Help informatio
 
   boost::shared_ptr<Fmi::WorldTimeZones> zones;
-  if (!options.zonefile.empty()) zones.reset(new Fmi::WorldTimeZones(options.zonefile));
+  if (!options.zonefile.empty())
+    zones.reset(new Fmi::WorldTimeZones(options.zonefile));
 
   // Unique attributes
 
   set<string> uniques = find_unique_attributes(shape, options.attribute);
 
-  if (options.verbose) print_uniques(uniques);
+  if (options.verbose)
+    print_uniques(uniques);
 
   if (zones)
   {
@@ -816,25 +850,30 @@ int domain(int argc, char *argv[])
 
   map<string, int> attmap = make_attribute_map(uniques);
 
-  if (options.verbose) print_uniques(uniques);
+  if (options.verbose)
+    print_uniques(uniques);
 
   // Render the image
 
   NFmiImage img(options.width, options.height, -1);
-  if (zones) render_shapepack(img, *zones, attmap);
+  if (zones)
+    render_shapepack(img, *zones, attmap);
 
   render_image(img, shape, attmap);
 
-  if (options.accurate) refine_image(img, shape, attmap);
+  if (options.accurate)
+    refine_image(img, shape, attmap);
 
-  if (!options.pngfile.empty()) img.WritePng(options.pngfile);
+  if (!options.pngfile.empty())
+    img.WritePng(options.pngfile);
 
   // Compress the data
 
   string data = compress_image(img, attmap);
 
   ofstream out(options.packfile.c_str());
-  if (!out) throw runtime_error("Could not open '" + options.packfile + "' for writing");
+  if (!out)
+    throw runtime_error("Could not open '" + options.packfile + "' for writing");
   out << data;
   out.close();
 

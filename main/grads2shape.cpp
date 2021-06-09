@@ -42,7 +42,8 @@ int domain(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if (cmdline.NumberofParameters() != 2)
     throw runtime_error("Expecting two command line arguments");
@@ -50,16 +51,19 @@ int domain(int argc, const char *argv[])
   const string gradsfile = cmdline.Parameter(1);
   const string shapename = cmdline.Parameter(2);
 
-  if (gradsfile.empty()) throw runtime_error("The name of the GrADS file is empty");
+  if (gradsfile.empty())
+    throw runtime_error("The name of the GrADS file is empty");
 
-  if (shapename.empty()) throw runtime_error("The name of the shape is empty");
+  if (shapename.empty())
+    throw runtime_error("The name of the shape is empty");
 
   // Read the GrADS file into a shape
 
   Imagine::NFmiEsriShape shp(Imagine::kFmiEsriPolyLine);
 
   ifstream in(gradsfile.c_str(), ios::in | ios::binary);
-  if (!in) throw runtime_error("Failed to open '" + gradsfile + "' for reading");
+  if (!in)
+    throw runtime_error("Failed to open '" + gradsfile + "' for reading");
 
   unsigned char record_type;
   unsigned char record_level;
@@ -99,7 +103,8 @@ int domain(int argc, const char *argv[])
   }
 
   string filename = shapename + ".shp";
-  if (!shp.WriteSHP(filename)) throw runtime_error("Failed to write '" + filename + "'");
+  if (!shp.WriteSHP(filename))
+    throw runtime_error("Failed to write '" + filename + "'");
 
   return 0;
 }

@@ -37,7 +37,8 @@ void print_double(ostream &out, double theValue)
 void print_lon(ostream &out, double theLon)
 {
   // Make sure value is in range [0-360[
-  if (theLon < 0) theLon += 360;
+  if (theLon < 0)
+    theLon += 360;
   print_double(out, theLon);
 }
 
@@ -68,7 +69,8 @@ void print_lat(ostream &out, double theLat)
 
 void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
 {
-  if (thePoints.empty()) return;
+  if (thePoints.empty())
+    return;
 
   typedef vector<NFmiPoint>::size_type size_type;
 
@@ -76,7 +78,8 @@ void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
   while (pos1 < thePoints.size())
   {
     size_type pos2 = min(pos1 + 254, thePoints.size() - 1);
-    if (pos1 == pos2) break;
+    if (pos1 == pos2)
+      break;
 
     // Must not cross the meridian during one segment
 
@@ -136,7 +139,8 @@ double read_lon(istream &in)
 {
   int value = read_int(in);
   double lon = (value / 1e4);
-  if (lon >= 180) lon -= 360;
+  if (lon >= 180)
+    lon -= 360;
   return lon;
 }
 
