@@ -7,14 +7,20 @@
 
 #include "Projection.h"
 
-#include <newbase/NFmiEquidistArea.h>
 #include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiPoint.h>
+
+#ifdef WGS84
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaTools.h>
+#else
+#include <newbase/NFmiEquidistArea.h>
 #include <newbase/NFmiGnomonicArea.h>
 #include <newbase/NFmiLatLonArea.h>
 #include <newbase/NFmiMercatorArea.h>
-#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiStereographicArea.h>
 #include <newbase/NFmiYKJArea.h>
+#endif
 
 #include <stdexcept>
 
@@ -282,6 +288,33 @@ NFmiArea *Projection::createArea() const
   NFmiPoint bottomleft = has_center ? itsPimple->itsCenter : itsPimple->itsBottomLeft;
   NFmiPoint topright = has_center ? itsPimple->itsCenter : itsPimple->itsTopRight;
 
+#ifdef WGS84
+
+  if (itsPimple->itsType == string("latlon"))
+    area = NFmiAreaTools::CreateLegacyLatLonArea(bottomleft, topright);
+
+  else if (itsPimple->itsType == "ykj")
+    area = NFmiAreaTools::CreateLegacyYKJArea(bottomleft, topright);
+
+  else if (itsPimple->itsType == "mercator")
+    area = NFmiAreaTools::CreateLegacyMercatorArea(bottomleft, topright);
+
+  else if (itsPimple->itsType == string("stereographic"))
+    area = NFmiAreaTools::CreateLegacyStereographicArea(bottomleft,
+                                                        topright,
+                                                        itsPimple->itsCentralLongitude,
+                                                        itsPimple->itsCentralLatitude,
+                                                        itsPimple->itsTrueLatitude);
+
+  else if (itsPimple->itsType == "gnomonic")
+    area = NFmiAreaTools::CreateLegacyGnomonicArea(
+        bottomleft, topright, itsPimple->itsCentralLongitude, itsPimple->itsCentralLatitude);
+
+  else if (itsPimple->itsType == "equidist")
+    area = NFmiAreaTools::CreateLegacyEquiDistArea(
+        bottomleft, topright, itsPimple->itsCentralLongitude, itsPimple->itsCentralLatitude);
+#else
+
   NFmiPoint topleftxy = NFmiPoint(0, 0);
   NFmiPoint bottomrightxy = NFmiPoint(1, 1);
 
@@ -319,6 +352,7 @@ NFmiArea *Projection::createArea() const
                                 topleftxy,
                                 bottomrightxy,
                                 itsPimple->itsCentralLatitude);
+#endif
   else
   {
     std::string msg = "Unrecognized projection type ";

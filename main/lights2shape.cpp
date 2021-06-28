@@ -16,12 +16,17 @@
 #include <newbase/NFmiCmdLine.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiFileString.h>
-#include <newbase/NFmiLatLonArea.h>
 #include <newbase/NFmiSettings.h>
 #include <fstream>
 #include <iomanip>
 #include <set>
 #include <string>
+
+#ifdef WGS84
+#include <newbase/NFmiAreaTools.h>
+#else
+#include <newbase/NFmiLatLonArea.h>
+#endif
 
 using namespace std;
 using namespace Imagine;
@@ -286,10 +291,16 @@ void create_shape()
   if (globals.verbose)
     cout << "Contouring the lights data..." << endl;
 
+#ifdef WGS84
+  auto *area = NFmiAreaTools::CreateLegacyLatLonArea(NFmiPoint(globals.x1, globals.y1),
+                                                     NFmiPoint(globals.x2, globals.y2));
+  area->SetXYArea(NFmiRect(NFmiPoint(0, 0), NFmiPoint(globals.values.NX(), globals.values.NY())));
+#else
   NFmiLatLonArea area(NFmiPoint(globals.x1, globals.y1),
                       NFmiPoint(globals.x2, globals.y2),
                       NFmiPoint(0, 0),
                       NFmiPoint(globals.values.NX(), globals.values.NY()));
+#endif
 
   NFmiDataHints hints(globals.values);
 
@@ -309,7 +320,11 @@ void create_shape()
     tree.Contour(globals.values, hints, NFmiContourTree::kFmiContourLinear);
 
     NFmiPath path = tree.Path();
+#ifdef WGS84
+    path.InvProject(area);
+#else
     path.InvProject(&area);
+#endif
 
     NFmiEsriAttribute attrvalue(*it, attribute);
     path_to_shape(path, shape, attrvalue);

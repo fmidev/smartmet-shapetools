@@ -770,7 +770,12 @@ int domain(int argc, const char *argv[])
         Imagine::NFmiGeoShape geo(shapefile, Imagine::kFmiGeoShapeEsri, condition);
         // geo.ProjectXY(*theArea);
 
+#ifdef WGS84
+        Imagine::NFmiPath path = geo.Path();
+#else
         Imagine::NFmiPath path = geo.Path().PacificView(theArea->PacificView());
+#endif
+
         path.Project(theArea.get());
 
         if (token == "shape" || token == "subshape")
