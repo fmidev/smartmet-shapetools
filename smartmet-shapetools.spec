@@ -16,7 +16,7 @@ BuildRequires: boost169-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: gdal32-devel
+BuildRequires: gdal33-devel
 BuildRequires: smartmet-library-imagine-devel >= 21.5.6
 BuildRequires: smartmet-library-newbase-devel >= 21.5.6
 BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
