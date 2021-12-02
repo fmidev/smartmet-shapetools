@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 21.5.6
+Version: 21.12.2
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -17,14 +17,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal33-devel
-BuildRequires: smartmet-library-imagine-devel >= 21.5.6
-BuildRequires: smartmet-library-newbase-devel >= 21.5.6
-BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
-BuildRequires: smartmet-library-gis-devel >= 21.5.5
-Requires: smartmet-library-imagine >= 21.5.6
-Requires: smartmet-library-newbase >= 21.5.6
-Requires: smartmet-library-macgyver >= 21.2.25
-Requires: smartmet-library-gis >= 21.5.5
+BuildRequires: smartmet-library-imagine-devel >= 21.12.2
+BuildRequires: smartmet-library-newbase-devel >= 21.12.1
+BuildRequires: smartmet-library-macgyver-devel >= 21.12.1
+BuildRequires: smartmet-library-gis-devel >= 21.12.1
+Requires: smartmet-library-imagine >= 21.12.2
+Requires: smartmet-library-newbase >= 21.12.1
+Requires: smartmet-library-macgyver >= 21.12.1
+Requires: smartmet-library-gis >= 21.12.1
 Requires: boost169-iostreams
 Requires: boost169-filesystem
 Requires: boost169-program-options
@@ -64,9 +64,9 @@ FMI shapetools
 rm -rf $RPM_BUILD_ROOT
 
 %setup -q -n %{RPMNAME}
- 
+
 %build
-make %{_smp_mflags} 
+make %{_smp_mflags}
 
 %install
 %makeinstall
@@ -77,22 +77,22 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(0775,root,root,-)
 /usr/bin/compositealpha
-/usr/bin/shapefilter 
-/usr/bin/shapeproject 
-/usr/bin/shapepoints 
-/usr/bin/shape2grads 
-/usr/bin/grads2shape 
-/usr/bin/gradsdump 
-/usr/bin/gshhs2grads 
-/usr/bin/gshhs2shape 
-/usr/bin/shape2ps 
+/usr/bin/shapefilter
+/usr/bin/shapeproject
+/usr/bin/shapepoints
+/usr/bin/shape2grads
+/usr/bin/grads2shape
+/usr/bin/gradsdump
+/usr/bin/gshhs2grads
+/usr/bin/gshhs2shape
+/usr/bin/shape2ps
 /usr/bin/shape2svg
-/usr/bin/shape2xml 
-/usr/bin/shapedump 
-/usr/bin/triangle2shape 
-/usr/bin/shape2triangle 
-/usr/bin/amalgamate 
-/usr/bin/etopo2shape 
+/usr/bin/shape2xml
+/usr/bin/shapedump
+/usr/bin/triangle2shape
+/usr/bin/shape2triangle
+/usr/bin/amalgamate
+/usr/bin/etopo2shape
 /usr/bin/lights2shape
 /usr/bin/shapepack
 /usr/bin/shapepick
@@ -262,5 +262,5 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Sep 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-2.el5.fmi
 - Improved make system.
 
-* Thu Jun  7 2007 tervo <tervo@xodin.weatherproof.fi> - 
+* Thu Jun  7 2007 tervo <tervo@xodin.weatherproof.fi> -
 - Initial build.
