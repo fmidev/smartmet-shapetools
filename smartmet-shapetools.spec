@@ -16,15 +16,15 @@ BuildRequires: boost169-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: gdal33-devel
-BuildRequires: smartmet-library-imagine-devel >= 21.12.2
-BuildRequires: smartmet-library-newbase-devel >= 21.12.1
-BuildRequires: smartmet-library-macgyver-devel >= 21.12.1
-BuildRequires: smartmet-library-gis-devel >= 21.12.1
-Requires: smartmet-library-imagine >= 21.12.2
-Requires: smartmet-library-newbase >= 21.12.1
-Requires: smartmet-library-macgyver >= 21.12.1
-Requires: smartmet-library-gis >= 21.12.1
+BuildRequires: gdal34-devel
+BuildRequires: smartmet-library-imagine-devel >= 21.1.21
+BuildRequires: smartmet-library-newbase-devel >= 21.1.21
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.21
+BuildRequires: smartmet-library-gis-devel >= 21.1.21
+Requires: smartmet-library-imagine >= 21.1.21
+Requires: smartmet-library-newbase >= 21.1.21
+Requires: smartmet-library-macgyver >= 21.1.21
+Requires: smartmet-library-gis >= 21.1.21
 Requires: boost169-iostreams
 Requires: boost169-filesystem
 Requires: boost169-program-options
