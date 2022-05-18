@@ -6,22 +6,10 @@
 // ======================================================================
 
 #include "Projection.h"
-
-#include <newbase/NFmiGlobals.h>
-#include <newbase/NFmiPoint.h>
-
-#ifdef WGS84
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaTools.h>
-#else
-#include <newbase/NFmiEquidistArea.h>
-#include <newbase/NFmiGnomonicArea.h>
-#include <newbase/NFmiLatLonArea.h>
-#include <newbase/NFmiMercatorArea.h>
-#include <newbase/NFmiStereographicArea.h>
-#include <newbase/NFmiYKJArea.h>
-#endif
-
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiPoint.h>
 #include <stdexcept>
 
 using namespace std;
@@ -288,8 +276,6 @@ NFmiArea *Projection::createArea() const
   NFmiPoint bottomleft = has_center ? itsPimple->itsCenter : itsPimple->itsBottomLeft;
   NFmiPoint topright = has_center ? itsPimple->itsCenter : itsPimple->itsTopRight;
 
-#ifdef WGS84
-
   if (itsPimple->itsType == string("latlon"))
     area = NFmiAreaTools::CreateLegacyLatLonArea(bottomleft, topright);
 
@@ -313,46 +299,6 @@ NFmiArea *Projection::createArea() const
   else if (itsPimple->itsType == "equidist")
     area = NFmiAreaTools::CreateLegacyEquiDistArea(
         bottomleft, topright, itsPimple->itsCentralLongitude, itsPimple->itsCentralLatitude);
-#else
-
-  NFmiPoint topleftxy = NFmiPoint(0, 0);
-  NFmiPoint bottomrightxy = NFmiPoint(1, 1);
-
-  if (itsPimple->itsType == string("latlon"))
-    area = new NFmiLatLonArea(bottomleft, topright, topleftxy, bottomrightxy);
-
-  else if (itsPimple->itsType == "ykj")
-    area = new NFmiYKJArea(bottomleft, topright, topleftxy, bottomrightxy);
-
-  else if (itsPimple->itsType == "mercator")
-    area = new NFmiMercatorArea(bottomleft, topright, topleftxy, bottomrightxy);
-
-  else if (itsPimple->itsType == string("stereographic"))
-    area = new NFmiStereographicArea(bottomleft,
-                                     topright,
-                                     itsPimple->itsCentralLongitude,
-                                     topleftxy,
-                                     bottomrightxy,
-                                     itsPimple->itsCentralLatitude,
-                                     itsPimple->itsTrueLatitude);
-
-  else if (itsPimple->itsType == "gnomonic")
-    area = new NFmiGnomonicArea(bottomleft,
-                                topright,
-                                itsPimple->itsCentralLongitude,
-                                topleftxy,
-                                bottomrightxy,
-                                itsPimple->itsCentralLatitude,
-                                itsPimple->itsTrueLatitude);
-
-  else if (itsPimple->itsType == "equidist")
-    area = new NFmiEquidistArea(bottomleft,
-                                topright,
-                                itsPimple->itsCentralLongitude,
-                                topleftxy,
-                                bottomrightxy,
-                                itsPimple->itsCentralLatitude);
-#endif
   else
   {
     std::string msg = "Unrecognized projection type ";

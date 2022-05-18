@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 22.1.21
+Version: 22.5.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -17,14 +17,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal34-devel
-BuildRequires: smartmet-library-imagine-devel >= 21.1.21
-BuildRequires: smartmet-library-newbase-devel >= 21.1.21
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.21
-BuildRequires: smartmet-library-gis-devel >= 21.1.21
-Requires: smartmet-library-imagine >= 21.1.21
-Requires: smartmet-library-newbase >= 21.1.21
-Requires: smartmet-library-macgyver >= 21.1.21
-Requires: smartmet-library-gis >= 21.1.21
+BuildRequires: smartmet-library-imagine-devel >= 22.1.21
+BuildRequires: smartmet-library-newbase-devel >= 22.5.18
+BuildRequires: smartmet-library-macgyver-devel >= 22.3.28
+BuildRequires: smartmet-library-gis-devel >= 22.5.4
+Requires: smartmet-library-imagine >= 22.1.21
+Requires: smartmet-library-newbase >= 22.5.18
+Requires: smartmet-library-macgyver >= 22.3.28
+Requires: smartmet-library-gis >= 22.5.4
 Requires: boost169-iostreams
 Requires: boost169-filesystem
 Requires: boost169-program-options
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Wed May 18 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.18-1.fmi
+- Removed obsolete #ifdef WGS84 statements
+
 * Fri Jan 21 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.1.21-1.fmi
 - Repackage due to upgrade of packages from PGDG repo: gdal-3.4, geos-3.10, proj-8.2
 
