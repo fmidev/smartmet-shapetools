@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 22.5.20
+Version: 22.5.24
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -17,12 +17,12 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal34-devel
-BuildRequires: smartmet-library-imagine-devel >= 22.5.20
-BuildRequires: smartmet-library-newbase-devel >= 22.5.20
+BuildRequires: smartmet-library-imagine-devel >= 22.5.24
+BuildRequires: smartmet-library-newbase-devel >= 22.5.24
 BuildRequires: smartmet-library-macgyver-devel >= 22.3.28
 BuildRequires: smartmet-library-gis-devel >= 22.5.4
-Requires: smartmet-library-imagine >= 22.5.20
-Requires: smartmet-library-newbase >= 22.5.20
+Requires: smartmet-library-imagine >= 22.5.24
+Requires: smartmet-library-newbase >= 22.5.24
 Requires: smartmet-library-macgyver >= 22.3.28
 Requires: smartmet-library-gis >= 22.5.4
 Requires: boost169-iostreams
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Tue May 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.24-1.fmi
+- Repackaged due to NFmiArea ABI changes
+
 * Fri May 20 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.20-1.fmi
 - Repackaged due to ABI changes to newbase LatLon methods
 
