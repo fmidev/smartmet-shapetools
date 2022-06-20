@@ -9,26 +9,33 @@ Group: Development/Tools
 URL: https://github.com/fmidev/smartmet-shapetools
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
+
+%if 0%{?rhel} && 0%{rhel} < 9
+%define smartmet_boost boost169
+%else
+%define smartmet_boost boost
+%endif
+
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: boost169-devel
+BuildRequires: %{smartmet_boost}-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal34-devel
-BuildRequires: smartmet-library-imagine-devel >= 22.5.24
-BuildRequires: smartmet-library-newbase-devel >= 22.5.24
-BuildRequires: smartmet-library-macgyver-devel >= 22.3.28
-BuildRequires: smartmet-library-gis-devel >= 22.5.4
-Requires: smartmet-library-imagine >= 22.5.24
-Requires: smartmet-library-newbase >= 22.5.24
-Requires: smartmet-library-macgyver >= 22.3.28
-Requires: smartmet-library-gis >= 22.5.4
-Requires: boost169-iostreams
-Requires: boost169-filesystem
-Requires: boost169-program-options
-Requires: boost169-system
+BuildRequires: smartmet-library-imagine-devel >= 22.6.16
+BuildRequires: smartmet-library-newbase-devel >= 22.6.16
+BuildRequires: smartmet-library-macgyver-devel >= 22.6.16
+BuildRequires: smartmet-library-gis-devel >= 22.6.16
+Requires: smartmet-library-imagine >= 22.6.16
+Requires: smartmet-library-newbase >= 22.6.16
+Requires: smartmet-library-macgyver >= 22.6.16
+Requires: smartmet-library-gis >= 22.6.16
+Requires: %{smartmet_boost}-iostreams
+Requires: %{smartmet_boost}-filesystem
+Requires: %{smartmet_boost}-program-options
+Requires: %{smartmet_boost}-system
 Requires: glibc
 Requires: libgcc
 Requires: libjpeg
