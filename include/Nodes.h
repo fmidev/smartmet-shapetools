@@ -33,10 +33,10 @@ class Nodes
 {
  public:
   //! Destructor
-  ~Nodes(void) {}
+  ~Nodes() {}
 
   //! Default constructor
-  Nodes(void) {}
+  Nodes() {}
 
   //! Add a point, returning the ordinal of the point
   long add(const Point &pt, long theId = 0);
@@ -54,7 +54,7 @@ class Nodes
   typedef std::map<Point, std::pair<unsigned long, long>> DataType;
 
   //! Return the data
-  const DataType &data(void) const { return itsData; }
+  const DataType &data() const { return itsData; }
 
  private:
   //! Copy constructor is disabled

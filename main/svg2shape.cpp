@@ -51,10 +51,17 @@ bool parse_options(int argc, char *argv[])
   namespace po = boost::program_options;
 
   po::options_description desc("Allowed options");
-  desc.add_options()("help,h", "print out help message")("version,V", "display version number")(
-      "infiles", po::value<std::vector<std::string>>(&options.infiles), "input files")(
-      "shape,o", po::value(&options.shapename), "shapefile name ('out')")(
-      "field,f", po::value(&options.shapename), "field name for the paths ('NAME')");
+  desc.add_options()("help,h", "print out help message")(
+      "version,V",
+      "display version number")("infiles",
+                                po::value<std::vector<std::string>>(&options.infiles),
+                                "input files")("shape,o",
+                                               po::value(&options.shapename),
+                                               "shapefile name ('out')")("field,f",
+                                                                         po::value(
+                                                                             &options.shapename),
+                                                                         "field name for the paths "
+                                                                         "('NAME')");
 
   po::positional_options_description p;
   p.add("infiles", -1);
@@ -79,7 +86,8 @@ bool parse_options(int argc, char *argv[])
     return false;
   }
 
-  if (options.infiles.empty()) throw std::runtime_error("No input files given");
+  if (options.infiles.empty())
+    throw std::runtime_error("No input files given");
 
   return true;
 }
@@ -98,11 +106,13 @@ std::map<std::string, NFmiSvgPath> read_files()
   {
     NFmiSvgPath svg;
     std::ifstream in(s.c_str());
-    if (!in) throw std::runtime_error("Failed to open '" + s + "' for reading");
+    if (!in)
+      throw std::runtime_error("Failed to open '" + s + "' for reading");
     svg.Read(in);
     in.close();
 
-    if (svg.empty()) throw std::runtime_error("File '" + s + "' contained no SVG path data");
+    if (svg.empty())
+      throw std::runtime_error("File '" + s + "' contained no SVG path data");
 
     boost::filesystem::path p(s);
     std::string stem = p.stem().string();
@@ -194,7 +204,8 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
 
 int run(int argc, char *argv[])
 {
-  if (!parse_options(argc, argv)) return 0;
+  if (!parse_options(argc, argv))
+    return 0;
 
   // Read the SVG files
 

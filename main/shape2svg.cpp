@@ -71,7 +71,8 @@ int run(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "hd!f!");
 
-  if (cmdline.Status().IsError()) throw runtime_error("Invalid command line");
+  if (cmdline.Status().IsError())
+    throw runtime_error("Invalid command line");
 
   if (cmdline.isOption('h'))
   {
@@ -84,9 +85,11 @@ int run(int argc, const char *argv[])
 
   options.infile = cmdline.Parameter(1);
 
-  if (cmdline.isOption('f')) options.fieldname = cmdline.OptionValue('f');
+  if (cmdline.isOption('f'))
+    options.fieldname = cmdline.OptionValue('f');
 
-  if (cmdline.isOption('d')) options.outdir = cmdline.OptionValue('d');
+  if (cmdline.isOption('d'))
+    options.outdir = cmdline.OptionValue('d');
 
   Imagine::NFmiEsriShape shape;
   if (!shape.Read(options.infile, true))
@@ -105,14 +108,16 @@ int run(int argc, const char *argv[])
   {
     ++shapenumber;
 
-    if (*it == 0) continue;
+    if (*it == 0)
+      continue;
 
     string name;
     for (Imagine::NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
          ait != attributes.end() && name.empty();
          ++ait)
     {
-      if ((*ait)->Name() != options.fieldname) continue;
+      if ((*ait)->Name() != options.fieldname)
+        continue;
 
       switch ((*ait)->Type())
       {
@@ -214,7 +219,8 @@ int run(int argc, const char *argv[])
     const Imagine::NFmiPath &path = ob.second;
 
     ofstream out(outfile.c_str());
-    if (!out) throw runtime_error("Failed to open '" + outfile + "' for writing");
+    if (!out)
+      throw runtime_error("Failed to open '" + outfile + "' for writing");
     out << '"' << boost::algorithm::replace_all_copy(path.SVG(), ",", " ") << '"';
     out.close();
   }

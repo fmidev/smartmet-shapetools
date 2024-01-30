@@ -2,30 +2,40 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 20.8.21
+Version: 23.7.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
 URL: https://github.com/fmidev/smartmet-shapetools
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
+
+%if 0%{?rhel} && 0%{rhel} < 9
+%define smartmet_boost boost169
+%else
+%define smartmet_boost boost
+%endif
+
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: boost169-devel
+BuildRequires: %{smartmet_boost}-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: smartmet-library-imagine-devel >= 20.8.21
-BuildRequires: smartmet-library-newbase-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.8.21
-Requires: smartmet-library-imagine >= 20.8.21
-Requires: smartmet-library-newbase >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.8.21
-Requires: boost169-iostreams
-Requires: boost169-filesystem
-Requires: boost169-program-options
-Requires: boost169-system
+BuildRequires: gdal35-devel
+BuildRequires: smartmet-library-imagine-devel >= 23.7.10
+BuildRequires: smartmet-library-newbase-devel >= 23.7.28
+BuildRequires: smartmet-library-macgyver-devel >= 23.7.28
+BuildRequires: smartmet-library-gis-devel >= 23.7.10
+Requires: smartmet-library-imagine >= 23.7.10
+Requires: smartmet-library-newbase >= 23.7.28
+Requires: smartmet-library-macgyver >= 23.7.28
+Requires: smartmet-library-gis >= 23.7.10
+Requires: %{smartmet_boost}-iostreams
+Requires: %{smartmet_boost}-filesystem
+Requires: %{smartmet_boost}-program-options
+Requires: %{smartmet_boost}-system
 Requires: glibc
 Requires: libgcc
 Requires: libjpeg
@@ -61,9 +71,9 @@ FMI shapetools
 rm -rf $RPM_BUILD_ROOT
 
 %setup -q -n %{RPMNAME}
- 
+
 %build
-make %{_smp_mflags} 
+make %{_smp_mflags}
 
 %install
 %makeinstall
@@ -74,22 +84,22 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(0775,root,root,-)
 /usr/bin/compositealpha
-/usr/bin/shapefilter 
-/usr/bin/shapeproject 
-/usr/bin/shapepoints 
-/usr/bin/shape2grads 
-/usr/bin/grads2shape 
-/usr/bin/gradsdump 
-/usr/bin/gshhs2grads 
-/usr/bin/gshhs2shape 
-/usr/bin/shape2ps 
+/usr/bin/shapefilter
+/usr/bin/shapeproject
+/usr/bin/shapepoints
+/usr/bin/shape2grads
+/usr/bin/grads2shape
+/usr/bin/gradsdump
+/usr/bin/gshhs2grads
+/usr/bin/gshhs2shape
+/usr/bin/shape2ps
 /usr/bin/shape2svg
-/usr/bin/shape2xml 
-/usr/bin/shapedump 
-/usr/bin/triangle2shape 
-/usr/bin/shape2triangle 
-/usr/bin/amalgamate 
-/usr/bin/etopo2shape 
+/usr/bin/shape2xml
+/usr/bin/shapedump
+/usr/bin/triangle2shape
+/usr/bin/shape2triangle
+/usr/bin/amalgamate
+/usr/bin/etopo2shape
 /usr/bin/lights2shape
 /usr/bin/shapepack
 /usr/bin/shapepick
@@ -97,6 +107,45 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Fri Jul 28 2023 Andris Pavēnis <andris.pavenis@fmi.fi> 23.7.28-1.fmi
+- Repackage due to bulk ABI changes in macgyver/newbase/spine
+
+* Wed Jul 12 2023 Andris Pavēnis <andris.pavenis@fmi.fi> 23.7.12-1.fmi
+- Use postgresql 15, gdal 3.5, geos 3.11 and proj-9.0
+
+* Mon Jun 20 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.6.20-1.fmi
+- Add support for RHEL9, upgrade libpqxx to 7.7.0 (rhel8+) and fmt to 8.1.1
+
+* Tue May 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.24-1.fmi
+- Repackaged due to NFmiArea ABI changes
+
+* Fri May 20 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.20-1.fmi
+- Repackaged due to ABI changes to newbase LatLon methods
+
+* Wed May 18 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.18-1.fmi
+- Removed obsolete #ifdef WGS84 statements
+
+* Fri Jan 21 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.1.21-1.fmi
+- Repackage due to upgrade of packages from PGDG repo: gdal-3.4, geos-3.10, proj-8.2
+
+* Tue Dec  7 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.12.7-1.fmi
+- Update to postgresql 13 and gdal 3.3
+
+* Thu May  6 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.6-1.fmi
+- Repackaged due to ABI changes in NFmiAzimuthalArea
+
+* Fri Feb 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.19-1.fmi
+- Repackaged due to newbase ABI changes
+
+* Mon Feb 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.15-1.fmi
+- Ported to use new interpolation APIs
+
+* Mon Jan 25 2021 Andris Pavenis <andris.pavenis@fmi.fi> - 21.1.25-1.fmi
+- Build update: use makefile.inc
+
+* Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
+- Repackaged smartmet to resolve debuginfo issues
+
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.fmi
 - Upgrade to fmt 6.2
 
@@ -244,5 +293,5 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Sep 13 2007 mheiskan <mika.heiskanen@fmi.fi> - 1.0.1-2.el5.fmi
 - Improved make system.
 
-* Thu Jun  7 2007 tervo <tervo@xodin.weatherproof.fi> - 
+* Thu Jun  7 2007 tervo <tervo@xodin.weatherproof.fi> -
 - Initial build.

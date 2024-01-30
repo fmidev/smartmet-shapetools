@@ -78,7 +78,8 @@ int main(int argc, const char *argv[])
 
       if (doflush && !poly.empty())
       {
-        if (arealimit <= 0 || poly.geoarea() >= arealimit) polygons.push_back(poly);
+        if (arealimit <= 0 || poly.geoarea() >= arealimit)
+          polygons.push_back(poly);
         poly.clear();
       }
 
@@ -182,7 +183,8 @@ int main(int argc, const char *argv[])
                   << endl;
             }
           }
-          if (pass == 2) previous_point = *piter;
+          if (pass == 2)
+            previous_point = *piter;
         }
       }
     }

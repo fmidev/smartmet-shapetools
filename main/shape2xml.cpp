@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
   try
   {
     Imagine::NFmiEsriShape shape;
-    if (!shape.Read(shapefile, true)) throw std::runtime_error("Failed to read " + shapefile);
+    if (!shape.Read(shapefile, true))
+      throw std::runtime_error("Failed to read " + shapefile);
 
     cout << "<shapefile filename=\"" << shapefile << "\">" << endl;
 
@@ -68,7 +69,8 @@ int main(int argc, char *argv[])
     {
       ++shapenumber;
 
-      if (*it == 0) continue;
+      if (*it == 0)
+        continue;
 
       cout << "<shape id=\"" << shapenumber << '"' << " type=\"" << static_cast<int>((*it)->Type())
            << '"';
@@ -121,7 +123,8 @@ int main(int argc, char *argv[])
           {
             const float x = elem->Points()[i].X();
             const float y = elem->Points()[i].Y();
-            if (i > 0) cout << ' ';
+            if (i > 0)
+              cout << ' ';
             cout << "M " << x << ' ' << y;
           }
           cout << endl;
@@ -144,7 +147,8 @@ int main(int argc, char *argv[])
 
             if (i2 >= i1)
             {
-              if (part > 0) cout << endl;
+              if (part > 0)
+                cout << endl;
               cout << "M " << elem->Points()[i1].X() << ' ' << elem->Points()[i1].Y();
               for (int i = i1 + 1; i <= i2; i++)
                 cout << " L " << elem->Points()[i].X() << ' ' << elem->Points()[i].Y();
@@ -169,7 +173,8 @@ int main(int argc, char *argv[])
 
             if (i2 >= i1)
             {
-              if (part > 0) cout << endl;
+              if (part > 0)
+                cout << endl;
               cout << "M " << elem->Points()[i1].X() << ' ' << elem->Points()[i1].Y();
               for (int i = i1 + 1; i <= i2; i++)
                 cout << " L " << elem->Points()[i].X() << ' ' << elem->Points()[i].Y();

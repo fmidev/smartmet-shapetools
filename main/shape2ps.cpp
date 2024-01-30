@@ -84,8 +84,8 @@
  */
 // ======================================================================
 
-// internal
 #include "Polyline.h"
+#include <gis/CoordinateMatrix.h>
 #include <imagine/NFmiApproximateBezierFit.h>
 #include <imagine/NFmiCardinalBezierFit.h>
 #include <imagine/NFmiContourTree.h>
@@ -141,8 +141,10 @@ struct BezierSettings
 
   bool operator<(const BezierSettings &theOther) const
   {
-    if (mode != theOther.mode) return (mode < theOther.mode);
-    if (smoothness != theOther.smoothness) return (smoothness < theOther.smoothness);
+    if (mode != theOther.mode)
+      return (mode < theOther.mode);
+    if (smoothness != theOther.smoothness)
+      return (smoothness < theOther.smoothness);
     return (maxerror < theOther.maxerror);
   }
 
@@ -265,7 +267,8 @@ string pathtostring(const Imagine::NFmiPath &thePath,
     {
       polyline.clip(
           theArea.Left(), theArea.Top(), theArea.Right(), theArea.Bottom(), theClipMargin);
-      if (!polyline.empty()) out += polyline.path(theMoveto, theLineto, theClosepath);
+      if (!polyline.empty())
+        out += polyline.path(theMoveto, theLineto, theClosepath);
       polyline.clear();
     }
   }
@@ -322,7 +325,8 @@ string pathtostring(const Imagine::NFmiPath &thePath,
         break;
       case Imagine::kFmiCubicTo:
         ++cubic_count;
-        if (cubic_count % 3 == 0) out << theCurveto << endl;
+        if (cubic_count % 3 == 0)
+          out << theCurveto << endl;
         break;
       case Imagine::kFmiConicTo:
         throw runtime_error("Conic segments not supported");
@@ -350,7 +354,8 @@ void set_level(NFmiFastQueryInfo &theInfo, int theLevel)
   else
   {
     for (theInfo.ResetLevel(); theInfo.NextLevel();)
-      if (theInfo.Level()->LevelValue() == static_cast<unsigned int>(theLevel)) return;
+      if (theInfo.Level()->LevelValue() == static_cast<unsigned int>(theLevel))
+        return;
     throw runtime_error("Level value " + NFmiStringTools::Convert(theLevel) + " is not available");
   }
 }
@@ -368,9 +373,11 @@ int domain(int argc, const char *argv[])
   if (cmdline.NumberofParameters() != 1)
     throw runtime_error("Usage: shape2ps [options] <filename>");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
-  if (cmdline.isOption('v')) verbose = true;
+  if (cmdline.isOption('v'))
+    verbose = true;
 
   string scriptfile = cmdline.Parameter(1);
 
@@ -451,7 +458,7 @@ int domain(int argc, const char *argv[])
   // Some tokens will invalidate the matrices
 
   unique_ptr<NFmiDataMatrix<float>> values;
-  unique_ptr<NFmiDataMatrix<NFmiPoint>> coords;
+  unique_ptr<Fmi::CoordinateMatrix> coords;
 
   // Do the deed
   string token;
@@ -462,7 +469,8 @@ int domain(int argc, const char *argv[])
     // ------------------------------------------------------------
     // Handle script comments
     // ------------------------------------------------------------
-    if (token == "#") script.ignore(1000000, '\n');
+    if (token == "#")
+      script.ignore(1000000, '\n');
 
     // ------------------------------------------------------------
     // Handle PostScript comments
@@ -491,13 +499,15 @@ int domain(int argc, const char *argv[])
       // Invalidate coordinate matrix
       coords.reset(0);
 
-      if (theArea.get()) throw runtime_error("Area given twice");
+      if (theArea.get())
+        throw runtime_error("Area given twice");
 
       unsigned long classID;
       string className;
       script >> classID >> className;
       theArea.reset(static_cast<NFmiArea *>(CreateSaveBase(classID)));
-      if (!theArea.get()) throw runtime_error("Unrecognized area in the script");
+      if (!theArea.get())
+        throw runtime_error("Unrecognized area in the script");
 
       script >> *theArea;
 
@@ -578,7 +588,8 @@ int domain(int argc, const char *argv[])
       // Invalidate coordinate matrix
       coords.reset(0);
 
-      if (theArea.get()) throw runtime_error("Projection given twice");
+      if (theArea.get())
+        throw runtime_error("Projection given twice");
 
       string specs;
       script >> specs;
@@ -619,9 +630,11 @@ int domain(int argc, const char *argv[])
     // ------------------------------------------------------------
     else if (token == "body")
     {
-      if (body) throw runtime_error("body command given twice in script");
+      if (body)
+        throw runtime_error("body command given twice in script");
 
-      if (!theArea.get()) throw runtime_error("No area specified before body");
+      if (!theArea.get())
+        throw runtime_error("No area specified before body");
 
       body = true;
 
@@ -662,7 +675,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "boundingbox")
     {
-      if (!theArea.get()) throw runtime_error("Using boundingbox before area");
+      if (!theArea.get())
+        throw runtime_error("Using boundingbox before area");
 
       buffer << static_cast<int>(theArea->Left()) << " " << static_cast<int>(theArea->Bottom())
              << " moveto " << static_cast<int>(theArea->Left()) << " "
@@ -678,7 +692,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "project")
     {
-      if (!theArea.get()) throw runtime_error("Using project before area");
+      if (!theArea.get())
+        throw runtime_error("Using project before area");
 
       double x, y;
       script >> x >> y;
@@ -694,7 +709,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "location")
     {
-      if (!theArea.get()) throw runtime_error("Using location before area");
+      if (!theArea.get())
+        throw runtime_error("Using location before area");
 
       string placename;
       script >> placename;
@@ -715,7 +731,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "system")
     {
-      if (!body) throw runtime_error("system command does not work in the header");
+      if (!body)
+        throw runtime_error("system command does not work in the header");
 
       getline(script, token);
       buffer << "% " << token << endl;
@@ -727,14 +744,17 @@ int domain(int argc, const char *argv[])
     // ------------------------------------------------------------
     else if (token == "shape" || token == "subshape" || token == "exec")
     {
-      if (!body) throw runtime_error("Cannot have " + token + " command in header");
+      if (!body)
+        throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto, closepath;
-      if (token == "shape" || token == "subshape") script >> moveto >> lineto >> closepath;
+      if (token == "shape" || token == "subshape")
+        script >> moveto >> lineto >> closepath;
 
       string shapefile, condition;
 
-      if (token == "subshape") script >> condition;
+      if (token == "subshape")
+        script >> condition;
 
       script >> shapefile;
 
@@ -757,11 +777,13 @@ int domain(int argc, const char *argv[])
           buffer << pathtostring(path, *theArea, theClipMargin, moveto, lineto, closepath);
         else
           buffer << pathtostring(path, *theArea, theClipMargin, "e3", "e2");
-        if (token == "exec") buffer << "pop pop" << endl;
+        if (token == "exec")
+          buffer << "pop pop" << endl;
       }
       catch (std::exception &e)
       {
-        if (token != "shape") throw e;
+        if (token != "shape")
+          throw e;
         string msg = "Failed at command shape ";
         msg += moveto + ' ';
         msg += lineto + ' ';
@@ -779,9 +801,11 @@ int domain(int argc, const char *argv[])
 
     else if (token == "qdexec")
     {
-      if (!body) throw runtime_error("Cannot have " + token + " command in header");
+      if (!body)
+        throw runtime_error("Cannot have " + token + " command in header");
 
-      if (!theArea.get()) throw runtime_error("Using qdexec before projection specified");
+      if (!theArea.get())
+        throw runtime_error("Using qdexec before projection specified");
 
       string queryfile;
       script >> queryfile;
@@ -810,7 +834,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "gshhs")
     {
-      if (!body) throw runtime_error("Cannot have " + token + " command in header");
+      if (!body)
+        throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto, closepath;
       script >> moveto >> lineto >> closepath;
@@ -853,7 +878,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "graticule")
     {
-      if (!body) throw runtime_error("Cannot have " + token + " command in header");
+      if (!body)
+        throw runtime_error("Cannot have " + token + " command in header");
 
       string moveto, lineto;
       script >> moveto >> lineto;
@@ -861,10 +887,14 @@ int domain(int argc, const char *argv[])
       double lon1, lon2, dx, lat1, lat2, dy;
       script >> lon1 >> lon2 >> dx >> lat1 >> lat2 >> dy;
 
-      if (lon1 > lon2) throw runtime_error("Graticule lon1>lon2");
-      if (lat1 > lat2) throw runtime_error("Graticule lat1>lat2");
-      if (dx <= 0) throw runtime_error("Graticule dx<=0");
-      if (dy <= 0) throw runtime_error("Graticule dy<=0");
+      if (lon1 > lon2)
+        throw runtime_error("Graticule lon1>lon2");
+      if (lat1 > lat2)
+        throw runtime_error("Graticule lat1>lat2");
+      if (dx <= 0)
+        throw runtime_error("Graticule dx<=0");
+      if (dy <= 0)
+        throw runtime_error("Graticule dy<=0");
 
       buffer << "% graticule " << lon1 << ' ' << lon2 << ' ' << dx << ' ' << lat1 << ' ' << lat2
              << ' ' << dy << endl;
@@ -959,7 +989,8 @@ int domain(int argc, const char *argv[])
       script >> theTimeOrigin >> theDay >> theHour;
       if (theTimeOrigin != "now" && theTimeOrigin != "origintime" && theTimeOrigin != "firsttime")
         throw runtime_error("Time mode " + theTimeOrigin + " is not recognized");
-      if (theDay < 0) throw runtime_error("First argument of time-command must be nonnegative");
+      if (theDay < 0)
+        throw runtime_error("First argument of time-command must be nonnegative");
       if (theHour < 0 || theHour > 24)
         throw runtime_error("Second argument of time-command must be in range 0-23");
     }
@@ -991,7 +1022,8 @@ int domain(int argc, const char *argv[])
     {
       values.reset(0);
       script >> theSmoother;
-      if (theSmoother != "None") script >> theSmootherFactor >> theSmootherRadius;
+      if (theSmoother != "None")
+        script >> theSmootherFactor >> theSmootherRadius;
       if (NFmiSmoother::SmootherValue(theSmoother) == NFmiSmoother::kFmiSmootherMissing)
         throw runtime_error("Smoother mode " + theSmoother + " is not recognized");
     }
@@ -1012,7 +1044,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "windarrows")
     {
-      if (!body) throw runtime_error(token + " command is not allowed in the header");
+      if (!body)
+        throw runtime_error(token + " command is not allowed in the header");
 
       int dx, dy;
       script >> dx >> dy;
@@ -1056,17 +1089,9 @@ int domain(int argc, const char *argv[])
       // Get the data to be contoured
 
       if (coords.get() == 0)
-      {
-        coords.reset(new NFmiDataMatrix<NFmiPoint>);
-        q->LocationsXY(*coords, *theArea);
-      }
+        coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
 
-      values.reset();
-      if (values.get() == 0)
-      {
-        values.reset(new NFmiDataMatrix<float>);
-        q->Values(*values, t);
-      }
+      values.reset(new NFmiDataMatrix<float>(q->Values(t)));
 
       // Loop through the data and render arrows
 
@@ -1074,7 +1099,7 @@ int domain(int argc, const char *argv[])
         for (unsigned int i = 0; i < values->NX(); i += dx)
         {
           float wdir = (*values)[i][j];
-          NFmiPoint xy = (*coords)[i][j];
+          NFmiPoint xy = (*coords)(i, j);
 
           double x = xy.X();
           double y = theArea->Bottom() - (xy.Y() - theArea->Top());
@@ -1094,7 +1119,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "contourline" || token == "contourfill")
     {
-      if (!body) throw runtime_error(token + " command is not allowed in the header");
+      if (!body)
+        throw runtime_error(token + " command is not allowed in the header");
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
       if (q == 0)
@@ -1137,7 +1163,8 @@ int domain(int argc, const char *argv[])
         t.ChangeByHours(theHour);
       }
 
-      if (theLocalTimeMode) t = toutctime(t);
+      if (theLocalTimeMode)
+        t = toutctime(t);
 
       cerr << "Time = " << t << endl;
 
@@ -1160,14 +1187,12 @@ int domain(int argc, const char *argv[])
 
       if (coords.get() == 0)
       {
-        coords.reset(new NFmiDataMatrix<NFmiPoint>);
-        q->LocationsXY(*coords, *theArea);
+        coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
       }
 
       if (values.get() == 0)
       {
-        values.reset(new NFmiDataMatrix<float>);
-        q->Values(*values, t);
+        values.reset(new NFmiDataMatrix<float>(q->Values(t)));
 
         if (theSmoother != "None")
         {
@@ -1177,7 +1202,8 @@ int domain(int argc, const char *argv[])
       }
 
       Imagine::NFmiContourTree tree(lolimit, hilimit);
-      if (token == "contourline") tree.LinesOnly(true);
+      if (token == "contourline")
+        tree.LinesOnly(true);
 
       tree.Contour(*coords, *values, Imagine::NFmiContourTree::kFmiContourLinear);
 

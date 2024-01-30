@@ -41,7 +41,8 @@ int domain(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if (cmdline.NumberofParameters() != 2)
     throw runtime_error("Expecting two command line arguments");
@@ -49,9 +50,11 @@ int domain(int argc, const char *argv[])
   const int level = NFmiStringTools::Convert<int>(cmdline.Parameter(1));
   const string gshhsfile = cmdline.Parameter(2);
 
-  if (level < 0 || level > 255) throw runtime_error("The level parameter must be in range 0-255");
+  if (level < 0 || level > 255)
+    throw runtime_error("The level parameter must be in range 0-255");
 
-  if (gshhsfile.empty()) throw runtime_error("The name of the gshhsfile is empty");
+  if (gshhsfile.empty())
+    throw runtime_error("The name of the gshhsfile is empty");
 
   // Read the GSHHS data
 

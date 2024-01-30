@@ -6,16 +6,10 @@
 // ======================================================================
 
 #include "Projection.h"
-
-#include <newbase/NFmiEquidistArea.h>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaTools.h>
 #include <newbase/NFmiGlobals.h>
-#include <newbase/NFmiGnomonicArea.h>
-#include <newbase/NFmiLatLonArea.h>
-#include <newbase/NFmiMercatorArea.h>
 #include <newbase/NFmiPoint.h>
-#include <newbase/NFmiStereographicArea.h>
-#include <newbase/NFmiYKJArea.h>
-
 #include <stdexcept>
 
 using namespace std;
@@ -28,7 +22,7 @@ using namespace std;
 //! The implementation hiding pimple for class Projection
 struct ProjectionPimple
 {
-  ProjectionPimple(void)
+  ProjectionPimple()
       : itsType(""),
         itsCentralLatitude(kFloatMissing),
         itsCentralLongitude(kFloatMissing),
@@ -62,7 +56,7 @@ struct ProjectionPimple
  */
 // ----------------------------------------------------------------------
 
-Projection::~Projection(void) {}
+Projection::~Projection() {}
 
 // ----------------------------------------------------------------------
 /*!
@@ -70,7 +64,7 @@ Projection::~Projection(void) {}
  */
 // ----------------------------------------------------------------------
 
-Projection::Projection(void)
+Projection::Projection()
 {
 #ifdef _MSC_VER
   itsPimple = auto_ptr<ProjectionPimple>(new ProjectionPimple());
@@ -125,7 +119,10 @@ Projection &Projection::operator=(const Projection &theProjection)
  */
 // ----------------------------------------------------------------------
 
-void Projection::type(const std::string &theType) { itsPimple->itsType = theType; }
+void Projection::type(const std::string &theType)
+{
+  itsPimple->itsType = theType;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -148,7 +145,10 @@ void Projection::centralLongitude(float theLongitude)
  */
 // ----------------------------------------------------------------------
 
-void Projection::centralLatitude(float theLatitude) { itsPimple->itsCentralLatitude = theLatitude; }
+void Projection::centralLatitude(float theLatitude)
+{
+  itsPimple->itsCentralLatitude = theLatitude;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -158,7 +158,10 @@ void Projection::centralLatitude(float theLatitude) { itsPimple->itsCentralLatit
  */
 // ----------------------------------------------------------------------
 
-void Projection::trueLatitude(float theLatitude) { itsPimple->itsTrueLatitude = theLatitude; }
+void Projection::trueLatitude(float theLatitude)
+{
+  itsPimple->itsTrueLatitude = theLatitude;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -210,7 +213,10 @@ void Projection::center(float theLon, float theLat)
  */
 // ----------------------------------------------------------------------
 
-void Projection::scale(float theScale) { itsPimple->itsScale = theScale; }
+void Projection::scale(float theScale)
+{
+  itsPimple->itsScale = theScale;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -220,7 +226,10 @@ void Projection::scale(float theScale) { itsPimple->itsScale = theScale; }
  */
 // ----------------------------------------------------------------------
 
-void Projection::width(float theWidth) { itsPimple->itsWidth = theWidth; }
+void Projection::width(float theWidth)
+{
+  itsPimple->itsWidth = theWidth;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -230,7 +239,10 @@ void Projection::width(float theWidth) { itsPimple->itsWidth = theWidth; }
  */
 // ----------------------------------------------------------------------
 
-void Projection::height(float theHeight) { itsPimple->itsHeight = theHeight; }
+void Projection::height(float theHeight)
+{
+  itsPimple->itsHeight = theHeight;
+}
 
 void Projection::origin(float theLon, float theLat)
 {
@@ -247,7 +259,7 @@ void Projection::origin(float theLon, float theLat)
  */
 // ----------------------------------------------------------------------
 
-NFmiArea *Projection::createArea(void) const
+NFmiArea *Projection::createArea() const
 {
   if (itsPimple->itsWidth < 0 && itsPimple->itsHeight < 0)
     throw std::runtime_error("Must specify atleast one of width/height");
@@ -264,43 +276,29 @@ NFmiArea *Projection::createArea(void) const
   NFmiPoint bottomleft = has_center ? itsPimple->itsCenter : itsPimple->itsBottomLeft;
   NFmiPoint topright = has_center ? itsPimple->itsCenter : itsPimple->itsTopRight;
 
-  NFmiPoint topleftxy = NFmiPoint(0, 0);
-  NFmiPoint bottomrightxy = NFmiPoint(1, 1);
-
   if (itsPimple->itsType == string("latlon"))
-    area = new NFmiLatLonArea(bottomleft, topright, topleftxy, bottomrightxy);
+    area = NFmiAreaTools::CreateLegacyLatLonArea(bottomleft, topright);
 
   else if (itsPimple->itsType == "ykj")
-    area = new NFmiYKJArea(bottomleft, topright, topleftxy, bottomrightxy);
+    area = NFmiAreaTools::CreateLegacyYKJArea(bottomleft, topright);
 
   else if (itsPimple->itsType == "mercator")
-    area = new NFmiMercatorArea(bottomleft, topright, topleftxy, bottomrightxy);
+    area = NFmiAreaTools::CreateLegacyMercatorArea(bottomleft, topright);
 
   else if (itsPimple->itsType == string("stereographic"))
-    area = new NFmiStereographicArea(bottomleft,
-                                     topright,
-                                     itsPimple->itsCentralLongitude,
-                                     topleftxy,
-                                     bottomrightxy,
-                                     itsPimple->itsCentralLatitude,
-                                     itsPimple->itsTrueLatitude);
+    area = NFmiAreaTools::CreateLegacyStereographicArea(bottomleft,
+                                                        topright,
+                                                        itsPimple->itsCentralLongitude,
+                                                        itsPimple->itsCentralLatitude,
+                                                        itsPimple->itsTrueLatitude);
 
   else if (itsPimple->itsType == "gnomonic")
-    area = new NFmiGnomonicArea(bottomleft,
-                                topright,
-                                itsPimple->itsCentralLongitude,
-                                topleftxy,
-                                bottomrightxy,
-                                itsPimple->itsCentralLatitude,
-                                itsPimple->itsTrueLatitude);
+    area = NFmiAreaTools::CreateLegacyGnomonicArea(
+        bottomleft, topright, itsPimple->itsCentralLongitude, itsPimple->itsCentralLatitude);
 
   else if (itsPimple->itsType == "equidist")
-    area = new NFmiEquidistArea(bottomleft,
-                                topright,
-                                itsPimple->itsCentralLongitude,
-                                topleftxy,
-                                bottomrightxy,
-                                itsPimple->itsCentralLatitude);
+    area = NFmiAreaTools::CreateLegacyEquiDistArea(
+        bottomleft, topright, itsPimple->itsCentralLongitude, itsPimple->itsCentralLatitude);
   else
   {
     std::string msg = "Unrecognized projection type ";
@@ -331,8 +329,10 @@ NFmiArea *Projection::createArea(void) const
     float w = itsPimple->itsWidth;
     float h = itsPimple->itsHeight;
 
-    if (w < 0) w = h * area->WorldXYAspectRatio();
-    if (h < 0) h = w / area->WorldXYAspectRatio();
+    if (w < 0)
+      w = h * area->WorldXYAspectRatio();
+    if (h < 0)
+      h = w / area->WorldXYAspectRatio();
 
     area->SetXYArea(NFmiRect(itsPimple->itsOrigin.X(), h, w, itsPimple->itsOrigin.Y()));
   }

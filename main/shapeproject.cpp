@@ -105,7 +105,8 @@ bool parse_command_line(int argc, const char *argv[])
 {
   NFmiCmdLine cmdline(argc, argv, "hi!o!");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   // help-option must be checked first
 
@@ -125,9 +126,11 @@ bool parse_command_line(int argc, const char *argv[])
 
   // options
 
-  if (cmdline.isOption('i')) options.inputprojection = cmdline.OptionValue('i');
+  if (cmdline.isOption('i'))
+    options.inputprojection = cmdline.OptionValue('i');
 
-  if (cmdline.isOption('o')) options.outputprojection = cmdline.OptionValue('o');
+  if (cmdline.isOption('o'))
+    options.outputprojection = cmdline.OptionValue('o');
 
   // validity checks
 
@@ -191,7 +194,8 @@ class MyProjector : public NFmiEsriProjector
 int domain(int argc, const char *argv[])
 {
   // Parse the command line options
-  if (!parse_command_line(argc, argv)) return 0;
+  if (!parse_command_line(argc, argv))
+    return 0;
 
   // Create the projections
 

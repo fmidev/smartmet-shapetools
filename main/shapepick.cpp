@@ -48,9 +48,14 @@ bool parse_options(int argc, char *argv[])
   namespace po = boost::program_options;
 
   po::options_description desc("Allowed options");
-  desc.add_options()("help,h", "print out help message")("version,V", "display version number")(
-      "lon", po::value(&options.lon), "longitude")("lat", po::value(&options.lat), "latitude")(
-      "infile,i", po::value(&options.infile), "input shapepack");
+  desc.add_options()("help,h", "print out help message")(
+      "version,V", "display version number")("lon",
+                                             po::value(&options.lon),
+                                             "longitude")("lat",
+                                                          po::value(&options.lat),
+                                                          "latitude")("infile,i",
+                                                                      po::value(&options.infile),
+                                                                      "input shapepack");
 
   po::positional_options_description p;
   p.add("infile", 1);
@@ -77,11 +82,14 @@ bool parse_options(int argc, char *argv[])
     return false;
   }
 
-  if (opt.count("infile") == 0) throw std::runtime_error("shapepick name not specified");
+  if (opt.count("infile") == 0)
+    throw std::runtime_error("shapepick name not specified");
 
-  if (opt.count("lon") == 0) throw std::runtime_error("longitude not specified");
+  if (opt.count("lon") == 0)
+    throw std::runtime_error("longitude not specified");
 
-  if (opt.count("lat") == 0) throw std::runtime_error("latitude not specified");
+  if (opt.count("lat") == 0)
+    throw std::runtime_error("latitude not specified");
 
   // Check bounding box
 
@@ -102,7 +110,8 @@ bool parse_options(int argc, char *argv[])
 
 int run(int argc, char *argv[])
 {
-  if (!parse_options(argc, argv)) return 0;
+  if (!parse_options(argc, argv))
+    return 0;
 
   Fmi::WorldTimeZones shape(options.infile);
 

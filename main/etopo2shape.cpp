@@ -13,10 +13,10 @@
 #include <imagine/NFmiEsriPolygon.h>
 #include <imagine/NFmiEsriShape.h>
 #include <imagine/NFmiPath.h>
+#include <newbase/NFmiAreaTools.h>
 #include <newbase/NFmiCmdLine.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiFileString.h>
-#include <newbase/NFmiLatLonArea.h>
 #include <newbase/NFmiSettings.h>
 #include <fstream>
 #include <iomanip>
@@ -83,7 +83,8 @@ void parse_command_line(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "hvb!l!");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if (cmdline.isOption('h'))
   {
@@ -96,12 +97,14 @@ void parse_command_line(int argc, const char *argv[])
 
   globals.shapename = cmdline.Parameter(1);
 
-  if (cmdline.isOption('v')) globals.verbose = true;
+  if (cmdline.isOption('v'))
+    globals.verbose = true;
 
   if (cmdline.isOption('b'))
   {
     const vector<double> values = NFmiStringTools::Split<vector<double>>(cmdline.OptionValue('b'));
-    if (values.size() != 4) throw runtime_error("The bounding box must consist of 4 numbers");
+    if (values.size() != 4)
+      throw runtime_error("The bounding box must consist of 4 numbers");
     globals.x1 = values[0];
     globals.y1 = values[1];
     globals.x2 = values[2];
@@ -128,7 +131,8 @@ void parse_command_line(int argc, const char *argv[])
 
 void read_etopo2()
 {
-  if (globals.verbose) cout << "Reading the topography data..." << endl;
+  if (globals.verbose)
+    cout << "Reading the topography data..." << endl;
 
   const string filename = NFmiSettings::Require<string>("rasters::etopo2");
 
@@ -175,7 +179,8 @@ void read_etopo2()
   // Start reading
 
   ifstream in(filename.c_str(), ios::in | ios::binary);
-  if (!in) throw runtime_error("Failed to open '" + filename + "' for reading");
+  if (!in)
+    throw runtime_error("Failed to open '" + filename + "' for reading");
 
   const NFmiFileString tmpfilename(filename);
   const string suffix = tmpfilename.Extension().CharPtr();
@@ -193,14 +198,17 @@ void read_etopo2()
 
   const int skip = 2 * (j1 * columns + i1);
 
-  if (globals.verbose) cout << "Skipping first " << skip << " bytes..." << endl;
+  if (globals.verbose)
+    cout << "Skipping first " << skip << " bytes..." << endl;
   filter.ignore(skip);
 
-  if (globals.verbose) cout << "Reading desired subgrid..." << endl;
+  if (globals.verbose)
+    cout << "Reading desired subgrid..." << endl;
   for (unsigned int j = 0; j < globals.values.NY(); j++)
   {
     // skip to next row if not the first row
-    if (j > 0) filter.ignore(2 * (columns - globals.values.NX()));
+    if (j > 0)
+      filter.ignore(2 * (columns - globals.values.NX()));
 
     unsigned char ch1, ch2;
     short height;
@@ -237,7 +245,8 @@ void path_to_shape(const NFmiPath &thePath,
     else if (++it == end)
     {
       --it;
-      if (polygon == 0) polygon = new NFmiEsriPolygon;
+      if (polygon == 0)
+        polygon = new NFmiEsriPolygon;
       polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       doflush = true;
     }
@@ -267,12 +276,12 @@ void path_to_shape(const NFmiPath &thePath,
 
 void create_shape()
 {
-  if (globals.verbose) cout << "Contouring the topography data..." << endl;
+  if (globals.verbose)
+    cout << "Contouring the topography data..." << endl;
 
-  NFmiLatLonArea area(NFmiPoint(globals.x1, globals.y1),
-                      NFmiPoint(globals.x2, globals.y2),
-                      NFmiPoint(0, 0),
-                      NFmiPoint(globals.values.NX(), globals.values.NY()));
+  auto *area = NFmiAreaTools::CreateLegacyLatLonArea(NFmiPoint(globals.x1, globals.y1),
+                                                     NFmiPoint(globals.x2, globals.y2));
+  area->SetXYArea(NFmiRect(0, 0, globals.values.NX(), globals.values.NY()));
 
   NFmiDataHints hints(globals.values);
 
@@ -284,7 +293,8 @@ void create_shape()
 
   for (set<int>::const_iterator it = globals.heights.begin(); it != globals.heights.end(); ++it)
   {
-    if (globals.verbose) cout << "  height " << *it << "..." << endl;
+    if (globals.verbose)
+      cout << "  height " << *it << "..." << endl;
 
     float lolimit = kFloatMissing;
     float hilimit = kFloatMissing;
@@ -298,13 +308,14 @@ void create_shape()
     tree.Contour(globals.values, hints, NFmiContourTree::kFmiContourLinear);
 
     NFmiPath path = tree.Path();
-    path.InvProject(&area);
+    path.InvProject(area);
 
     NFmiEsriAttribute attrvalue(*it, attribute);
     path_to_shape(path, shape, attrvalue);
   }
 
-  if (globals.verbose) cout << "Writing result..." << endl;
+  if (globals.verbose)
+    cout << "Writing result..." << endl;
 
   shape.Write(globals.shapename);
 }

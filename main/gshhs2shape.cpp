@@ -41,7 +41,8 @@ int domain(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
   if (cmdline.NumberofParameters() != 2)
     throw runtime_error("Expecting two command line arguments");
@@ -49,9 +50,11 @@ int domain(int argc, const char *argv[])
   const string gshhsfile = cmdline.Parameter(1);
   const string shapename = cmdline.Parameter(2);
 
-  if (gshhsfile.empty()) throw runtime_error("The name of the gshhsfile is empty");
+  if (gshhsfile.empty())
+    throw runtime_error("The name of the gshhsfile is empty");
 
-  if (shapename.empty()) throw runtime_error("The name of the shape is empty");
+  if (shapename.empty())
+    throw runtime_error("The name of the shape is empty");
 
   // Read the GSHHS data
 
@@ -70,12 +73,15 @@ int domain(int argc, const char *argv[])
     switch ((*it).Oper())
     {
       case Imagine::kFmiMoveTo:
-        if (line != 0) shp.Add(line);
+        if (line != 0)
+          shp.Add(line);
         line = new Imagine::NFmiEsriPolyLine;
-        if (line == 0) throw runtime_error("Failed to allocate a new NFmiEsriPolyLine");
+        if (line == 0)
+          throw runtime_error("Failed to allocate a new NFmiEsriPolyLine");
       // fall through
       case Imagine::kFmiLineTo:
-        if (line == 0) throw runtime_error("Internal error - a lineto before a moveto");
+        if (line == 0)
+          throw runtime_error("Internal error - a lineto before a moveto");
         line->Add(Imagine::NFmiEsriPoint((*it).X(), (*it).Y()));
         break;
       case Imagine::kFmiGhostLineTo:
@@ -84,10 +90,12 @@ int domain(int argc, const char *argv[])
         throw runtime_error("The shapefile contains Bezier curve segments");
     }
   }
-  if (line != 0) shp.Add(line);
+  if (line != 0)
+    shp.Add(line);
 
   string filename = shapename + ".shp";
-  if (!shp.WriteSHP(filename)) throw runtime_error("Failed to write '" + filename + "'");
+  if (!shp.WriteSHP(filename))
+    throw runtime_error("Failed to write '" + filename + "'");
 
   return 0;
 }

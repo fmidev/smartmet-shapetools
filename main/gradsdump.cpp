@@ -38,18 +38,22 @@ int domain(int argc, const char *argv[])
 
   NFmiCmdLine cmdline(argc, argv, "");
 
-  if (cmdline.Status().IsError()) throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
+  if (cmdline.Status().IsError())
+    throw runtime_error(cmdline.Status().ErrorLog().CharPtr());
 
-  if (cmdline.NumberofParameters() != 1) throw runtime_error("Expecting one command line argument");
+  if (cmdline.NumberofParameters() != 1)
+    throw runtime_error("Expecting one command line argument");
 
   const string gradsfile = cmdline.Parameter(1);
 
-  if (gradsfile.empty()) throw runtime_error("The name of the GrADS file is empty");
+  if (gradsfile.empty())
+    throw runtime_error("The name of the GrADS file is empty");
 
   // Dump the GrADS file
 
   ifstream in(gradsfile.c_str(), ios::in | ios::binary);
-  if (!in) throw runtime_error("Failed to open '" + gradsfile + "' for reading");
+  if (!in)
+    throw runtime_error("Failed to open '" + gradsfile + "' for reading");
 
   unsigned char record_type;
   unsigned char record_level;
