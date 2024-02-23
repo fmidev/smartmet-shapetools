@@ -24,12 +24,12 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal35-devel
-BuildRequires: smartmet-library-imagine-devel >= 24.1.30
-BuildRequires: smartmet-library-newbase-devel >= 24.1.30
+BuildRequires: smartmet-library-imagine-devel >= 24.2.23
+BuildRequires: smartmet-library-newbase-devel >= 24.2.23
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
-Requires: smartmet-library-imagine >= 24.1.30
-Requires: smartmet-library-newbase >= 24.1.30
+Requires: smartmet-library-imagine >= 24.2.23
+Requires: smartmet-library-newbase >= 24.2.23
 Requires: smartmet-library-macgyver >= 24.1.17
 Requires: smartmet-library-gis >= 24.1.3
 Requires: %{smartmet_boost}-iostreams
