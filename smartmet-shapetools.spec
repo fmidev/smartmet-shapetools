@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 24.2.23
+Version: 24.3.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -25,11 +25,11 @@ BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal35-devel
 BuildRequires: smartmet-library-imagine-devel >= 24.2.23
-BuildRequires: smartmet-library-newbase-devel >= 24.2.23
+BuildRequires: smartmet-library-newbase-devel >= 24.3.11
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
 Requires: smartmet-library-imagine >= 24.2.23
-Requires: smartmet-library-newbase >= 24.2.23
+Requires: smartmet-library-newbase >= 24.3.11
 Requires: smartmet-library-macgyver >= 24.1.17
 Requires: smartmet-library-gis >= 24.1.3
 Requires: %{smartmet_boost}-iostreams
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Mar 18 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.3.18-1.fmi
+- Fixed shape2ps to check whether the desired time is available
+
 * Fri Feb 23 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> 24.2.23-1.fmi
 - Full repackaging
 
