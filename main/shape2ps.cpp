@@ -1092,6 +1092,8 @@ int domain(int argc, const char *argv[])
         coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
 
       values.reset(new NFmiDataMatrix<float>(q->Values(t)));
+      if (values->NX() == 0 || values->NY() == 0)
+        throw runtime_error("Requested time not available");
 
       // Loop through the data and render arrows
 
@@ -1193,6 +1195,8 @@ int domain(int argc, const char *argv[])
       if (values.get() == 0)
       {
         values.reset(new NFmiDataMatrix<float>(q->Values(t)));
+        if (values->NX() == 0 || values->NY() == 0)
+          throw runtime_error("Requested time not available");
 
         if (theSmoother != "None")
         {
