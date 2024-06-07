@@ -23,7 +23,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
-BuildRequires: gdal35-devel
+BuildRequires: gdal38-devel
 BuildRequires: smartmet-library-imagine-devel >= 24.2.23
 BuildRequires: smartmet-library-newbase-devel >= 24.3.11
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
