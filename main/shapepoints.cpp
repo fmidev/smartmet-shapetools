@@ -37,7 +37,7 @@
 // ======================================================================
 
 #include "PointSelector.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <imagine/NFmiEsriPoint.h>
 #include <imagine/NFmiEsriShape.h>
 #include <newbase/NFmiArea.h>
@@ -304,7 +304,7 @@ int domain(int argc, const char *argv[])
 
   // Setup the selector
 
-  boost::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
+  std::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(options.projection);
   PointSelector selector(*area, options.negate);
   selector.minDistance(options.mindistance);
   selector.boundingBox(area->Left() + options.minborderdistance,

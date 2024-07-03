@@ -831,7 +831,7 @@ int domain(int argc, char *argv[])
 
   // Help informatio
 
-  boost::shared_ptr<Fmi::WorldTimeZones> zones;
+  std::shared_ptr<Fmi::WorldTimeZones> zones;
   if (!options.zonefile.empty())
     zones.reset(new Fmi::WorldTimeZones(options.zonefile));
 
