@@ -8,7 +8,7 @@
 #ifndef POINTSELECTOR_H
 #define POINTSELECTOR_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <list>
 
 class NFmiArea;
@@ -37,7 +37,7 @@ class PointSelector
 
  private:
   class Pimple;
-  boost::shared_ptr<Pimple> itsPimple;
+  std::shared_ptr<Pimple> itsPimple;
 
   PointSelector();
   PointSelector(const PointSelector &theSelector);

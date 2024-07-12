@@ -11,7 +11,7 @@
 #include <imagine/NFmiEsriShape.h>
 #include <newbase/NFmiSvgPath.h>
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 
@@ -114,7 +114,7 @@ std::map<std::string, NFmiSvgPath> read_files()
     if (svg.empty())
       throw std::runtime_error("File '" + s + "' contained no SVG path data");
 
-    boost::filesystem::path p(s);
+    std::filesystem::path p(s);
     std::string stem = p.stem().string();
     paths[stem] = svg;
   }
