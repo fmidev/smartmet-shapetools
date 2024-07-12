@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 24.3.18
+Version: 24.7.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Fri Jul 12 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.12-1.fmi
+- Replace many boost library types with C++ standard library ones
+
 * Mon Mar 18 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.3.18-1.fmi
 - Fixed shape2ps to check whether the desired time is available
 
