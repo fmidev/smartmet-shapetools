@@ -19,7 +19,6 @@ LIBS += -L$(libdir) \
 	-lsmartmet-macgyver \
 	-lsmartmet-gis \
 	-lboost_iostreams \
-	-lboost_filesystem \
 	-lboost_program_options \
 	-lboost_system \
 	-lstdc++ -lm
