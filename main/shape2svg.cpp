@@ -23,7 +23,6 @@
 #endif
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/foreach.hpp>
 #include <imagine/NFmiEsriMultiPoint.h>
 #include <imagine/NFmiEsriPolyLine.h>
 #include <imagine/NFmiEsriPolygon.h>
@@ -213,7 +212,7 @@ int run(int argc, const char *argv[])
     }
   }
 
-  BOOST_FOREACH (const Paths::value_type &ob, paths)
+  for (const Paths::value_type &ob : paths)
   {
     const std::string &outfile = ob.first;
     const Imagine::NFmiPath &path = ob.second;

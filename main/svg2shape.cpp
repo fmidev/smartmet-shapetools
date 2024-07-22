@@ -12,7 +12,6 @@
 #include <newbase/NFmiSvgPath.h>
 
 #include <filesystem>
-#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 
 #include <fstream>
@@ -102,7 +101,7 @@ std::map<std::string, NFmiSvgPath> read_files()
 {
   std::map<std::string, NFmiSvgPath> paths;
 
-  BOOST_FOREACH (const std::string &s, options.infiles)
+  for (const std::string &s : options.infiles)
   {
     NFmiSvgPath svg;
     std::ifstream in(s.c_str());
@@ -132,7 +131,7 @@ std::size_t max_name_length(const std::map<std::string, NFmiSvgPath> &paths)
 {
   std::size_t max_length = 0;
   typedef std::map<std::string, NFmiSvgPath>::value_type value_type;
-  BOOST_FOREACH (const value_type &v, paths)
+  for (const value_type &v : paths)
   {
     max_length = std::max(max_length, v.first.size());
   }
@@ -159,7 +158,7 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
 
   typedef NFmiSvgPath::const_iterator const_iterator;
 
-  BOOST_FOREACH (const value_type &v, paths)
+  for (const value_type &v : paths)
   {
     const std::string &name = v.first;
     const NFmiSvgPath &svg = v.second;
