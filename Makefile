@@ -12,7 +12,7 @@ DEFINES = -DUNIX
 INCLUDES += \
 	-I$(includedir)/smartmet
 
-LIBS += -L$(libdir) \
+LIBS += $(PREFIX_LDFLAGS) \
 	$(REQUIRED_LIBS) \
 	-lsmartmet-imagine \
 	-lsmartmet-newbase \
