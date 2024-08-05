@@ -394,7 +394,7 @@ int domain(int argc, const char *argv[])
   istringstream script(text);
 
   // The area specification is not given yet
-  boost::shared_ptr<NFmiArea> theArea;
+  std::shared_ptr<NFmiArea> theArea;
 
   // The querydata is not given yet
   string theQueryDataName;

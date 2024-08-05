@@ -66,7 +66,6 @@
 
 #include <macgyver/WorldTimeZones.h>
 
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
@@ -703,7 +702,7 @@ string compress_image(const NFmiImage &theImage, const map<string, int> &theMap)
         uniques.insert(theImage(i, j));
       last = theImage(i, j);
     }
-  BOOST_FOREACH (int c, uniques)
+  for (int c : uniques)
     std::cout << c << std::endl;
 #endif
 
@@ -831,7 +830,7 @@ int domain(int argc, char *argv[])
 
   // Help informatio
 
-  boost::shared_ptr<Fmi::WorldTimeZones> zones;
+  std::shared_ptr<Fmi::WorldTimeZones> zones;
   if (!options.zonefile.empty())
     zones.reset(new Fmi::WorldTimeZones(options.zonefile));
 
@@ -844,7 +843,7 @@ int domain(int argc, char *argv[])
 
   if (zones)
   {
-    BOOST_FOREACH (const string &z, zones->zones())
+    for (const string &z : zones->zones())
       uniques.insert(z);
   }
 

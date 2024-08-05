@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 24.3.18
+Version: 24.7.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -24,14 +24,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal38-devel
-BuildRequires: smartmet-library-imagine-devel >= 24.2.23
-BuildRequires: smartmet-library-newbase-devel >= 24.3.11
-BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
-BuildRequires: smartmet-library-gis-devel >= 24.1.3
-Requires: smartmet-library-imagine >= 24.2.23
-Requires: smartmet-library-newbase >= 24.3.11
-Requires: smartmet-library-macgyver >= 24.1.17
-Requires: smartmet-library-gis >= 24.1.3
+BuildRequires: smartmet-library-imagine-devel >= 24.7.12
+BuildRequires: smartmet-library-newbase-devel >= 24.7.12
+BuildRequires: smartmet-library-macgyver-devel >= 24.7.12
+BuildRequires: smartmet-library-gis-devel >= 24.7.12
+Requires: smartmet-library-imagine >= 24.7.12
+Requires: smartmet-library-newbase >= 24.7.12
+Requires: smartmet-library-macgyver >= 24.7.12
+Requires: smartmet-library-gis >= 24.7.12
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-program-options
@@ -107,6 +107,15 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Jul 22 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.22-1.fmi
+- Replace BOOST_FOREACH and boost::array
+
+* Wed Jul 17 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.17-1.fmi
+- Do not link with libboost_filesystem
+
+* Fri Jul 12 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.12-1.fmi
+- Replace many boost library types with C++ standard library ones
+
 * Mon Mar 18 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.3.18-1.fmi
 - Fixed shape2ps to check whether the desired time is available
 

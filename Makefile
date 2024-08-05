@@ -12,14 +12,13 @@ DEFINES = -DUNIX
 INCLUDES += \
 	-I$(includedir)/smartmet
 
-LIBS += -L$(libdir) \
+LIBS += $(PREFIX_LDFLAGS) \
 	$(REQUIRED_LIBS) \
 	-lsmartmet-imagine \
 	-lsmartmet-newbase \
 	-lsmartmet-macgyver \
 	-lsmartmet-gis \
 	-lboost_iostreams \
-	-lboost_filesystem \
 	-lboost_program_options \
 	-lboost_system \
 	-lstdc++ -lm
