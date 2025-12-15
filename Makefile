@@ -20,7 +20,6 @@ LIBS += $(PREFIX_LDFLAGS) \
 	-lsmartmet-gis \
 	-lboost_iostreams \
 	-lboost_program_options \
-	-lboost_system \
 	-lstdc++ -lm
 
 # Compilation directories
