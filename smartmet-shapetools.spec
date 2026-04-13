@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 26.2.4
+Version: 26.4.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -27,14 +27,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal312-devel
-BuildRequires: smartmet-library-imagine-devel >= 26.2.4
+BuildRequires: smartmet-library-imagine-devel >= 26.4.13
 BuildRequires: smartmet-library-newbase-devel >= 26.2.4
-BuildRequires: smartmet-library-macgyver-devel >= 26.2.4
-BuildRequires: smartmet-library-gis-devel >= 26.2.4
-Requires: smartmet-library-imagine >= 26.2.4
+BuildRequires: smartmet-library-macgyver-devel >= 26.4.13
+BuildRequires: smartmet-library-gis-devel >= 26.4.13
+Requires: smartmet-library-imagine >= 26.4.13
 Requires: smartmet-library-newbase >= 26.2.4
-Requires: smartmet-library-macgyver >= 26.2.4
-Requires: smartmet-library-gis >= 26.2.4
+Requires: smartmet-library-macgyver >= 26.4.13
+Requires: smartmet-library-gis >= 26.4.13
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-program-options
@@ -110,6 +110,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/svg2shape
 
 %changelog
+* Mon Apr 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.4.13-1.fmi
+- Repackaged due to API changes
+
 * Wed Feb  4 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.2.4-1.fmi
 - Update to proj-9.7, gdal-3.12, fmt-12
 
