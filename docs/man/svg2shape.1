@@ -1,0 +1,50 @@
+.TH SVG2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+svg2shape \- build an ESRI shapefile from SVG paths
+.SH SYNOPSIS
+.B svg2shape
+.RI [ options ]
+.I infiles ...
+.SH DESCRIPTION
+.B svg2shape
+reads one or more SVG path files (typically produced by
+.BR shape2svg (1))
+and assembles them into a single ESRI shapefile. Each input file
+contributes one polygon, and the file's stem (without the
+.I .svg
+suffix) is stored as the value of the chosen attribute.
+.SH OPTIONS
+.TP
+.B \-h ", " \-\^\-help
+Print help.
+.TP
+.B \-V ", " \-\^\-version
+Display version number.
+.TP
+.BI \-o " name" "\fR, \fP\-\^\-shape " name
+Output shapefile name, given without the trailing
+.I .shp
+suffix (default
+.BR out ).
+.TP
+.BI \-f " name" "\fR, \fP\-\^\-field " name
+Attribute name used to record the source filename (default
+.BR NAME ).
+.TP
+.BI \-\^\-infiles " files..."
+Input SVG files. May also be given as positional arguments.
+.SH EXAMPLES
+Round\(hytrip a shape through SVG:
+.PP
+.RS 4
+shape2svg \-f NAME regions
+.br
+svg2shape \-o regions2 \-f NAME *.svg
+.RE
+.SH SEE ALSO
+.BR shape2svg (1),
+.BR shape2xml (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

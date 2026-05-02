@@ -1,0 +1,55 @@
+.TH SHAPE2SVG 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shape2svg \- export named polygons of an ESRI shapefile as SVG paths
+.SH SYNOPSIS
+.B shape2svg
+.RI [ options ]
+.I shapename
+.SH DESCRIPTION
+.B shape2svg
+reads an ESRI shapefile and writes one file per distinct value of the
+chosen attribute. Each output file contains the polygon geometry in
+SVG path data form, as consumed by the
+.B qdtext
+text\(hygeneration toolchain. The output is not a complete SVG document,
+only a path; the round\(hytrip back to a shapefile is provided by
+.BR svg2shape (1).
+.PP
+The polygons present in a shape can be inspected with
+.BR shape2xml (1).
+For example,
+.PP
+.RS 4
+shape2xml regions | grep '<shape'
+.RE
+.PP
+will list the named features. Then
+.PP
+.RS 4
+shape2svg \-f NAME regions
+.RE
+.PP
+extracts each named polygon to its own
+.IR NAME .svg
+file.
+.SH OPTIONS
+.TP
+.BI \-f " name"
+Attribute used to choose output filenames (default
+.BR NAME ).
+The attribute must be of string type.
+.TP
+.BI \-d " dir"
+Output directory (default
+.BR . ).
+.TP
+.B \-h
+Print help.
+.SH SEE ALSO
+.BR svg2shape (1),
+.BR shape2xml (1),
+.BR shape2ps (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

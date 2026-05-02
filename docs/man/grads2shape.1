@@ -1,0 +1,29 @@
+.TH GRADS2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+grads2shape \- convert a GrADS map data file to an ESRI shapefile
+.SH SYNOPSIS
+.B grads2shape
+.I mapfile
+.I shapename
+.SH DESCRIPTION
+.B grads2shape
+reads a GrADS map data file and writes the contents as a polyline ESRI
+shapefile. Each polyline record in the GrADS file becomes one polyline
+in the shape; skip records are reported on standard output and not
+written. Only types 1 and 2 are recognized.
+.SH ARGUMENTS
+.TP
+.I mapfile
+The input GrADS map data file.
+.TP
+.I shapename
+Name of the output shape, written as
+.IR shapename .shp .
+.SH SEE ALSO
+.BR shape2grads (1),
+.BR gradsdump (1),
+.BR gshhs2shape (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

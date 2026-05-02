@@ -1,0 +1,45 @@
+.TH SHAPEPROJECT 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapeproject \- reproject an ESRI shapefile
+.SH SYNOPSIS
+.B shapeproject
+.RI [ options ]
+.I inputshape
+.I outputshape
+.SH DESCRIPTION
+.B shapeproject
+reads an ESRI shapefile in one coordinate system and writes a new
+shapefile in another. Both projections are described using the
+SmartMet
+.I NFmiAreaFactory
+syntax. Coordinates are interpreted in the world\(hycoordinate units of
+the projection (i.e.\& metres for projected systems, degrees for
+.IR latlon ).
+The default for both input and output projections is
+.IR latlon .
+.SH OPTIONS
+.TP
+.B \-h
+Print help.
+.TP
+.BI \-i " proj"
+Projection of the input shapefile (default
+.IR latlon ).
+.TP
+.BI \-o " proj"
+Projection of the output shapefile (default
+.IR latlon ).
+.SH EXAMPLES
+Convert YKJ\(hyprojected Finnish road data to latitude/longitude:
+.PP
+.RS 4
+shapeproject \-i ykj tiet_ykj tiet_latlon
+.RE
+.SH SEE ALSO
+.BR shapefilter (1),
+.BR shapefind (1),
+.BR shape2ps (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

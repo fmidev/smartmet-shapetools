@@ -1,0 +1,30 @@
+.TH GSHHS2GRADS 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+gshhs2grads \- convert a GSHHS shoreline file to GrADS map data
+.SH SYNOPSIS
+.B gshhs2grads
+.I level
+.I gshhsfile
+.SH DESCRIPTION
+.B gshhs2grads
+reads a GSHHS (Global Self\(hyconsistent Hierarchical High\(hyresolution
+Geography) shoreline binary and writes a GrADS map data record stream
+to standard output. Every polyline produced from the GSHHS data is
+tagged with the given level number.
+.SH ARGUMENTS
+.TP
+.I level
+The level number to attach to the records, in the range 0\(en255.
+.TP
+.I gshhsfile
+Path to the GSHHS binary (e.g.\&
+.IR gshhs_f.b ).
+.SH SEE ALSO
+.BR gshhs2shape (1),
+.BR shape2grads (1),
+.BR grads2shape (1),
+.BR gradsdump (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

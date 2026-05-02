@@ -1,0 +1,85 @@
+.TH SHAPEFIND 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapefind \- find shapefile elements closest to a coordinate
+.SH SYNOPSIS
+.B shapefind
+.RI [ options ]
+.I shapefile
+.SH DESCRIPTION
+.B shapefind
+searches an ESRI shapefile for the elements nearest to the given
+coordinate and prints the requested attributes for each match. It was
+originally created for finding the road segment closest to a given
+point, but works for any point or polyline shape.
+.PP
+If the input shape is polygonal, the program instead prints the
+single polygon that contains the search point. In that case the
+options
+.BR \-r ,
+.B \-n
+and
+.B \-u
+are not meaningful.
+.SH OPTIONS
+.TP
+.B \-h ", " \-\^\-help
+Print help.
+.TP
+.B \-v ", " \-\^\-verbose
+Verbose mode.
+.TP
+.B \-V ", " \-\^\-version
+Display version number.
+.TP
+.BI \-a " list" "\fR, \fP\-\^\-attributes " list
+Comma\(hyseparated list of shapefile attributes to print.
+.TP
+.BI \-u " name" "\fR, \fP\-\^\-unique " name
+Force the named attribute to have unique values across the result set.
+.TP
+.BI \-s " name" "\fR, \fP\-\^\-shapefile " name
+The shapefile, given without the trailing
+.I .shp
+suffix.
+.TP
+.BI \-c " expr" "\fR, \fP\-\^\-condition " expr
+Search condition on attribute values, e.g.\&
+.IR CLASS>2 .
+.TP
+.BI \-y " lat" "\fR, \fP\-\^\-lat " lat
+Latitude of the search coordinate.
+.TP
+.BI \-x " lon" "\fR, \fP\-\^\-lon " lon
+Longitude of the search coordinate.
+.TP
+.BI \-l " file" "\fR, \fP\-\^\-coordinatefile " file
+File containing lines
+.IR name,lon,lat ;
+each line is processed as a separate search.
+.TP
+.BI \-r " km" "\fR, \fP\-\^\-radius " km
+Maximum search radius, in kilometres.
+.TP
+.BI \-n " count" "\fR, \fP\-\^\-maxcount " count
+Maximum number of matches to return.
+.TP
+.BI \-d " string" "\fR, \fP\-\^\-delimiter " string
+Output column delimiter (default: TAB).
+.TP
+.BI \-p " desc" "\fR, \fP\-\^\-projection " desc
+Projection in which distances are evaluated (default:
+.IR latlon ).
+.SH EXAMPLES
+Find the nearest road within 10 km:
+.PP
+.RS 4
+shapefind \-s roads \-x 24.94 \-y 60.17 \-r 10 \-a CLASS,NAME
+.RE
+.SH SEE ALSO
+.BR shapefilter (1),
+.BR shapepick (1),
+.BR shapeproject (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

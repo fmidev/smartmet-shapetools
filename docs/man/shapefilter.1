@@ -1,0 +1,67 @@
+.TH SHAPEFILTER 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapefilter \- extract a subset of an ESRI shapefile
+.SH SYNOPSIS
+.B shapefilter
+.RI [ options ]
+.I inputshape
+.I outputshape
+.SH DESCRIPTION
+.B shapefilter
+reads an ESRI shapefile and writes a new shapefile that contains only
+the elements selected by the given options. Common uses are to extract
+a single named region, to keep only the parts of the data that lie
+inside a bounding box, or to separate national borders (which appear
+twice when each country is stored as a separate polygon) from
+shorelines (which appear once).
+.PP
+Both shape names are given without the
+.I .shp
+suffix.
+.SH OPTIONS
+.TP
+.B \-e
+Keep only edges that appear an even number of times. This selects
+common borders shared by adjacent polygons \(em e.g.\& national
+borders in a country shapefile.
+.TP
+.B \-o
+Keep only edges that appear an odd number of times. This selects
+exterior boundaries \(em e.g.\& coastlines.
+.TP
+.BI \-f " name=value"
+Keep only elements whose attribute
+.I name
+equals
+.IR value .
+.TP
+.BI \-b " x1,y1,x2,y2"
+Keep only elements that intersect the given longitude/latitude
+bounding box, defined by its bottom\(hyleft and top\(hyright corners.
+.SH EXAMPLES
+Extract one named region:
+.PP
+.RS 4
+shapefilter \-f NAME=Lielriga regions lielriga
+.RE
+.PP
+Extract national borders from a country shapefile:
+.PP
+.RS 4
+shapefilter \-e country borders
+.RE
+.PP
+Extract shorelines (everything that is not a shared border):
+.PP
+.RS 4
+shapefilter \-o country shoreline
+.RE
+.SH SEE ALSO
+.BR shapefind (1),
+.BR shapepick (1),
+.BR shapeproject (1),
+.BR shape2xml (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

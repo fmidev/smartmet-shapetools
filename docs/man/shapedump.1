@@ -1,0 +1,41 @@
+.TH SHAPEDUMP 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapedump \- print the coordinates of an ESRI shapefile
+.SH SYNOPSIS
+.B shapedump
+.I shapefile
+.SH DESCRIPTION
+.B shapedump
+reads the given ESRI shapefile and prints all path coordinates to
+standard output. Each line contains four tab-separated columns: a
+shape number, a vertex number within that shape, and the X and Y
+coordinates. The shape number is incremented every time a new
+sub-path begins.
+.PP
+The shape name is given without the
+.I .shp
+suffix; the companion
+.IR .dbf ,
+.IR .shx ,
+.RI etc.\&
+files in the same directory are read as needed.
+.SH ARGUMENTS
+.TP
+.I shapefile
+The shapefile to dump, given without the trailing
+.I .shp
+suffix.
+.SH EXAMPLES
+Dump the coordinates of a Finland shapefile:
+.PP
+.RS 4
+shapedump suomi > suomi.dat
+.RE
+.SH SEE ALSO
+.BR shape2xml (1),
+.BR shapefind (1),
+.BR shapefilter (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

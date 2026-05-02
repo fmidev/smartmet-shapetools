@@ -1,0 +1,31 @@
+.TH GSHHS2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+gshhs2shape \- convert a GSHHS shoreline file to an ESRI shapefile
+.SH SYNOPSIS
+.B gshhs2shape
+.I gshhsfile
+.I shapename
+.SH DESCRIPTION
+.B gshhs2shape
+reads a GSHHS (Global Self\(hyconsistent Hierarchical High\(hyresolution
+Geography) shoreline binary covering the whole globe and writes the
+result as a polyline ESRI shapefile. Each
+.B moveto
+in the GSHHS path starts a new polyline.
+.SH ARGUMENTS
+.TP
+.I gshhsfile
+Path to the GSHHS binary (e.g.\&
+.IR gshhs_f.b ).
+.TP
+.I shapename
+Name of the output shape, written as
+.IR shapename .shp .
+.SH SEE ALSO
+.BR gshhs2grads (1),
+.BR etopo2shape (1),
+.BR shapefilter (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

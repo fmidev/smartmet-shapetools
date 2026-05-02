@@ -1,0 +1,60 @@
+.TH ETOPO2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+etopo2shape \- build elevation contour polygons from ETOPO2 data
+.SH SYNOPSIS
+.B etopo2shape
+.RI [ options ]
+.I shapename
+.SH DESCRIPTION
+.B etopo2shape
+reads the global ETOPO2 topography raster (2\(hyminute resolution),
+contours the heights at the requested levels and writes the resulting
+polygons as an ESRI shapefile. The path to the ETOPO2 binary is read
+from the
+.B rasters::etopo2
+setting in the SmartMet configuration. Compressed
+.RB ( .gz ", " .bz2 )
+inputs are decompressed transparently.
+.PP
+Each output polygon carries an integer
+.B HEIGHT
+attribute equal to the contour level it was generated from. Negative
+values produce contours of the lower\(hybound type; the default level
+set is suitable for Scandinavia.
+.SH OPTIONS
+.TP
+.B \-h
+Print help.
+.TP
+.B \-v
+Verbose mode.
+.TP
+.BI \-b " x1,y1,x2,y2"
+Bounding box (longitude/latitude) to extract. Default is roughly
+Scandinavia
+.RI ( 6,51,49,71 ).
+.TP
+.BI \-l " h1,h2,..."
+Comma\(hyseparated list of heights, in metres, at which to contour.
+Default is
+.IR 100,200,300,500,700,1000 .
+.SH EXAMPLES
+Default Scandinavian contours:
+.PP
+.RS 4
+etopo2shape topo
+.RE
+.PP
+Custom area and levels:
+.PP
+.RS 4
+etopo2shape \-b \-25,35,45,72 \-l 50,200,500,1000,2000 europe_topo
+.RE
+.SH SEE ALSO
+.BR lights2shape (1),
+.BR gshhs2shape (1),
+.BR shape2ps (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

@@ -1,0 +1,50 @@
+.TH SHAPE2XML 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shape2xml \- dump shapefile contents as XML
+.SH SYNOPSIS
+.B shape2xml
+.I shapefile
+.SH DESCRIPTION
+.B shape2xml
+reads an ESRI shapefile and prints its contents on standard output in
+an XML\(hyish form. Each polygon, polyline and point is wrapped in a
+.RB \(lq <shape> \(rq
+element annotated with the attribute table fields, and the geometry
+itself is encoded as SVG\(hystyle path data
+.RB ( "M x y L x y \&...\& Z" ).
+.PP
+The output is convenient for inspecting the contents of a shapefile,
+in particular which named features it contains:
+.PP
+.RS 4
+shape2xml regions | grep '<shape'
+.RE
+.PP
+The output is not strictly conformant XML and is meant for human
+inspection or quick scripting, not for general\(hypurpose interchange.
+.SH ARGUMENTS
+.TP
+.I shapefile
+The shapefile to dump, given without the trailing
+.I .shp
+suffix.
+.SH EXAMPLES
+Save the regions shape as XML:
+.PP
+.RS 4
+shape2xml regions > regions.xml
+.RE
+.PP
+List named features:
+.PP
+.RS 4
+shape2xml regions | grep '<shape'
+.RE
+.SH SEE ALSO
+.BR shapedump (1),
+.BR shape2svg (1),
+.BR svg2shape (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

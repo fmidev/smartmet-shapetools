@@ -1,0 +1,90 @@
+.TH SHAPEPACK 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapepack \- pack a polygonal shapefile into a fast 2D lookup table
+.SH SYNOPSIS
+.B shapepack
+.RI [ options ]
+.I shapefile
+.I outfile
+.SH DESCRIPTION
+.B shapepack
+reads a latitude/longitude polygonal shapefile and one of its
+attributes, rasterizes the polygons at the chosen resolution and
+writes a compact 2D table that can be queried at runtime with
+.BR shapepick (1).
+It was originally written to give a fast way to look up the timezone
+of an arbitrary coordinate.
+.PP
+The packed file format is a small ASCII header (magic
+.RB \(lq SHAPEPACK \(rq,
+dimensions, bounding box and the list of distinct attribute values)
+followed by a binary 2D index table. Latitude is the inner index, so
+that consecutive memory addresses correspond to north\(hysouth steps.
+.SH OPTIONS
+.TP
+.B \-h ", " \-\^\-help
+Print help.
+.TP
+.B \-v ", " \-\^\-verbose
+Verbose mode.
+.TP
+.B \-V ", " \-\^\-version
+Display version number.
+.TP
+.BI \-a " name" "\fR, \fP\-\^\-attribute " name
+The shapefile attribute to pack.
+.TP
+.BI \-s " name" "\fR, \fP\-\^\-shapefile " name
+The input shapefile, given without the trailing
+.I .shp
+suffix.
+.TP
+.BI \-o " file" "\fR, \fP\-\^\-output " file
+The output shapepack filename.
+.TP
+.BI \-p " file" "\fR, \fP\-\^\-pngfile " file
+Optional PNG file to render the rasterized polygons into for visual
+inspection.
+.TP
+.BI \-z " file" "\fR, \fP\-\^\-zonefile " file
+Optional shapepack to combine the new information with.
+.TP
+.BI \-W " px" "\fR, \fP\-\^\-width " px
+Width, in pixels, of the rasterized table.
+.TP
+.BI \-H " px" "\fR, \fP\-\^\-height " px
+Height, in pixels, of the rasterized table.
+.TP
+.BI \-\^\-lon1 " lon"
+Bottom\(hyleft longitude of the area covered (default
+.BR \-180 ).
+.TP
+.BI \-\^\-lat1 " lat"
+Bottom\(hyleft latitude of the area covered (default
+.BR \-90 ).
+.TP
+.BI \-\^\-lon2 " lon"
+Top\(hyright longitude of the area covered (default
+.BR 180 ).
+.TP
+.BI \-\^\-lat2 " lat"
+Top\(hyright latitude of the area covered (default
+.BR 90 ).
+.TP
+.B \-A ", " \-\^\-accurate
+Use a more accurate (and slower) rasterization mode.
+.SH EXAMPLES
+Pack the
+.B TZID
+field of a world timezones shape:
+.PP
+.RS 4
+shapepack \-s timezones \-a TZID \-o timezones.pack \-W 7200 \-H 3600
+.RE
+.SH SEE ALSO
+.BR shapepick (1),
+.BR shapefilter (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

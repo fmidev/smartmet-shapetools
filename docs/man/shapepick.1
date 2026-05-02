@@ -1,0 +1,46 @@
+.TH SHAPEPICK 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapepick \- look up the value at a coordinate in a shapepack
+.SH SYNOPSIS
+.B shapepick
+.RI [ options ]
+.I shapepack
+.I lon
+.I lat
+.SH DESCRIPTION
+.B shapepick
+reads a packed 2D attribute table created by
+.BR shapepack (1)
+and prints the attribute value at the given longitude/latitude.
+A typical use is looking up the timezone identifier for an arbitrary
+coordinate.
+.SH OPTIONS
+.TP
+.B \-h ", " \-\^\-help
+Print help.
+.TP
+.B \-V ", " \-\^\-version
+Display version number.
+.TP
+.BI \-i " file" "\fR, \fP\-\^\-infile " file
+The input shapepack. May also be given as the first positional
+argument.
+.TP
+.BI \-\^\-lon " lon"
+Longitude. May also be given as the second positional argument.
+.TP
+.BI \-\^\-lat " lat"
+Latitude. May also be given as the third positional argument.
+.SH EXAMPLES
+Look up the timezone of Helsinki:
+.PP
+.RS 4
+shapepick timezones.pack 24.94 60.17
+.RE
+.SH SEE ALSO
+.BR shapepack (1),
+.BR shapefind (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

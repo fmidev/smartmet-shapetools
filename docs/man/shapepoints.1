@@ -1,0 +1,62 @@
+.TH SHAPEPOINTS 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shapepoints \- thin a point shapefile by minimum distance
+.SH SYNOPSIS
+.B shapepoints
+.RI [ options ]
+.I inputshape
+.I outputshape
+.SH DESCRIPTION
+.B shapepoints
+reads a point ESRI shapefile (typically a list of cities or other
+labels) and writes a new shapefile keeping only an evenly spaced
+subset. Points are first sorted by a numeric attribute (so the
+\(lqlarger\(rq points win the ties), and points that are too close to
+an already accepted point or to the border of the projection area are
+dropped.
+.PP
+A projection must be provided so that pixel\(hybased distances can be
+evaluated.
+.SH OPTIONS
+.TP
+.B \-h
+Print help.
+.TP
+.B \-v
+Verbose mode.
+.TP
+.BI \-d " dist"
+Minimum distance between accepted points, in pixels (default
+.BR 10 ).
+.TP
+.BI \-D " dist"
+Minimum distance from the area border, in pixels (default
+.BR 0 ).
+.TP
+.BI \-p " desc"
+Projection description used to translate latitude/longitude into
+pixel coordinates. There is no default.
+.TP
+.BI \-f " name"
+Numeric attribute used for sorting (default
+.BR TYPE ).
+Smaller values are preferred (i.e.\& accepted first).
+.TP
+.B \-n
+Negate the field value, so larger values are preferred.
+.SH EXAMPLES
+Pick prominent European cities for a 400\(mu\(rs pixel stereographic map:
+.PP
+.RS 4
+AREA=stereographic,25:6,51.3,49,70.2:400,\-1
+.br
+shapepoints \-p $AREA \-d 20 \-n ESRI/europe/places myplaces
+.RE
+.SH SEE ALSO
+.BR shapefilter (1),
+.BR shapeproject (1),
+.BR shape2ps (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

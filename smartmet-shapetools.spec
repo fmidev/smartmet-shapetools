@@ -108,6 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/shapepick
 /usr/bin/shapefind
 /usr/bin/svg2shape
+%{_mandir}/man1/*.1.gz
 
 %changelog
 * Mon Apr 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.4.13-1.fmi

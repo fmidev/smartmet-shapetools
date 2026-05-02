@@ -1,0 +1,47 @@
+.TH COMPOSITEALPHA 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+compositealpha \- replace the alpha channel of an image with a mask image
+.SH SYNOPSIS
+.B compositealpha
+.I inputimage
+.I maskimage
+.I outputimage
+.SH DESCRIPTION
+.B compositealpha
+reads
+.I inputimage
+and
+.IR maskimage ,
+which must have identical pixel dimensions, and writes a new image to
+.I outputimage
+where each output pixel takes its colour from
+.I inputimage
+and its alpha from the intensity of the corresponding pixel in
+.IR maskimage .
+A bright pixel in the mask therefore yields an opaque output pixel
+and a dark mask pixel a transparent one.
+.PP
+The output image format is selected from the suffix of
+.IR outputimage .
+The output is written with palette and alpha enabled.
+.SH ARGUMENTS
+.TP
+.I inputimage
+The image whose colour values are kept.
+.TP
+.I maskimage
+The image whose intensity is used as the new alpha channel.
+.TP
+.I outputimage
+The output filename. The format is determined by the suffix.
+.SH EXAMPLES
+Build a transparent map by masking a base image with a separately
+rendered alpha mask:
+.PP
+.RS 4
+compositealpha base.png alpha.png result.png
+.RE
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

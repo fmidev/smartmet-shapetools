@@ -1,0 +1,43 @@
+.TH SHAPE2GRADS 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shape2grads \- convert an ESRI shapefile to a GrADS map data file
+.SH SYNOPSIS
+.B shape2grads
+.I level
+.I shapefile
+.SH DESCRIPTION
+.B shape2grads
+reads an ESRI shapefile and writes a GrADS map data record stream to
+standard output. Every polyline in the shape becomes one type\(hy1
+record tagged with the given level number.
+.PP
+GrADS map files can be concatenated, so producing a combined map for
+several countries is typically done by appending the output of
+several invocations:
+.PP
+.RS 4
+shape2grads 1 suomi    >  scandinavia.grads
+.br
+shape2grads 1 ruotsi   >> scandinavia.grads
+.br
+shape2grads 1 norja    >> scandinavia.grads
+.br
+shape2grads 1 tanska   >> scandinavia.grads
+.RE
+.SH ARGUMENTS
+.TP
+.I level
+The level number to attach to the records, in the range 0\(en255.
+.TP
+.I shapefile
+The shapefile to convert, given without the trailing
+.I .shp
+suffix.
+.SH SEE ALSO
+.BR grads2shape (1),
+.BR gradsdump (1),
+.BR gshhs2grads (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

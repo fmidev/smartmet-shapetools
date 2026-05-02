@@ -1,0 +1,60 @@
+.TH LIGHTS2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+lights2shape \- build city\(hylights polygons from a nighttime lights raster
+.SH SYNOPSIS
+.B lights2shape
+.RI [ options ]
+.I shapename
+.SH DESCRIPTION
+.B lights2shape
+reads the nighttime city\(hylights raster (30\(hysecond resolution,
+covering latitudes \(+-75), contours intensities at the requested levels
+and writes the resulting polygons as an ESRI shapefile. The path to
+the lights binary is read from the
+.B rasters::lights
+setting in the SmartMet configuration. Compressed
+.RB ( .gz ", " .bz2 )
+inputs are decompressed transparently.
+.PP
+Each output polygon carries an integer
+.B INTENSITY
+attribute equal to the level it was generated from. The default
+bounding box is suitable for Scandinavia and is automatically clamped
+to \(+-75\(de of latitude.
+.SH OPTIONS
+.TP
+.B \-h
+Print help.
+.TP
+.B \-v
+Verbose mode.
+.TP
+.BI \-b " x1,y1,x2,y2"
+Bounding box (longitude/latitude) to extract. Default is roughly
+Scandinavia
+.RI ( 6,51,49,71 ).
+.TP
+.BI \-l " l1,l2,..."
+Comma\(hyseparated list of intensity levels at which to contour.
+Default is
+.IR 32 .
+.SH EXAMPLES
+Default Scandinavian lights at intensity 32:
+.PP
+.RS 4
+lights2shape lights
+.RE
+.PP
+European area at multiple intensities:
+.PP
+.RS 4
+lights2shape \-b \-25,35,45,72 \-l 16,32,64 europe_lights
+.RE
+.SH SEE ALSO
+.BR etopo2shape (1),
+.BR shape2ps (1),
+.BR shapefilter (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

@@ -1,0 +1,35 @@
+.TH GRADSDUMP 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+gradsdump \- print the contents of a GrADS map data file
+.SH SYNOPSIS
+.B gradsdump
+.I mapfile
+.SH DESCRIPTION
+.B gradsdump
+reads a GrADS map data file (a binary stream of polyline and skip
+records used by GrADS to draw country borders, coastlines, etc.) and
+prints its contents on standard output in a readable form.
+.PP
+For polyline records (type 1) the level and the number of points are
+printed, followed by one
+.IR "lon\ lat"
+pair per line. For skip records (type 2) the start and end levels,
+record size and bounding box are printed.
+.SH ARGUMENTS
+.TP
+.I mapfile
+The GrADS map file to dump.
+.SH EXAMPLES
+Inspect a GrADS map file:
+.PP
+.RS 4
+gradsdump europe.grads | less
+.RE
+.SH SEE ALSO
+.BR shape2grads (1),
+.BR grads2shape (1),
+.BR gshhs2grads (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

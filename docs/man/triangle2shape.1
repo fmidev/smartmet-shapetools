@@ -1,0 +1,56 @@
+.TH TRIANGLE2SHAPE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+triangle2shape \- convert PSLG files produced by Triangle back to a shapefile
+.SH SYNOPSIS
+.B triangle2shape
+.I arealimit
+.I pslg
+.I shapename
+.SH DESCRIPTION
+.B triangle2shape
+reads the PSLG files
+.IR pslg .node
+and
+.IR pslg .poly,
+reconstructs closed polygons from their edges and writes the result as
+an ESRI shapefile
+.RI ( shapename .shp
+plus an empty
+.IR .dbf ).
+Polygons whose geographical area is smaller than
+.I arealimit
+square kilometres are dropped.
+.PP
+This is the final step of the shapetools amalgamation pipeline; see
+.BR amalgamate (1)
+for the full sequence. When the area limit was already applied during
+amalgamation, pass
+.B 0
+here to keep every polygon.
+.SH ARGUMENTS
+.TP
+.I arealimit
+Minimum polygon area in square kilometres; smaller polygons are
+dropped. Use
+.B 0
+to keep every polygon.
+.TP
+.I pslg
+Stem of the input PSLG files
+.RI ( pslg .node ", " pslg .poly ).
+.TP
+.I shapename
+Stem of the output shapefile.
+.SH EXAMPLES
+Build a shapefile from amalgamated PSLG output:
+.PP
+.RS 4
+triangle2shape 0 suomi.1 suomishape
+.RE
+.SH SEE ALSO
+.BR shape2triangle (1),
+.BR amalgamate (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

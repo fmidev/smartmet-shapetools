@@ -1,0 +1,96 @@
+.TH SHAPE2PS 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shape2ps \- render shapefiles and querydata contours as PostScript
+.SH SYNOPSIS
+.B shape2ps
+.I controlfile
+.SH DESCRIPTION
+.B shape2ps
+reads a control file and writes a PostScript document on standard
+output. The control file is, by default, plain PostScript: every line
+that does not begin with one of the
+.B shape2ps
+keywords is copied through verbatim, and the program emits the
+necessary header automatically.
+.PP
+Special keywords give access to the shapefile, GSHHS, querydata and
+projection facilities of the SmartMet stack. They include
+.BR projection ,
+.B body
+(end of header / start of body),
+.BR boundingbox ,
+.B shape
+and
+.B subshape
+(render an ESRI shapefile),
+.B gshhs
+(render a GSHHS shoreline binary),
+.BR graticule ,
+.B exec
+and
+.B qdexec
+(run PostScript fragments per shape vertex or grid point),
+.B project
+and
+.B location
+(emit the projected coordinates of a point or named place),
+.B querydata ,
+.BR parameter ,
+.BR level ,
+.BR timemode ,
+.B time
+(select the active querydata field),
+.BR smoother ,
+.BR contourcommands ,
+.B contourline
+and
+.B contourfill
+(produce isoline / isoband paths) and
+.BR bezier .
+A typical control file therefore looks like
+.PP
+.RS 4
+projection stereographic,25:20,55,29,59:600,\-1
+.br
+% PostScript helpers (procedures for moveto, colors, ...)
+.br
+body
+.br
+% PostScript body that calls shape, gshhs, querydata, ...
+.RE
+.PP
+Often the result is post\(hyprocessed into a raster image, e.g.\&
+.PP
+.RS 4
+shape2ps map.ctl > map.ps
+.br
+convert map.ps map.png
+.RE
+.PP
+The full set of keywords and their arguments is documented in the
+prose document
+.IR docs/shape2ps.md
+in the source distribution; see also the projection description
+reference for the syntax accepted by
+.BR projection .
+.SH ARGUMENTS
+.TP
+.I controlfile
+The control file to render. The PostScript output is written to
+standard output.
+.SH EXAMPLES
+Render a control file:
+.PP
+.RS 4
+shape2ps map.ctl > map.ps
+.RE
+.SH SEE ALSO
+.BR shape2svg (1),
+.BR shape2xml (1),
+.BR shapefilter (1),
+.BR shapeproject (1),
+.BR gshhs2shape (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.

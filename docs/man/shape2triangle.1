@@ -1,0 +1,58 @@
+.TH SHAPE2TRIANGLE 1 "2026-05-02" "smartmet-shapetools" "SmartMet Tools"
+.SH NAME
+shape2triangle \- convert an ESRI shapefile to PSLG files for Triangle
+.SH SYNOPSIS
+.B shape2triangle
+.I arealimit
+.I shapefile
+.I outname
+.SH DESCRIPTION
+.B shape2triangle
+reads an ESRI shapefile, discards polygons whose geographical area is
+smaller than
+.IR arealimit
+square kilometres, and writes a Planar Straight Line Graph (PSLG) in
+the format expected by Jonathan R.\& Shewchuk's
+.B triangle
+program. Two files are produced:
+.IR outname .node
+(the unique vertices) and
+.IR outname .poly
+(the edges and one inside\(hypoint per polygon).
+.PP
+Each polygon is given a unique attribute, so triangles produced by a
+later constrained Delaunay triangulation can be identified as
+belonging to the same original polygon. This is the first step of the
+shapetools amalgamation pipeline; see
+.BR amalgamate (1)
+for the full sequence.
+.SH ARGUMENTS
+.TP
+.I arealimit
+Minimum polygon area in square kilometres; smaller polygons are
+dropped. Use
+.B 0
+to keep every polygon.
+.TP
+.I shapefile
+The input shapefile, given without the trailing
+.I .shp
+suffix.
+.TP
+.I outname
+Stem for the output PSLG files
+.RI ( outname .node ", " outname .poly ).
+.SH EXAMPLES
+Prepare a Finnish coastline for triangulation, dropping islands smaller
+than 5 km\(S2:
+.PP
+.RS 4
+shape2triangle 5 ESRI/Suomi/ponet suomi
+.RE
+.SH SEE ALSO
+.BR triangle2shape (1),
+.BR amalgamate (1)
+.SH AUTHOR
+Finnish Meteorological Institute
+.PP
+Report issues at <https://github.com/fmidev/smartmet-shapetools/issues>.
