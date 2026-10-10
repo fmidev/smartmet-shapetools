@@ -74,16 +74,16 @@ int domain(int argc, const char *argv[])
 
   vector<NFmiPoint> buffer;
 
-  for (auto it = path.Elements().begin(); it != path.Elements().end(); ++it)
+  for (const auto& it : path.Elements())
   {
-    switch ((*it).Oper())
+    switch (it.Oper())
     {
       case Imagine::kFmiMoveTo:
         GradsTools::print_line(cout, level, buffer);
         buffer.clear();
       // fallthrough
       case Imagine::kFmiLineTo:
-        buffer.emplace_back((*it).X(), (*it).Y());
+        buffer.emplace_back(it.X(), it.Y());
         break;
       case Imagine::kFmiGhostLineTo:
       case Imagine::kFmiConicTo:

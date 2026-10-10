@@ -323,10 +323,10 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
   // Build a path from even numbered edges
 
   NFmiEdgeTree tree;
-  for (auto it = counts.begin(); it != counts.end(); ++it)
+  for (const auto& count : counts)
   {
-    if (it->second % 2 == 0)
-      tree.Add(it->first);
+    if (count.second % 2 == 0)
+      tree.Add(count.first);
   }
 
   if (options.verbose)
@@ -360,10 +360,10 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
   // Build a path from odd numbered edges
 
   NFmiEdgeTree tree;
-  for (auto it = counts.begin(); it != counts.end(); ++it)
+  for (const auto& count : counts)
   {
-    if (it->second % 2 != 0)
-      tree.Add(it->first);
+    if (count.second % 2 != 0)
+      tree.Add(count.first);
   }
 
   if (options.verbose)
@@ -434,22 +434,22 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
   auto* shape = new NFmiEsriShape(theShape.Type());
 
   // Copy the attribute type information
-  for (auto ait = theShape.Attributes().begin(); ait != theShape.Attributes().end(); ++ait)
+  for (auto ait : theShape.Attributes())
   {
-    shape->Add(new NFmiEsriAttributeName(**ait));
+    shape->Add(new NFmiEsriAttributeName(*ait));
   }
 
   // Copy the elements which overlap the bounding box
 
-  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
+  for (auto it : theShape.Elements())
   {
     // Skip empty elements
-    if (*it == nullptr)
+    if (it == nullptr)
       continue;
 
     // Establish bounding box of the element
     NFmiEsriBox box;
-    (*it)->Update(box);
+    it->Update(box);
 
     // Establish whether element is outside the desired box
     bool outside = false;
@@ -461,7 +461,7 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
     // If elements overlaps bbox, add it to the result
     if (!outside)
     {
-      NFmiEsriElement *tmp = (*it)->Clone();
+      NFmiEsriElement* tmp = it->Clone();
       shape->Add(tmp);
     }
   }

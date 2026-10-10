@@ -271,11 +271,11 @@ set<string> find_unique_attributes(const NFmiEsriShape &theShape, const string &
 
   set<string> values;
 
-  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
+  for (auto it : theShape.Elements())
   {
-    if (*it == nullptr)
+    if (it == nullptr)
       continue;
-    string value = get_attribute_value(**it, **at);
+    string value = get_attribute_value(*it, **at);
     values.insert(value);
   }
 
@@ -308,9 +308,9 @@ map<string, int> make_attribute_map(const set<string> &theSet)
 {
   map<string, int> ret;
   int i = 1;
-  for (auto it = theSet.begin(); it != theSet.end(); ++it)
+  for (const auto& it : theSet)
   {
-    ret.insert(map<string, int>::value_type(*it, i++));
+    ret.insert(map<string, int>::value_type(it, i++));
   }
   return ret;
 }
@@ -400,16 +400,16 @@ void render_image(NFmiImage &theImage,
 
   auto at = find_attribute(attributes, options.attribute);
 
-  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
+  for (auto it : theShape.Elements())
   {
-    if (*it == nullptr)
+    if (it == nullptr)
       continue;
 
-    const string value = get_attribute_value(**it, **at);
+    const string value = get_attribute_value(*it, **at);
     NFmiColorTools::Color color = theValues.find(value)->second;
 
     NFmiFillMap fillmap;
-    polygon_to_fillmap(fillmap, *it);
+    polygon_to_fillmap(fillmap, it);
     fillmap.Fill(theImage, color, NFmiColorTools::kFmiColorCopy);
   }
 }
@@ -674,9 +674,9 @@ string compress_image(const NFmiImage &theImage, const map<string, int> &theMap)
 
   out << theMap.size() << '\n';
 
-  for (auto it = theMap.begin(); it != theMap.end(); ++it)
+  for (const auto& it : theMap)
   {
-    out << it->first << '\n';
+    out << it.first << '\n';
   }
 
   // Raw data

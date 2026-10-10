@@ -252,14 +252,14 @@ void parse_condition(string &theVariable, string &theComparison, string &theValu
 
   // Try to split the condition
 
-  for (auto it = comparisons.begin(); it != comparisons.end(); ++it)
+  for (auto& comparison : comparisons)
   {
-    string::size_type pos = options.condition.find(*it);
+    string::size_type pos = options.condition.find(comparison);
     if (pos != string::npos)
     {
-      theComparison = *it;
+      theComparison = comparison;
       theVariable = options.condition.substr(0, pos);
-      theValue = options.condition.substr(pos + it->size());
+      theValue = options.condition.substr(pos + comparison.size());
       break;
     }
   }
@@ -595,10 +595,10 @@ NFmiEsriAttributeType establish_attribute_type(const NFmiEsriShape &theShape, co
 {
   const Imagine::NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  for (auto ait = attributes.begin(); ait != attributes.end(); ++ait)
+  for (auto attribute : attributes)
   {
-    if ((*ait)->Name() == theName)
-      return (*ait)->Type();
+    if (attribute->Name() == theName)
+      return attribute->Type();
   }
   throw runtime_error("No attribute named '" + theName + "' in the shape");
 }
@@ -658,9 +658,9 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  for (auto it = theData.begin(); it != theData.end(); ++it)
+  for (auto& it : theData)
   {
-    int pos = it->second;
+    int pos = it.second;
     const auto* elem = static_cast<const NFmiEsriElement*>(elements[pos]);
 
     switch (atype)
@@ -670,7 +670,7 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
         string value = elem->GetString(options.uniqueattribute);
         if (unique_strings.find(value) == unique_strings.end())
         {
-          newdata.insert(*it);
+          newdata.insert(it);
           unique_strings.insert(value);
         }
         break;
@@ -680,7 +680,7 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
         int value = elem->GetInteger(options.uniqueattribute);
         if (unique_ints.find(value) == unique_ints.end())
         {
-          newdata.insert(*it);
+          newdata.insert(it);
           unique_ints.insert(value);
         }
         break;
@@ -690,7 +690,7 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
         double value = elem->GetDouble(options.uniqueattribute);
         if (unique_doubles.find(value) == unique_doubles.end())
         {
-          newdata.insert(*it);
+          newdata.insert(it);
           unique_doubles.insert(value);
         }
         break;
@@ -700,7 +700,7 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
         NFmiMetTime value = elem->GetDate(options.uniqueattribute);
         if (unique_dates.find(value) == unique_dates.end())
         {
-          newdata.insert(*it);
+          newdata.insert(it);
           unique_dates.insert(value);
         }
         break;
@@ -780,12 +780,12 @@ void find_nearest_points(const NFmiEsriShape &theShape,
   // Print the results
 
   unsigned int num = 0;
-  for (auto it = distance_map.begin(); it != distance_map.end(); ++it)
+  for (auto& it : distance_map)
   {
     if (num >= options.maxcount)
       break;
 
-    int pos = it->second;
+    int pos = it.second;
     const auto* elem = static_cast<const NFmiEsriPoint*>(elements[pos]);
 
     double x = elem->X();
@@ -801,7 +801,7 @@ void find_nearest_points(const NFmiEsriShape &theShape,
     if (!theName.empty())
       cout << theName << options.delimiter;
 
-    cout << ++num << options.delimiter << it->first << options.delimiter << x << options.delimiter
+    cout << ++num << options.delimiter << it.first << options.delimiter << x << options.delimiter
          << y << options.delimiter;
 
     print_attributes(*elem);
@@ -898,18 +898,18 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
   filter_out_duplicates(theShape, distance_map);
 
   unsigned int num = 0;
-  for (auto it = distance_map.begin(); it != distance_map.end(); ++it)
+  for (auto& it : distance_map)
   {
     if (num >= options.maxcount)
       break;
 
-    int pos = it->second;
+    int pos = it.second;
     const auto* elem = static_cast<const NFmiEsriElement*>(elements[pos]);
 
     if (!theName.empty())
       cout << theName << options.delimiter;
 
-    cout << ++num << options.delimiter << it->first << options.delimiter;
+    cout << ++num << options.delimiter << it.first << options.delimiter;
     print_attributes(*elem);
     cout << endl;
   }
@@ -1088,10 +1088,10 @@ int domain(int argc, char *argv[])
   {
     LocationList places = read_locationlist(options.coordinatefile);
 
-    for (auto it = places.begin(); it != places.end(); ++it)
+    for (auto& place : places)
     {
-      string name = it->first;
-      NFmiPoint latlon = it->second;
+      string name = place.first;
+      NFmiPoint latlon = place.second;
 
       if (type == kFmiEsriPoint)
         find_nearest_points(shape, latlon, name);

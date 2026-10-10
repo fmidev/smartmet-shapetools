@@ -235,9 +235,9 @@ void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShap
 
   // Copy the attribute type information
 
-  for (auto ait = theShape.Attributes().begin(); ait != theShape.Attributes().end(); ++ait)
+  for (auto ait : theShape.Attributes())
   {
-    shape.Add(new NFmiEsriAttributeName(**ait));
+    shape.Add(new NFmiEsriAttributeName(*ait));
   }
 
   // Then copy the desired elements in the order of importance
@@ -247,9 +247,9 @@ void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShap
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  for (auto it = theSelector.begin(); it != theSelector.end(); ++it)
+  for (int it : theSelector)
   {
-    NFmiEsriElement *tmp = elements[*it]->Clone();
+    NFmiEsriElement* tmp = elements[it]->Clone();
     shape.Add(tmp);
   }
 

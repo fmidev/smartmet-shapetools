@@ -66,9 +66,9 @@ int domain(int argc, const char *argv[])
 
   Imagine::NFmiEsriPolyLine* line = nullptr;
 
-  for (auto it = path.Elements().begin(); it != path.Elements().end(); ++it)
+  for (const auto& it : path.Elements())
   {
-    switch ((*it).Oper())
+    switch (it.Oper())
     {
       case Imagine::kFmiMoveTo:
         if (line != nullptr)
@@ -80,7 +80,7 @@ int domain(int argc, const char *argv[])
       case Imagine::kFmiLineTo:
         if (line == nullptr)
           throw runtime_error("Internal error - a lineto before a moveto");
-        line->Add(Imagine::NFmiEsriPoint((*it).X(), (*it).Y()));
+        line->Add(Imagine::NFmiEsriPoint(it.X(), it.Y()));
         break;
       case Imagine::kFmiGhostLineTo:
       case Imagine::kFmiConicTo:

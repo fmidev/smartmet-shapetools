@@ -228,9 +228,9 @@ void PointSelector::Pimple::reduce() const
   NFmiNearTree<NFmiPoint> ntree;
   NFmiPoint nearest;
 
-  for (auto it = itsCandidates.begin(); it != itsCandidates.end(); ++it)
+  for (auto& itsCandidate : itsCandidates)
   {
-    const NFmiPoint xy(it->second.x, it->second.y);
+    const NFmiPoint xy(itsCandidate.second.x, itsCandidate.second.y);
     if (ntree.NearestPoint(nearest, xy, itsMinDistance))
     {
       // There was an earlier point too close - discard the candidate
@@ -238,7 +238,7 @@ void PointSelector::Pimple::reduce() const
     else
     {
       // Accept the candidate
-      itsResults.push_back(it->second.id);
+      itsResults.push_back(itsCandidate.second.id);
       ntree.Insert(xy);
     }
   }

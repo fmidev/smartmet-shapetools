@@ -101,11 +101,11 @@ int run(int argc, const char *argv[])
   Paths paths;
 
   int shapenumber = -1;
-  for (auto it = shape.Elements().begin(); it != shape.Elements().end(); ++it)
+  for (auto it : shape.Elements())
   {
     ++shapenumber;
 
-    if (*it == nullptr)
+    if (it == nullptr)
       continue;
 
     string name;
@@ -117,7 +117,7 @@ int run(int argc, const char *argv[])
       switch ((*ait)->Type())
       {
         case Imagine::kFmiEsriString:
-          name = (*it)->GetString((*ait)->Name());
+          name = it->GetString((*ait)->Name());
           break;
         default:
           throw runtime_error("Attribute " + options.fieldname + " must be of type string");
@@ -131,7 +131,7 @@ int run(int argc, const char *argv[])
 
     Imagine::NFmiPath &path = paths[outfile];
 
-    switch ((*it)->Type())
+    switch (it->Type())
     {
       case Imagine::kFmiEsriNull:
       case Imagine::kFmiEsriMultiPatch:
@@ -140,8 +140,8 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriPointM:
       case Imagine::kFmiEsriPointZ:
       {
-        const float x = (*it)->X();
-        const float y = (*it)->Y();
+        const float x = it->X();
+        const float y = it->Y();
         path.MoveTo(x, y);
         break;
       }
@@ -149,7 +149,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriMultiPointM:
       case Imagine::kFmiEsriMultiPointZ:
       {
-        const auto* elem = static_cast<const Imagine::NFmiEsriMultiPoint*>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriMultiPoint*>(it);
         for (int i = 0; i < elem->NumPoints(); i++)
         {
           const float x = elem->Points()[i].X();
@@ -162,7 +162,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriPolyLineM:
       case Imagine::kFmiEsriPolyLineZ:
       {
-        const auto* elem = static_cast<const Imagine::NFmiEsriPolyLine*>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriPolyLine*>(it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;
@@ -185,7 +185,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriPolygonM:
       case Imagine::kFmiEsriPolygonZ:
       {
-        const auto* elem = static_cast<const Imagine::NFmiEsriPolygon*>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriPolygon*>(it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;

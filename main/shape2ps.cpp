@@ -1264,28 +1264,29 @@ int domain(int argc, const char *argv[])
 
   if (!theContours.empty())
   {
-    for (auto sit = theContourSettings.begin(); sit != theContourSettings.end(); ++sit)
+    for (const auto& theContourSetting : theContourSettings)
     {
       list<string> names;
       Imagine::NFmiBezierTools::NFmiPaths paths;
-      for (auto it = theContours.begin(); it != theContours.end(); ++it)
+      for (auto& theContour : theContours)
       {
-        if (*sit == it->first)
+        if (theContourSetting == theContour.first)
         {
-          paths.push_back(it->second);
-          names.push_back(it->first.name);
+          paths.push_back(theContour.second);
+          names.push_back(theContour.first.name);
         }
       }
 
       Imagine::NFmiBezierTools::NFmiPaths outpaths;
-      if (sit->mode == "cardinal")
-        outpaths = Imagine::NFmiCardinalBezierFit::Fit(paths, sit->smoothness);
-      else if (sit->mode == "approximate")
-        outpaths = Imagine::NFmiApproximateBezierFit::Fit(paths, sit->maxerror);
-      else if (sit->mode == "tight")
-        outpaths = Imagine::NFmiTightBezierFit::Fit(paths, sit->maxerror);
+      if (theContourSetting.mode == "cardinal")
+        outpaths = Imagine::NFmiCardinalBezierFit::Fit(paths, theContourSetting.smoothness);
+      else if (theContourSetting.mode == "approximate")
+        outpaths = Imagine::NFmiApproximateBezierFit::Fit(paths, theContourSetting.maxerror);
+      else if (theContourSetting.mode == "tight")
+        outpaths = Imagine::NFmiTightBezierFit::Fit(paths, theContourSetting.maxerror);
       else
-        throw runtime_error("Unknown Bezier mode " + sit->mode + " while fitting contours");
+        throw runtime_error("Unknown Bezier mode " + theContourSetting.mode +
+                            " while fitting contours");
 
       auto nit = names.begin();
       auto it = outpaths.begin();
