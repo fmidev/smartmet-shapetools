@@ -242,13 +242,13 @@ void parse_condition(string &theVariable, string &theComparison, string &theValu
   // Possible operations
 
   list<string> comparisons;
-  comparisons.push_back("==");
-  comparisons.push_back("<=");
-  comparisons.push_back(">=");
-  comparisons.push_back("<>");
-  comparisons.push_back("<");
-  comparisons.push_back(">");
-  comparisons.push_back("=");
+  comparisons.emplace_back("==");
+  comparisons.emplace_back("<=");
+  comparisons.emplace_back(">=");
+  comparisons.emplace_back("<>");
+  comparisons.emplace_back("<");
+  comparisons.emplace_back(">");
+  comparisons.emplace_back("=");
 
   // Try to split the condition
 

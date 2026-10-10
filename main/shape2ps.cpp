@@ -1229,7 +1229,7 @@ int domain(int argc, const char *argv[])
         const string name = ContourName(theContours.size() + 1);
         BezierSettings bset(name, theBezierMode, theBezierSmoothness, theBezierMaxError);
         theContourSettings.insert(bset);
-        theContours.push_back(make_pair(bset, path));
+        theContours.emplace_back(bset, path);
         buffer << name << endl;
       }
     }

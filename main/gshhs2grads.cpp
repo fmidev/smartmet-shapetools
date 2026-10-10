@@ -73,7 +73,7 @@ int domain(int argc, const char *argv[])
         buffer.clear();
       // fallthrough
       case Imagine::kFmiLineTo:
-        buffer.push_back(NFmiPoint((*it).X(), (*it).Y()));
+        buffer.emplace_back((*it).X(), (*it).Y());
         break;
       case Imagine::kFmiGhostLineTo:
       case Imagine::kFmiConicTo:

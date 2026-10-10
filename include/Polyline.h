@@ -46,7 +46,7 @@ class Polyline
   void clear() { itsPoints.clear(); }
 
   //! Add a point to the polyline
-  void add(double x, double y) { itsPoints.push_back(Point(x, y)); }
+  void add(double x, double y) { itsPoints.emplace_back(x, y); }
 
   //! Add a point to the polyline
   void add(const Point &thePoint) { itsPoints.push_back(thePoint); }
