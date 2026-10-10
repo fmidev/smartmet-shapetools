@@ -34,7 +34,7 @@ class Polyline
   ~Polyline() {}
 
   //! Default constructor
-  Polyline() {}
+  Polyline() = default;
 
   //! Return the size of the polyline
   unsigned int size() const { return itsPoints.size(); }
@@ -66,7 +66,7 @@ class Polyline
                    const std::string &closepath = "") const;
 
  private:
-  typedef std::vector<Point> DataType;
+  using DataType = std::vector<Point>;
 
   //! The actual data container
   DataType itsPoints;

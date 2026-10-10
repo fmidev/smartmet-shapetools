@@ -36,7 +36,7 @@ class Nodes
   ~Nodes() {}
 
   //! Default constructor
-  Nodes() {}
+  Nodes() = default;
 
   //! Add a point, returning the ordinal of the point
   long add(const Point &pt, long theId = 0);
@@ -51,7 +51,7 @@ class Nodes
   Point point(long ordinal) const;
 
   //! The container holds a map of Points with values number,id
-  typedef std::map<Point, std::pair<unsigned long, long>> DataType;
+  using DataType = std::map<Point, std::pair<unsigned long, long>>;
 
   //! Return the data
   const DataType &data() const { return itsData; }

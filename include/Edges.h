@@ -25,10 +25,10 @@ class Edges
   ~Edges() {}
 
   //! Default constructor
-  Edges() {}
+  Edges() = default;
 
   //! The type of the contained data
-  typedef std::set<Edge> DataType;
+  using DataType = std::set<Edge>;
 
   //! Adding a new edge to the set returns true if the edge is new
   bool add(const Edge &edge) { return itsData.insert(edge).second; }

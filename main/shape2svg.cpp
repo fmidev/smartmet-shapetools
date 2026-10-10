@@ -97,7 +97,7 @@ int run(int argc, const char *argv[])
   const Imagine::NFmiEsriShape::attributes_type &attributes = shape.Attributes();
 
   // Collect the data fully before writing to files
-  typedef std::map<std::string, Imagine::NFmiPath> Paths;
+  using Paths = std::map<std::string, Imagine::NFmiPath>;
   Paths paths;
 
   int shapenumber = -1;

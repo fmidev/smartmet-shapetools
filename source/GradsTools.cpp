@@ -72,7 +72,7 @@ void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
   if (thePoints.empty())
     return;
 
-  typedef vector<NFmiPoint>::size_type size_type;
+  using size_type = vector<NFmiPoint>::size_type;
 
   size_type pos1 = 0;
   while (pos1 < thePoints.size())

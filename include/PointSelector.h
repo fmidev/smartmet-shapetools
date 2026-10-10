@@ -16,9 +16,9 @@ class NFmiArea;
 class PointSelector
 {
  public:
-  typedef std::list<int> IndexList;
-  typedef IndexList::const_iterator const_iterator;
-  typedef IndexList::size_type size_type;
+  using IndexList = std::list<int>;
+  using const_iterator = IndexList::const_iterator;
+  using size_type = IndexList::size_type;
 
  public:
   ~PointSelector();

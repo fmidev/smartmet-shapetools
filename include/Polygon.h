@@ -33,7 +33,7 @@ class Polygon
   ~Polygon() {}
 
   //! Default constructor
-  Polygon() {}
+  Polygon() = default;
 
   //! Adding a new point to the polygon
   void add(const Point &pt) { itsData.push_back(pt); }
@@ -57,7 +57,7 @@ class Polygon
   Point someInsidePoint() const;
 
   //! The actual type of the contained data
-  typedef std::vector<Point> DataType;
+  using DataType = std::vector<Point>;
 
   //! Return the data itself
 

@@ -186,7 +186,7 @@ bool parse_options(int argc, char *argv[])
  */
 // ----------------------------------------------------------------------
 
-typedef map<string, NFmiPoint> LocationList;
+using LocationList = map<string, NFmiPoint>;
 
 LocationList read_locationlist(const string &theFile)
 {
@@ -738,7 +738,7 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
   // Search results in sorted order
 
-  typedef multimap<float, int> DistanceMap;
+  using DistanceMap = multimap<float, int>;
   DistanceMap distance_map;
 
   // Search conditions
@@ -828,7 +828,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
   // Search results in sorted order
 
-  typedef multimap<float, int> DistanceMap;
+  using DistanceMap = multimap<float, int>;
   DistanceMap distance_map;
 
   // Search conditions

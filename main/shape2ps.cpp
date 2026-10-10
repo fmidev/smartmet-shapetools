@@ -436,7 +436,7 @@ int domain(int argc, const char *argv[])
   // The calculated contours before Bezier fitting, and set of all
   // different combinatins of Bezier parameters used in the script
 
-  typedef list<pair<BezierSettings, Imagine::NFmiPath>> Contours;
+  using Contours = list<pair<BezierSettings, Imagine::NFmiPath>>;
   Contours theContours;
   set<BezierSettings> theContourSettings;
 

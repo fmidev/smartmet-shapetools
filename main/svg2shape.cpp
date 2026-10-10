@@ -130,7 +130,7 @@ std::map<std::string, NFmiSvgPath> read_files()
 std::size_t max_name_length(const std::map<std::string, NFmiSvgPath> &paths)
 {
   std::size_t max_length = 0;
-  typedef std::map<std::string, NFmiSvgPath>::value_type value_type;
+  using value_type = std::map<std::string, NFmiSvgPath>::value_type;
   for (const value_type &v : paths)
   {
     max_length = std::max(max_length, v.first.size());
@@ -154,9 +154,9 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
       new NFmiEsriAttributeName(options.fieldname, std::string(), max_name_length(paths));
   shape.Add(attribute);
 
-  typedef std::map<std::string, NFmiSvgPath>::value_type value_type;
+  using value_type = std::map<std::string, NFmiSvgPath>::value_type;
 
-  typedef NFmiSvgPath::const_iterator const_iterator;
+  using const_iterator = NFmiSvgPath::const_iterator;
 
   for (const value_type &v : paths)
   {

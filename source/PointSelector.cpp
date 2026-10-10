@@ -84,7 +84,7 @@ class PointSelector::Pimple
   double itsY2;
 
  private:
-  typedef multimap<double, PointData, greater<double>> Candidates;
+  using Candidates = multimap<double, PointData, greater<double>>;
   const NFmiArea &itsArea;
   const bool itsNegateFlag;
   mutable bool itsReduced;
@@ -252,7 +252,7 @@ void PointSelector::Pimple::reduce() const
  */
 // ----------------------------------------------------------------------
 
-PointSelector::~PointSelector() {}
+PointSelector::~PointSelector() = default;
 
 // ----------------------------------------------------------------------
 /*!
