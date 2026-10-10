@@ -155,8 +155,8 @@ bool Polygon::isInside(const Point &pt) const
 
   bool inside = false;
 
-  const DataType::const_iterator begin = itsData.begin();
-  const DataType::const_iterator end = itsData.end();
+  const auto begin = itsData.begin();
+  const auto end = itsData.end();
   for (DataType::const_iterator iter = begin; iter != end; ++iter)
   {
     x2 = iter->x();

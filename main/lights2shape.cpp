@@ -105,7 +105,7 @@ void parse_command_line(int argc, const char *argv[])
 
   if (cmdline.isOption('b'))
   {
-    const vector<double> values = NFmiStringTools::Split<vector<double>>(cmdline.OptionValue('b'));
+    const auto values = NFmiStringTools::Split<vector<double>>(cmdline.OptionValue('b'));
     if (values.size() != 4)
       throw runtime_error("The bounding box must consist of 4 numbers");
     globals.x1 = values[0];
@@ -238,8 +238,8 @@ void path_to_shape(const NFmiPath &thePath,
                    NFmiEsriShape &theShape,
                    const NFmiEsriAttribute theAttribute)
 {
-  const NFmiPathData::const_iterator begin = thePath.Elements().begin();
-  const NFmiPathData::const_iterator end = thePath.Elements().end();
+  const auto begin = thePath.Elements().begin();
+  const auto end = thePath.Elements().end();
 
   NFmiEsriPolygon *polygon = 0;
 
@@ -295,10 +295,10 @@ void create_shape()
   // Initialize the shape
 
   NFmiEsriShape shape(kFmiEsriPolygon);
-  NFmiEsriAttributeName *attribute = new NFmiEsriAttributeName("INTENSITY", kFmiEsriInteger, 4, 0);
+  auto* attribute = new NFmiEsriAttributeName("INTENSITY", kFmiEsriInteger, 4, 0);
   shape.Add(attribute);
 
-  for (set<int>::const_iterator it = globals.levels.begin(); it != globals.levels.end(); ++it)
+  for (auto it = globals.levels.begin(); it != globals.levels.end(); ++it)
   {
     if (globals.verbose)
       cout << "  intensity " << *it << "..." << endl;

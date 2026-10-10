@@ -214,8 +214,8 @@ LocationList read_locationlist(const string &theFile)
       try
       {
         string name = parts[0];
-        double lon = NFmiStringTools::Convert<double>(parts[1]);
-        double lat = NFmiStringTools::Convert<double>(parts[2]);
+        auto lon = NFmiStringTools::Convert<double>(parts[1]);
+        auto lat = NFmiStringTools::Convert<double>(parts[2]);
         ret.insert(make_pair(name, NFmiPoint(lon, lat)));
       }
       catch (...)
@@ -252,7 +252,7 @@ void parse_condition(string &theVariable, string &theComparison, string &theValu
 
   // Try to split the condition
 
-  for (list<string>::const_iterator it = comparisons.begin(); it != comparisons.end(); ++it)
+  for (auto it = comparisons.begin(); it != comparisons.end(); ++it)
   {
     string::size_type pos = options.condition.find(*it);
     if (pos != string::npos)
@@ -301,7 +301,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
   }
   else if (atype == kFmiEsriInteger)
   {
-    double value = boost::lexical_cast<double>(theValue);
+    auto value = boost::lexical_cast<double>(theValue);
     if (theComparison == "=" || theComparison == "==")
       return (theElement.GetInteger(theVariable) == value);
     else if (theComparison == "<>")
@@ -317,7 +317,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
   }
   else if (atype == kFmiEsriDouble)
   {
-    double value = boost::lexical_cast<double>(theValue);
+    auto value = boost::lexical_cast<double>(theValue);
     if (theComparison == "=" || theComparison == "==")
       return (theElement.GetDouble(theVariable) == value);
     else if (theComparison == "<>")
@@ -374,9 +374,7 @@ void establish_attribute(const NFmiEsriShape &theShape)
       ostringstream out;
       out << "shapefile contains multiple attributes, choose one: ";
       int pos = 0;
-      for (NFmiEsriShape::attributes_type::const_iterator at = attributes.begin();
-           at != attributes.end();
-           ++at, ++pos)
+      for (auto at = attributes.begin(); at != attributes.end(); ++at, ++pos)
       {
         if (pos > 0)
           out << ",";
@@ -404,7 +402,7 @@ NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
   bool found_one = false;
   bool multiple_types = false;
 
-  NFmiEsriShape::const_iterator it = theShape.Elements().begin();
+  auto it = theShape.Elements().begin();
   for (; it != theShape.Elements().end(); ++it)
   {
     if (*it == nullptr)
@@ -597,9 +595,7 @@ NFmiEsriAttributeType establish_attribute_type(const NFmiEsriShape &theShape, co
 {
   const Imagine::NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  for (Imagine::NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
-       ait != attributes.end();
-       ++ait)
+  for (auto ait = attributes.begin(); ait != attributes.end(); ++ait)
   {
     if ((*ait)->Name() == theName)
       return (*ait)->Type();
@@ -662,10 +658,10 @@ void filter_out_duplicates(const NFmiEsriShape &theShape, multimap<float, int> &
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  for (multimap<float, int>::const_iterator it = theData.begin(); it != theData.end(); ++it)
+  for (auto it = theData.begin(); it != theData.end(); ++it)
   {
     int pos = it->second;
-    const NFmiEsriElement *elem = static_cast<const NFmiEsriElement *>(elements[pos]);
+    const auto* elem = static_cast<const NFmiEsriElement*>(elements[pos]);
 
     switch (atype)
     {
@@ -759,7 +755,7 @@ void find_nearest_points(const NFmiEsriShape &theShape,
     if (elements[i] == 0)  // null element?
       continue;
 
-    const NFmiEsriPoint *elem = static_cast<const NFmiEsriPoint *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPoint*>(elements[i]);
 
     float dist;
     if (options.projection == "latlon")
@@ -784,13 +780,13 @@ void find_nearest_points(const NFmiEsriShape &theShape,
   // Print the results
 
   unsigned int num = 0;
-  for (DistanceMap::const_iterator it = distance_map.begin(); it != distance_map.end(); ++it)
+  for (auto it = distance_map.begin(); it != distance_map.end(); ++it)
   {
     if (num >= options.maxcount)
       break;
 
     int pos = it->second;
-    const NFmiEsriPoint *elem = static_cast<const NFmiEsriPoint *>(elements[pos]);
+    const auto* elem = static_cast<const NFmiEsriPoint*>(elements[pos]);
 
     double x = elem->X();
     double y = elem->Y();
@@ -849,7 +845,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
     if (elements[i] == 0)  // null element?
       continue;
 
-    const NFmiEsriPolyLine *elem = static_cast<const NFmiEsriPolyLine *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPolyLine*>(elements[i]);
 
     float mindist = -1;
 
@@ -902,13 +898,13 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
   filter_out_duplicates(theShape, distance_map);
 
   unsigned int num = 0;
-  for (DistanceMap::const_iterator it = distance_map.begin(); it != distance_map.end(); ++it)
+  for (auto it = distance_map.begin(); it != distance_map.end(); ++it)
   {
     if (num >= options.maxcount)
       break;
 
     int pos = it->second;
-    const NFmiEsriElement *elem = static_cast<const NFmiEsriElement *>(elements[pos]);
+    const auto* elem = static_cast<const NFmiEsriElement*>(elements[pos]);
 
     if (!theName.empty())
       cout << theName << options.delimiter;
@@ -997,7 +993,7 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
     if (elements[i] == 0)  // null element?
       continue;
 
-    const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);
 
     bool enclosed = false;
 
@@ -1017,7 +1013,7 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
 
   if (i < elements.size())
   {
-    const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);
 
     if (!theName.empty())
       cout << theName << options.delimiter;
@@ -1092,7 +1088,7 @@ int domain(int argc, char *argv[])
   {
     LocationList places = read_locationlist(options.coordinatefile);
 
-    for (LocationList::const_iterator it = places.begin(); it != places.end(); ++it)
+    for (auto it = places.begin(); it != places.end(); ++it)
     {
       string name = it->first;
       NFmiPoint latlon = it->second;

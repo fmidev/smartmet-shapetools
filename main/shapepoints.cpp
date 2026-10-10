@@ -200,7 +200,7 @@ void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape)
     if (elements[i]->Type() != kFmiEsriPoint)
       continue;
 
-    const NFmiEsriPoint *elem = static_cast<const NFmiEsriPoint *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPoint*>(elements[i]);
     const int id = i;
     const double lon = elem->X();
     const double lat = elem->Y();
@@ -235,9 +235,7 @@ void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShap
 
   // Copy the attribute type information
 
-  for (NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
-       ait != theShape.Attributes().end();
-       ++ait)
+  for (auto ait = theShape.Attributes().begin(); ait != theShape.Attributes().end(); ++ait)
   {
     shape.Add(new NFmiEsriAttributeName(**ait));
   }
@@ -249,7 +247,7 @@ void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShap
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  for (PointSelector::const_iterator it = theSelector.begin(); it != theSelector.end(); ++it)
+  for (auto it = theSelector.begin(); it != theSelector.end(); ++it)
   {
     NFmiEsriElement *tmp = elements[*it]->Clone();
     shape.Add(tmp);

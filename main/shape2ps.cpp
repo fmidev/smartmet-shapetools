@@ -239,8 +239,8 @@ string pathtostring(const Imagine::NFmiPath &thePath,
                     const string &theLineto,
                     const string &theClosepath = "")
 {
-  const Imagine::NFmiPathData::const_iterator begin = thePath.Elements().begin();
-  const Imagine::NFmiPathData::const_iterator end = thePath.Elements().end();
+  const auto begin = thePath.Elements().begin();
+  const auto end = thePath.Elements().end();
 
   string out;
 
@@ -293,8 +293,8 @@ string pathtostring(const Imagine::NFmiPath &thePath,
   Imagine::NFmiPath path =
       thePath.Clip(theArea.Left(), theArea.Top(), theArea.Right(), theArea.Bottom(), theClipMargin);
 
-  const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-  const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
+  const auto begin = path.Elements().begin();
+  const auto end = path.Elements().end();
 
   ostringstream out;
 
@@ -448,8 +448,8 @@ int domain(int argc, const char *argv[])
 
   // Prepare the location finder for "location" token
 
-  string coordfile = NFmiSettings::Optional<string>("qdpoint::coordinates_file", "default.txt");
-  string coordpath = NFmiSettings::Optional<string>("qdpoint::coordinates_path", ".");
+  auto coordfile = NFmiSettings::Optional<string>("qdpoint::coordinates_file", "default.txt");
+  auto coordpath = NFmiSettings::Optional<string>("qdpoint::coordinates_path", ".");
 
   NFmiLocationFinder locfinder;
   locfinder.AddFile(NFmiFileSystem::FileComplete(coordfile, coordpath), false);
@@ -1264,13 +1264,11 @@ int domain(int argc, const char *argv[])
 
   if (!theContours.empty())
   {
-    for (set<BezierSettings>::const_iterator sit = theContourSettings.begin();
-         sit != theContourSettings.end();
-         ++sit)
+    for (auto sit = theContourSettings.begin(); sit != theContourSettings.end(); ++sit)
     {
       list<string> names;
       Imagine::NFmiBezierTools::NFmiPaths paths;
-      for (Contours::const_iterator it = theContours.begin(); it != theContours.end(); ++it)
+      for (auto it = theContours.begin(); it != theContours.end(); ++it)
       {
         if (*sit == it->first)
         {
@@ -1289,8 +1287,8 @@ int domain(int argc, const char *argv[])
       else
         throw runtime_error("Unknown Bezier mode " + sit->mode + " while fitting contours");
 
-      list<string>::const_iterator nit = names.begin();
-      Imagine::NFmiBezierTools::NFmiPaths::const_iterator it = outpaths.begin();
+      auto nit = names.begin();
+      auto it = outpaths.begin();
       for (; nit != names.end() && it != outpaths.end(); ++nit, ++it)
       {
         const string name = *nit;

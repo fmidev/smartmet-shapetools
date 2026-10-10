@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     Imagine::NFmiGeoShape geo(shapefile, Imagine::kFmiGeoShapeEsri);
     Imagine::NFmiPath path = geo.Path();
 
-    const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-    const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
+    const auto begin = path.Elements().begin();
+    const auto end = path.Elements().end();
 
     for (Imagine::NFmiPathData::const_iterator it = begin; it != end; ++it)
     {

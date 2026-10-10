@@ -74,9 +74,7 @@ int domain(int argc, const char *argv[])
 
   vector<NFmiPoint> buffer;
 
-  for (Imagine::NFmiPathData::const_iterator it = path.Elements().begin();
-       it != path.Elements().end();
-       ++it)
+  for (auto it = path.Elements().begin(); it != path.Elements().end(); ++it)
   {
     switch ((*it).Oper())
     {

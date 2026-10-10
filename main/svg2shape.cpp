@@ -150,7 +150,7 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
 
   NFmiEsriShape shape(kFmiEsriPolygon);
 
-  NFmiEsriAttributeName *attribute =
+  auto* attribute =
       new NFmiEsriAttributeName(options.fieldname, std::string(), max_name_length(paths));
   shape.Add(attribute);
 
@@ -163,15 +163,15 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
     const std::string &name = v.first;
     const NFmiSvgPath &svg = v.second;
 
-    NFmiEsriPolygon *polygon = new NFmiEsriPolygon;
+    auto* polygon = new NFmiEsriPolygon;
     NFmiEsriAttribute attr(name, attribute);
     polygon->Add(attr);
 
     double firstX = 0;
     double firstY = 0;
 
-    const_iterator end = svg.end();
-    for (const_iterator it = svg.begin(); it != end; ++it)
+    auto end = svg.end();
+    for (auto it = svg.begin(); it != end; ++it)
     {
       if (it->itsType == NFmiSvgPath::kElementMoveto)
       {

@@ -245,7 +245,7 @@ string get_attribute_value(const NFmiEsriElement &theElement, const NFmiEsriAttr
 NFmiEsriShape::attributes_type::const_iterator find_attribute(
     const NFmiEsriShape::attributes_type &theAttributes, const std::string &theName)
 {
-  NFmiEsriShape::attributes_type::const_iterator it = theAttributes.begin();
+  auto it = theAttributes.begin();
   for (; it != theAttributes.end(); ++it)
   {
     if ((*it)->Name() == theName)
@@ -266,13 +266,11 @@ set<string> find_unique_attributes(const NFmiEsriShape &theShape, const string &
 {
   const NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  NFmiEsriShape::attributes_type::const_iterator at = find_attribute(attributes, theAttribute);
+  auto at = find_attribute(attributes, theAttribute);
 
   set<string> values;
 
-  for (NFmiEsriShape::const_iterator it = theShape.Elements().begin();
-       it != theShape.Elements().end();
-       ++it)
+  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
   {
     if (*it == nullptr)
       continue;
@@ -293,7 +291,7 @@ void print_uniques(const set<string> &theValues)
 {
   cout << "There were " << theValues.size() << " unique values in the shape:" << endl;
   int pos = 1;
-  for (set<string>::const_iterator it = theValues.begin(); it != theValues.end(); ++it, ++pos)
+  for (auto it = theValues.begin(); it != theValues.end(); ++it, ++pos)
   {
     cout << pos << ' ' << *it << endl;
   }
@@ -309,7 +307,7 @@ map<string, int> make_attribute_map(const set<string> &theSet)
 {
   map<string, int> ret;
   int i = 1;
-  for (set<string>::const_iterator it = theSet.begin(); it != theSet.end(); ++it)
+  for (auto it = theSet.begin(); it != theSet.end(); ++it)
   {
     ret.insert(map<string, int>::value_type(*it, i++));
   }
@@ -356,7 +354,7 @@ void polygon_to_fillmap(NFmiFillMap &theMap, const NFmiEsriElement *theElement)
     case kFmiEsriPolygonM:
     case kFmiEsriPolygonZ:
     {
-      const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(theElement);
+      const auto* elem = static_cast<const NFmiEsriPolygon*>(theElement);
       for (int part = 0; part < elem->NumParts(); part++)
       {
         int i1, i2;
@@ -399,11 +397,9 @@ void render_image(NFmiImage &theImage,
 
   const NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  NFmiEsriShape::attributes_type::const_iterator at = find_attribute(attributes, options.attribute);
+  auto at = find_attribute(attributes, options.attribute);
 
-  for (NFmiEsriShape::const_iterator it = theShape.Elements().begin();
-       it != theShape.Elements().end();
-       ++it)
+  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
   {
     if (*it == nullptr)
       continue;
@@ -492,7 +488,7 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
     if (elements[i] == 0)  // null element?
       continue;
 
-    const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);
 
     bool enclosed = is_inside(*elem, theLon, theLat);
 
@@ -504,10 +500,9 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
 
   if (i < elements.size())
   {
-    const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(elements[i]);
+    const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);
     const NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
-    NFmiEsriShape::attributes_type::const_iterator at =
-        find_attribute(attributes, options.attribute);
+    auto at = find_attribute(attributes, options.attribute);
     const string value = get_attribute_value(*elem, **at);
     return value;
   }
@@ -678,7 +673,7 @@ string compress_image(const NFmiImage &theImage, const map<string, int> &theMap)
 
   out << theMap.size() << '\n';
 
-  for (map<string, int>::const_iterator it = theMap.begin(); it != theMap.end(); ++it)
+  for (auto it = theMap.begin(); it != theMap.end(); ++it)
   {
     out << it->first << '\n';
   }
@@ -760,7 +755,7 @@ void render_shapepack(NFmiImage &img,
       try
       {
         std::string tz = zones.zone_name(lonpixel(i), latpixel(j));
-        map<string, int>::const_iterator it = attmap.find(tz);
+        auto it = attmap.find(tz);
         if (it == attmap.end())
         {
           cerr << "Failed to find index for timezone " << tz << " at coordinate " << i << "," << j
@@ -814,9 +809,7 @@ int domain(int argc, char *argv[])
       ostringstream out;
       out << "shapefile contains multiple attributes, choose one: ";
       int pos = 0;
-      for (NFmiEsriShape::attributes_type::const_iterator at = attributes.begin();
-           at != attributes.end();
-           ++at, ++pos)
+      for (auto at = attributes.begin(); at != attributes.end(); ++at, ++pos)
       {
         if (pos > 0)
           out << ",";

@@ -53,7 +53,7 @@ long Nodes::add(const Point &pt, long theId)
 
 unsigned long Nodes::number(const Point &pt) const
 {
-  DataType::const_iterator pos = itsData.find(pt);
+  auto pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
   else
@@ -69,7 +69,7 @@ unsigned long Nodes::number(const Point &pt) const
 
 long Nodes::id(const Point &pt) const
 {
-  DataType::const_iterator pos = itsData.find(pt);
+  auto pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
   else

@@ -235,8 +235,8 @@ int main(int argc, char *argv[])
   vector<Polygon> polygons;
   {
     Polygon poly;
-    const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-    const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
+    const auto begin = path.Elements().begin();
+    const auto end = path.Elements().end();
 
     for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;)
     {
@@ -272,14 +272,14 @@ int main(int argc, char *argv[])
   cout << "Calculating unique nodes" << endl;
   Nodes nodes;
   {
-    const vector<Polygon>::const_iterator begin = polygons.begin();
-    const vector<Polygon>::const_iterator end = polygons.end();
+    const auto begin = polygons.begin();
+    const auto end = polygons.end();
     unsigned long idx = 0;
     for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
     {
       ++idx;
-      const Polygon::DataType::const_iterator pbegin = iter->data().begin();
-      const Polygon::DataType::const_iterator pend = iter->data().end();
+      const auto pbegin = iter->data().begin();
+      const auto pend = iter->data().end();
       for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
         static_cast<void>(nodes.add(*piter, idx));
     }
@@ -304,16 +304,16 @@ int main(int argc, char *argv[])
     map<unsigned long, Point> sortednodes;
     const Nodes::DataType &data = nodes.data();
     {
-      const Nodes::DataType::const_iterator begin = data.begin();
-      const Nodes::DataType::const_iterator end = data.end();
+      const auto begin = data.begin();
+      const auto end = data.end();
       for (Nodes::DataType::const_iterator iter = begin; iter != end; ++iter)
         sortednodes.insert(make_pair(iter->second.first, iter->first));
     }
     cout << "Writing " << nodefile << " with " << data.size() << " nodes" << endl;
     out << data.size() << " 2 0 0" << endl;
     {
-      const map<unsigned long, Point>::const_iterator begin = sortednodes.begin();
-      const map<unsigned long, Point>::const_iterator end = sortednodes.end();
+      const auto begin = sortednodes.begin();
+      const auto end = sortednodes.end();
       for (map<unsigned long, Point>::const_iterator iter = begin; iter != end; ++iter)
         out << iter->first << '\t' << iter->second.x() << '\t' << iter->second.y() << endl;
     }
@@ -343,13 +343,13 @@ int main(int argc, char *argv[])
         out << number_of_edges << " 0" << endl;
       }
 
-      const vector<Polygon>::const_iterator begin = polygons.begin();
-      const vector<Polygon>::const_iterator end = polygons.end();
+      const auto begin = polygons.begin();
+      const auto end = polygons.end();
       for (vector<Polygon>::const_iterator iter = begin; iter != end; ++iter)
       {
         Point previous_point(0, 0);
-        const Polygon::DataType::const_iterator pbegin = iter->data().begin();
-        const Polygon::DataType::const_iterator pend = iter->data().end();
+        const auto pbegin = iter->data().begin();
+        const auto pend = iter->data().end();
         for (Polygon::DataType::const_iterator piter = pbegin; piter != pend; ++piter)
         {
           if (piter != pbegin)

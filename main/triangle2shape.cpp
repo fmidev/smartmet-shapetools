@@ -140,8 +140,8 @@ int main(int argc, char *argv[])
     Imagine::NFmiEsriShape shape;
     Polygon poly;
 
-    const Imagine::NFmiPathData::const_iterator begin = path.Elements().begin();
-    const Imagine::NFmiPathData::const_iterator end = path.Elements().end();
+    const auto begin = path.Elements().begin();
+    const auto end = path.Elements().end();
 
     for (Imagine::NFmiPathData::const_iterator iter = begin; iter != end;)
     {
@@ -163,10 +163,10 @@ int main(int argc, char *argv[])
         if (arealimit <= 0 || poly.geoarea() >= arealimit)
         {
           // Convert to NFmiEsriPolygon
-          Imagine::NFmiEsriPolygon *p = new Imagine::NFmiEsriPolygon();
-          Polygon::DataType::const_iterator b = poly.data().begin();
-          Polygon::DataType::const_iterator e = poly.data().end();
-          for (Polygon::DataType::const_iterator it = b; it != e; ++it)
+          auto* p = new Imagine::NFmiEsriPolygon();
+          auto b = poly.data().begin();
+          auto e = poly.data().end();
+          for (auto it = b; it != e; ++it)
             p->Add(Imagine::NFmiEsriPoint(it->x(), it->y()));
           // And add to output
           shape.Add(p);

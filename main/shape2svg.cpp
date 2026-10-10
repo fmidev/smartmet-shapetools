@@ -101,9 +101,7 @@ int run(int argc, const char *argv[])
   Paths paths;
 
   int shapenumber = -1;
-  for (Imagine::NFmiEsriShape::const_iterator it = shape.Elements().begin();
-       it != shape.Elements().end();
-       ++it)
+  for (auto it = shape.Elements().begin(); it != shape.Elements().end(); ++it)
   {
     ++shapenumber;
 
@@ -111,9 +109,7 @@ int run(int argc, const char *argv[])
       continue;
 
     string name;
-    for (Imagine::NFmiEsriShape::attributes_type::const_iterator ait = attributes.begin();
-         ait != attributes.end() && name.empty();
-         ++ait)
+    for (auto ait = attributes.begin(); ait != attributes.end() && name.empty(); ++ait)
     {
       if ((*ait)->Name() != options.fieldname)
         continue;
@@ -153,8 +149,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriMultiPointM:
       case Imagine::kFmiEsriMultiPointZ:
       {
-        const Imagine::NFmiEsriMultiPoint *elem =
-            static_cast<const Imagine::NFmiEsriMultiPoint *>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriMultiPoint*>(*it);
         for (int i = 0; i < elem->NumPoints(); i++)
         {
           const float x = elem->Points()[i].X();
@@ -167,7 +162,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriPolyLineM:
       case Imagine::kFmiEsriPolyLineZ:
       {
-        const Imagine::NFmiEsriPolyLine *elem = static_cast<const Imagine::NFmiEsriPolyLine *>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriPolyLine*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;
@@ -190,7 +185,7 @@ int run(int argc, const char *argv[])
       case Imagine::kFmiEsriPolygonM:
       case Imagine::kFmiEsriPolygonZ:
       {
-        const Imagine::NFmiEsriPolygon *elem = static_cast<const Imagine::NFmiEsriPolygon *>(*it);
+        const auto* elem = static_cast<const Imagine::NFmiEsriPolygon*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;

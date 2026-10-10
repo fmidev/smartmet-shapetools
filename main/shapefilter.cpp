@@ -151,7 +151,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
   if (options.verbose)
     cout << "Counting edges in shape..." << endl;
 
-  NFmiEsriShape::const_iterator it = theShape.Elements().begin();
+  auto it = theShape.Elements().begin();
 
   for (; it != theShape.Elements().end(); ++it)
   {
@@ -173,7 +173,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
       case kFmiEsriPolyLineM:
       case kFmiEsriPolyLineZ:
       {
-        const NFmiEsriPolyLine *elem = static_cast<const NFmiEsriPolyLine *>(*it);
+        const auto* elem = static_cast<const NFmiEsriPolyLine*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;
@@ -204,7 +204,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
       case kFmiEsriPolygonM:
       case kFmiEsriPolygonZ:
       {
-        const NFmiEsriPolygon *elem = static_cast<const NFmiEsriPolygon *>(*it);
+        const auto* elem = static_cast<const NFmiEsriPolygon*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
           int i1, i2;
@@ -248,8 +248,8 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
 
   const NFmiEsriElementType etype = theShape.Type();
 
-  const NFmiPathData::const_iterator begin = thePath.Elements().begin();
-  const NFmiPathData::const_iterator end = thePath.Elements().end();
+  const auto begin = thePath.Elements().begin();
+  const auto end = thePath.Elements().end();
 
   NFmiEsriPolyLine *polyline = 0;
   NFmiEsriPolygon *polygon = 0;
@@ -323,7 +323,7 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
   // Build a path from even numbered edges
 
   NFmiEdgeTree tree;
-  for (NFmiCounter<NFmiEdge>::const_iterator it = counts.begin(); it != counts.end(); ++it)
+  for (auto it = counts.begin(); it != counts.end(); ++it)
   {
     if (it->second % 2 == 0)
       tree.Add(it->first);
@@ -335,7 +335,7 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
 
   // Convert the tree to a shape
 
-  NFmiEsriShape *shape = new NFmiEsriShape(kFmiEsriPolyLine);
+  auto* shape = new NFmiEsriShape(kFmiEsriPolyLine);
   path_to_shape(path, *shape);
 
   return shape;
@@ -360,7 +360,7 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
   // Build a path from odd numbered edges
 
   NFmiEdgeTree tree;
-  for (NFmiCounter<NFmiEdge>::const_iterator it = counts.begin(); it != counts.end(); ++it)
+  for (auto it = counts.begin(); it != counts.end(); ++it)
   {
     if (it->second % 2 != 0)
       tree.Add(it->first);
@@ -379,7 +379,7 @@ const NFmiEsriShape *filter_odd_count(const NFmiEsriShape &theShape)
   if (oldtype != kFmiEsriPolygon)
     newtype = kFmiEsriPolyLine;
 
-  NFmiEsriShape *shape = new NFmiEsriShape(newtype);
+  auto* shape = new NFmiEsriShape(newtype);
   path_to_shape(path, *shape);
 
   return shape;
@@ -412,7 +412,7 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
 
   // Parse the bounding box
 
-  const vector<double> values = NFmiStringTools::Split<vector<double>>(options.filter_boundingbox);
+  const auto values = NFmiStringTools::Split<vector<double>>(options.filter_boundingbox);
   if (values.size() != 4)
     throw runtime_error("Bounding box must consist of 4 values");
 
@@ -431,21 +431,17 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
 
   // Start the result shape
 
-  NFmiEsriShape *shape = new NFmiEsriShape(theShape.Type());
+  auto* shape = new NFmiEsriShape(theShape.Type());
 
   // Copy the attribute type information
-  for (NFmiEsriShape::attributes_type::const_iterator ait = theShape.Attributes().begin();
-       ait != theShape.Attributes().end();
-       ++ait)
+  for (auto ait = theShape.Attributes().begin(); ait != theShape.Attributes().end(); ++ait)
   {
     shape->Add(new NFmiEsriAttributeName(**ait));
   }
 
   // Copy the elements which overlap the bounding box
 
-  for (NFmiEsriShape::const_iterator it = theShape.Elements().begin();
-       it != theShape.Elements().end();
-       ++it)
+  for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
   {
     // Skip empty elements
     if (*it == 0)

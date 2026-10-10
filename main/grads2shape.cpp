@@ -74,7 +74,7 @@ int domain(int argc, const char *argv[])
   {
     if (record_type == 1)
     {
-      Imagine::NFmiEsriPolyLine *line = new Imagine::NFmiEsriPolyLine(counter);
+      auto* line = new Imagine::NFmiEsriPolyLine(counter);
       for (unsigned int i = 0; i < record_points; i++)
       {
         double lon = GradsTools::read_lon(in);
