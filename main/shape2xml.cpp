@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     {
       ++shapenumber;
 
-      if (*it == 0)
+      if (*it == nullptr)
         continue;
 
       cout << "<shape id=\"" << shapenumber << '"' << " type=\"" << static_cast<int>((*it)->Type())

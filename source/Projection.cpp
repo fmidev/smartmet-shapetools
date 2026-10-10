@@ -266,7 +266,7 @@ NFmiArea *Projection::createArea() const
 
   // Create the required projection
 
-  NFmiArea *area = 0;
+  NFmiArea* area = nullptr;
 
   // Special handling for the center
 

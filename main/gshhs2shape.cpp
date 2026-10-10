@@ -64,21 +64,21 @@ int domain(int argc, const char *argv[])
 
   // Output the data
 
-  Imagine::NFmiEsriPolyLine *line = 0;
+  Imagine::NFmiEsriPolyLine* line = nullptr;
 
   for (auto it = path.Elements().begin(); it != path.Elements().end(); ++it)
   {
     switch ((*it).Oper())
     {
       case Imagine::kFmiMoveTo:
-        if (line != 0)
+        if (line != nullptr)
           shp.Add(line);
         line = new Imagine::NFmiEsriPolyLine;
-        if (line == 0)
+        if (line == nullptr)
           throw runtime_error("Failed to allocate a new NFmiEsriPolyLine");
       // fall through
       case Imagine::kFmiLineTo:
-        if (line == 0)
+        if (line == nullptr)
           throw runtime_error("Internal error - a lineto before a moveto");
         line->Add(Imagine::NFmiEsriPoint((*it).X(), (*it).Y()));
         break;
@@ -88,7 +88,7 @@ int domain(int argc, const char *argv[])
         throw runtime_error("The shapefile contains Bezier curve segments");
     }
   }
-  if (line != 0)
+  if (line != nullptr)
     shp.Add(line);
 
   string filename = shapename + ".shp";

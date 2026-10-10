@@ -105,7 +105,7 @@ int run(int argc, const char *argv[])
   {
     ++shapenumber;
 
-    if (*it == 0)
+    if (*it == nullptr)
       continue;
 
     string name;

@@ -752,7 +752,7 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
   for (NFmiEsriShape::elements_type::size_type i = 0; i < elements.size(); i++)
   {
-    if (elements[i] == 0)  // null element?
+    if (elements[i] == nullptr)  // null element?
       continue;
 
     const auto* elem = static_cast<const NFmiEsriPoint*>(elements[i]);
@@ -842,7 +842,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
   for (NFmiEsriShape::elements_type::size_type i = 0; i < elements.size(); i++)
   {
-    if (elements[i] == 0)  // null element?
+    if (elements[i] == nullptr)  // null element?
       continue;
 
     const auto* elem = static_cast<const NFmiEsriPolyLine*>(elements[i]);
@@ -990,7 +990,7 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
   NFmiEsriShape::elements_type::size_type i;
   for (i = 0; i < elements.size(); i++)
   {
-    if (elements[i] == 0)  // null element?
+    if (elements[i] == nullptr)  // null element?
       continue;
 
     const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);

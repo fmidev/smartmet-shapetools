@@ -234,7 +234,7 @@ void path_to_shape(const NFmiPath &thePath,
   const auto begin = thePath.Elements().begin();
   const auto end = thePath.Elements().end();
 
-  NFmiEsriPolygon *polygon = 0;
+  NFmiEsriPolygon* polygon = nullptr;
 
   for (NFmiPathData::const_iterator it = begin; it != end;)
   {
@@ -245,7 +245,7 @@ void path_to_shape(const NFmiPath &thePath,
     else if (++it == end)
     {
       --it;
-      if (polygon == 0)
+      if (polygon == nullptr)
         polygon = new NFmiEsriPolygon;
       polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       doflush = true;
@@ -255,7 +255,7 @@ void path_to_shape(const NFmiPath &thePath,
 
     if (doflush)
     {
-      if (polygon != 0)
+      if (polygon != nullptr)
       {
         polygon->Add(theAttribute);
         theShape.Add(polygon);

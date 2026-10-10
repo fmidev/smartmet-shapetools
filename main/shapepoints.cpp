@@ -177,7 +177,7 @@ void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape)
   // Establish the correct attribute
 
   const NFmiEsriAttributeName *name = theShape.AttributeName(options.fieldname);
-  if (name == 0)
+  if (name == nullptr)
     throw runtime_error("The input shape does not have a field named '" + options.fieldname + "'");
 
   const NFmiEsriAttributeType atype = name->Type();
@@ -193,7 +193,7 @@ void select_points(PointSelector &theSelector, const NFmiEsriShape &theShape)
   for (NFmiEsriShape::elements_type::size_type i = 0; i < elements.size(); i++)
   {
     // Ignore empty elements
-    if (elements[i] == 0)
+    if (elements[i] == nullptr)
       continue;
 
     // Ignore invalid element types

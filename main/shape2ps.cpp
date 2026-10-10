@@ -497,7 +497,7 @@ int domain(int argc, const char *argv[])
            << endl;
 
       // Invalidate coordinate matrix
-      coords.reset(0);
+      coords.reset(nullptr);
 
       if (theArea.get())
         throw runtime_error("Area given twice");
@@ -546,7 +546,7 @@ int domain(int argc, const char *argv[])
               "projection command instead"
            << endl;
 
-      coords.reset(0);
+      coords.reset(nullptr);
 
       if (!theArea.get())
         throw runtime_error(
@@ -586,7 +586,7 @@ int domain(int argc, const char *argv[])
     else if (token == "projection")
     {
       // Invalidate coordinate matrix
-      coords.reset(0);
+      coords.reset(nullptr);
 
       if (theArea.get())
         throw runtime_error("Projection given twice");
@@ -930,8 +930,8 @@ int domain(int argc, const char *argv[])
 
     else if (token == "querydata")
     {
-      coords.reset(0);
-      values.reset(0);
+      coords.reset(nullptr);
+      values.reset(nullptr);
       script >> theQueryDataName;
       if (!theQueryData.SafeReadLatestData(theQueryDataName))
         throw runtime_error("Failed to read querydata from " + theQueryDataName);
@@ -943,7 +943,7 @@ int domain(int argc, const char *argv[])
 
     else if (token == "parameter")
     {
-      values.reset(0);
+      values.reset(nullptr);
       script >> theParameterName;
       NFmiEnumConverter converter;
       theParameter = FmiParameterName(converter.ToEnum(theParameterName));
@@ -957,7 +957,7 @@ int domain(int argc, const char *argv[])
 
     else if (token == "level")
     {
-      values.reset(0);
+      values.reset(nullptr);
       script >> theLevel;
     }
 
@@ -967,7 +967,7 @@ int domain(int argc, const char *argv[])
 
     else if (token == "timemode")
     {
-      values.reset(0);
+      values.reset(nullptr);
       string name;
       script >> name;
       if (name == "local")
@@ -985,7 +985,7 @@ int domain(int argc, const char *argv[])
 
     else if (token == "time")
     {
-      values.reset(0);
+      values.reset(nullptr);
       script >> theTimeOrigin >> theDay >> theHour;
       if (theTimeOrigin != "now" && theTimeOrigin != "origintime" && theTimeOrigin != "firsttime")
         throw runtime_error("Time mode " + theTimeOrigin + " is not recognized");
@@ -1020,7 +1020,7 @@ int domain(int argc, const char *argv[])
 
     else if (token == "smoother")
     {
-      values.reset(0);
+      values.reset(nullptr);
       script >> theSmoother;
       if (theSmoother != "None")
         script >> theSmootherFactor >> theSmootherRadius;
@@ -1051,7 +1051,7 @@ int domain(int argc, const char *argv[])
       script >> dx >> dy;
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
-      if (q == 0)
+      if (q == nullptr)
         throw runtime_error("querydata must be specified before using any windarrows commands");
       if (!q->Param(kFmiWindDirection))
         throw runtime_error("parameter WindDirection is not available in " + theQueryDataName);
@@ -1088,7 +1088,7 @@ int domain(int argc, const char *argv[])
 
       // Get the data to be contoured
 
-      if (coords.get() == 0)
+      if (coords.get() == nullptr)
         coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
 
       values.reset(new NFmiDataMatrix<float>(q->Values(t)));
@@ -1125,7 +1125,7 @@ int domain(int argc, const char *argv[])
         throw runtime_error(token + " command is not allowed in the header");
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
-      if (q == 0)
+      if (q == nullptr)
         throw runtime_error("querydata must be specified before using any contouring commands");
 
       if (theParameter == kFmiBadParameter)
@@ -1187,12 +1187,12 @@ int domain(int argc, const char *argv[])
 
       // Get the data to be contoured
 
-      if (coords.get() == 0)
+      if (coords.get() == nullptr)
       {
         coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
       }
 
-      if (values.get() == 0)
+      if (values.get() == nullptr)
       {
         values.reset(new NFmiDataMatrix<float>(q->Values(t)));
         if (values->NX() == 0 || values->NY() == 0)

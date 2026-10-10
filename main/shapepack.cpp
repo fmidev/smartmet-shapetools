@@ -485,7 +485,7 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
   NFmiEsriShape::elements_type::size_type i;
   for (i = 0; i < elements.size(); i++)
   {
-    if (elements[i] == 0)  // null element?
+    if (elements[i] == nullptr)  // null element?
       continue;
 
     const auto* elem = static_cast<const NFmiEsriPolygon*>(elements[i]);

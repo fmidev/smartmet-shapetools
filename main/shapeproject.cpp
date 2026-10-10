@@ -158,7 +158,7 @@ class MyProjector : public NFmiEsriProjector
   {
   }
 
-  virtual NFmiEsriPoint operator()(const NFmiEsriPoint &thePoint) const
+  NFmiEsriPoint operator()(const NFmiEsriPoint& thePoint) const override
   {
     const NFmiPoint p(thePoint.X(), thePoint.Y());
     if (options.inputprojection == "latlon")
@@ -179,7 +179,7 @@ class MyProjector : public NFmiEsriProjector
     }
   }
 
-  virtual void SetBox(const NFmiEsriBox &theBox) const
+  void SetBox(const NFmiEsriBox& theBox) const override
   {
     // We do nothing, no idea how this should even work
   }

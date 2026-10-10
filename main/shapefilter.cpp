@@ -251,8 +251,8 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
   const auto begin = thePath.Elements().begin();
   const auto end = thePath.Elements().end();
 
-  NFmiEsriPolyLine *polyline = 0;
-  NFmiEsriPolygon *polygon = 0;
+  NFmiEsriPolyLine* polyline = nullptr;
+  NFmiEsriPolygon* polygon = nullptr;
 
   for (NFmiPathData::const_iterator it = begin; it != end;)
   {
@@ -265,13 +265,13 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
       --it;
       if (etype == kFmiEsriPolygon)
       {
-        if (polygon == 0)
+        if (polygon == nullptr)
           polygon = new NFmiEsriPolygon;
         polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       }
       else
       {
-        if (polyline == 0)
+        if (polyline == nullptr)
           polyline = new NFmiEsriPolyLine;
         polyline->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
       }
@@ -284,13 +284,13 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
     {
       if (etype == kFmiEsriPolygon)
       {
-        if (polygon != 0)
+        if (polygon != nullptr)
           theShape.Add(polygon);
         polygon = new NFmiEsriPolygon;
       }
       else
       {
-        if (polyline != 0)
+        if (polyline != nullptr)
           theShape.Add(polyline);
         polyline = new NFmiEsriPolyLine;
       }
@@ -444,7 +444,7 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
   for (auto it = theShape.Elements().begin(); it != theShape.Elements().end(); ++it)
   {
     // Skip empty elements
-    if (*it == 0)
+    if (*it == nullptr)
       continue;
 
     // Establish bounding box of the element
