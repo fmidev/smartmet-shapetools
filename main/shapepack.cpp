@@ -72,6 +72,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -825,7 +826,7 @@ int domain(int argc, char *argv[])
 
   std::shared_ptr<Fmi::WorldTimeZones> zones;
   if (!options.zonefile.empty())
-    zones.reset(new Fmi::WorldTimeZones(options.zonefile));
+    zones = std::make_shared<Fmi::WorldTimeZones>(options.zonefile);
 
   // Unique attributes
 
