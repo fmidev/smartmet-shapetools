@@ -22,7 +22,7 @@ class Edges
 {
  public:
   //! Destructor
-  ~Edges() {}
+  ~Edges() = default;
 
   //! Default constructor
   Edges() = default;

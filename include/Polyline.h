@@ -31,7 +31,7 @@ class Polyline
 {
  public:
   //! Default destructor
-  ~Polyline() {}
+  ~Polyline() = default;
 
   //! Default constructor
   Polyline() = default;

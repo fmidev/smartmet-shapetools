@@ -30,7 +30,7 @@ class Polygon
 {
  public:
   //! Destructor
-  ~Polygon() {}
+  ~Polygon() = default;
 
   //! Default constructor
   Polygon() = default;

@@ -33,7 +33,7 @@ class Nodes
 {
  public:
   //! Destructor
-  ~Nodes() {}
+  ~Nodes() = default;
 
   //! Default constructor
   Nodes() = default;
