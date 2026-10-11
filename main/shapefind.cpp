@@ -595,7 +595,7 @@ NFmiEsriAttributeType establish_attribute_type(const NFmiEsriShape &theShape, co
 {
   const Imagine::NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  for (auto attribute : attributes)
+  for (auto* attribute : attributes)
   {
     if (attribute->Name() == theName)
       return attribute->Type();

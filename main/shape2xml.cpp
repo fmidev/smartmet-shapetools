@@ -54,14 +54,14 @@ int main(int argc, char *argv[])
 
     {
       cout << "<attributelist>" << endl;
-      for (auto attribute : attributes)
+      for (auto* attribute : attributes)
         cout << " <attribute name=\"" << attribute->Name() << '"' << " type=\""
              << static_cast<int>(attribute->Type()) << '"' << "/>" << endl;
       cout << "</attributelist>" << endl;
     }
 
     int shapenumber = -1;
-    for (auto it : shape.Elements())
+    for (auto* it : shape.Elements())
     {
       ++shapenumber;
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       cout << "<shape id=\"" << shapenumber << '"' << " type=\"" << static_cast<int>(it->Type())
            << '"';
 
-      for (auto attribute : attributes)
+      for (auto* attribute : attributes)
       {
         cout << ' ' << attribute->Name() << "=\"";
         switch (attribute->Type())

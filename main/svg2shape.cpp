@@ -156,8 +156,6 @@ void make_shape(const std::map<std::string, NFmiSvgPath> &paths)
 
   using value_type = std::map<std::string, NFmiSvgPath>::value_type;
 
-  using const_iterator = NFmiSvgPath::const_iterator;
-
   for (const value_type &v : paths)
   {
     const std::string &name = v.first;

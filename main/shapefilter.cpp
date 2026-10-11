@@ -434,14 +434,14 @@ const NFmiEsriShape *filter_boundingbox(const NFmiEsriShape &theShape)
   auto* shape = new NFmiEsriShape(theShape.Type());
 
   // Copy the attribute type information
-  for (auto ait : theShape.Attributes())
+  for (auto* ait : theShape.Attributes())
   {
     shape->Add(new NFmiEsriAttributeName(*ait));
   }
 
   // Copy the elements which overlap the bounding box
 
-  for (auto it : theShape.Elements())
+  for (auto* it : theShape.Elements())
   {
     // Skip empty elements
     if (it == nullptr)

@@ -271,7 +271,7 @@ set<string> find_unique_attributes(const NFmiEsriShape &theShape, const string &
 
   set<string> values;
 
-  for (auto it : theShape.Elements())
+  for (auto* it : theShape.Elements())
   {
     if (it == nullptr)
       continue;
@@ -400,7 +400,7 @@ void render_image(NFmiImage &theImage,
 
   auto at = find_attribute(attributes, options.attribute);
 
-  for (auto it : theShape.Elements())
+  for (auto* it : theShape.Elements())
   {
     if (it == nullptr)
       continue;

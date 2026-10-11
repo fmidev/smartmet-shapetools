@@ -101,7 +101,7 @@ int run(int argc, const char *argv[])
   Paths paths;
 
   int shapenumber = -1;
-  for (auto it : shape.Elements())
+  for (auto* it : shape.Elements())
   {
     ++shapenumber;
 

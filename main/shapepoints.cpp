@@ -235,7 +235,7 @@ void create_shape(const PointSelector &theSelector, const NFmiEsriShape &theShap
 
   // Copy the attribute type information
 
-  for (auto ait : theShape.Attributes())
+  for (auto* ait : theShape.Attributes())
   {
     shape.Add(new NFmiEsriAttributeName(*ait));
   }
