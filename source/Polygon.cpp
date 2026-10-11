@@ -257,7 +257,9 @@ Point Polygon::someInsidePoint() const
       // We limit the scales to 0.2-0.8 to guarantee numerical stability
       // For example a1=0.999x is known to have caused trouble
 
+      // NOLINTNEXTLINE(cert-msc50-cpp): rand() is not used for security here
       double a1 = 0.2 + (0.8 - 0.2) * rand() / (RAND_MAX + 1.0);
+      // NOLINTNEXTLINE(cert-msc50-cpp): rand() is not used for security here
       double a2 = 0.2 + (0.8 - 0.2) * rand() / (RAND_MAX + 1.0);
 
       const double x = x1 + a1 * (x2 - x1) + (1 - a1) * a2 * (x3 - x1);

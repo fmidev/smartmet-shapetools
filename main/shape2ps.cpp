@@ -736,6 +736,7 @@ int domain(int argc, const char *argv[])
 
       getline(script, token);
       buffer << "% " << token << endl;
+      // NOLINTNEXTLINE(cert-env33-c): the script 'system' command by design
       ::system(token.c_str());
     }
 
@@ -901,23 +902,31 @@ int domain(int argc, const char *argv[])
 
       Imagine::NFmiPath path;
 
-      for (double x = lon1; x <= lon2; x += dx)
-        for (double y = lat1; y <= lat2; y += dy)
+      for (int nx = 0; lon1 + nx * dx <= lon2; nx++)
+      {
+        const double x = lon1 + nx * dx;
+        for (int ny = 0; lat1 + ny * dy <= lat2; ny++)
         {
+          const double y = lat1 + ny * dy;
           if (y == lat1)
             path.MoveTo(x, y);
           else
             path.LineTo(x, y);
         }
+      }
 
-      for (double y = lat1; y <= lat2; y += dy)
-        for (double x = lon1; x <= lon2; x += dx)
+      for (int ny = 0; lat1 + ny * dy <= lat2; ny++)
+      {
+        const double y = lat1 + ny * dy;
+        for (int nx = 0; lon1 + nx * dx <= lon2; nx++)
         {
+          const double x = lon1 + nx * dx;
           if (x == lon1)
             path.MoveTo(x, y);
           else
             path.LineTo(x, y);
         }
+      }
 
       path.Project(theArea.get());
 
