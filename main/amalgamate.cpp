@@ -30,6 +30,7 @@
 #include "Edges.h"
 #include "Nodes.h"
 #include "Polygon.h"
+#include <macgyver/StringConversion.h>
 #include <imagine/NFmiEdgeTree.h>
 #include <newbase/NFmiValueString.h>
 #include <fstream>
@@ -50,8 +51,8 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  double lengthlimit = atof(argv[1]);
-  double arealimit = atof(argv[2]);
+  double lengthlimit = Fmi::stod(argv[1]);
+  double arealimit = Fmi::stod(argv[2]);
   string inname = argv[3];
   string outname = argv[4];
 

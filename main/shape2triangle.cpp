@@ -20,6 +20,7 @@
 
 #include "Nodes.h"
 #include "Polygon.h"
+#include <macgyver/StringConversion.h>
 #include <imagine/NFmiGeoShape.h>
 #include <imagine/NFmiPath.h>
 #include <newbase/NFmiArea.h>
@@ -44,7 +45,7 @@ int main(int argc, const char *argv[])
     cerr << "Usage: " << argv[0] << " [arealimit] [shape] [outname]" << endl;
     return 1;
   }
-  double arealimit = atof(argv[1]);
+  double arealimit = Fmi::stod(argv[1]);
   string shapefile = argv[2];
   string outname = argv[3];
 
