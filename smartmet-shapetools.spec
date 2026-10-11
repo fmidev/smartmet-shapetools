@@ -27,14 +27,14 @@ BuildRequires: libjpeg
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: gdal312-devel
-BuildRequires: smartmet-library-imagine-devel >= 26.4.13
-BuildRequires: smartmet-library-newbase-devel >= 26.2.4
-BuildRequires: smartmet-library-macgyver-devel >= 26.4.13
-BuildRequires: smartmet-library-gis-devel >= 26.4.13
-Requires: smartmet-library-imagine >= 26.4.13
-Requires: smartmet-library-newbase >= 26.2.4
-Requires: smartmet-library-macgyver >= 26.4.13
-Requires: smartmet-library-gis >= 26.4.13
+BuildRequires: smartmet-library-imagine-devel >= 26.10.11
+BuildRequires: smartmet-library-newbase-devel >= 26.10.11
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
+BuildRequires: smartmet-library-gis-devel >= 26.10.11
+Requires: smartmet-library-imagine >= 26.10.11
+Requires: smartmet-library-newbase >= 26.10.11
+Requires: smartmet-library-macgyver >= 26.10.11
+Requires: smartmet-library-gis >= 26.10.11
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-program-options
@@ -114,8 +114,6 @@ rm -rf $RPM_BUILD_ROOT
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix
 - Floating point loops use integer counters, so rounding no longer drops or adds iterations
-
-* Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
 - Use auto and return {} where clang-tidy suggests it, no functional changes
 - Mark overriding methods override and use nullptr, no functional changes
 - Use = default and using declarations where clang-tidy suggests it, no functional changes
