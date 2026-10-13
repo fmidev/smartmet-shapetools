@@ -8,6 +8,7 @@
 #include "GradsTools.h"
 #include <newbase/NFmiPoint.h>
 
+#include <cmath>
 #include <iostream>
 
 using namespace std;
@@ -22,7 +23,7 @@ namespace GradsTools
 
 void print_double(ostream &out, double theValue)
 {
-  int value = static_cast<int>(theValue * 1e4 + 0.5);
+  int value = static_cast<int>(std::lround(theValue * 1e4));
   out << static_cast<unsigned char>((value >> 16) & 0xFF);
   out << static_cast<unsigned char>((value >> 8) & 0xFF);
   out << static_cast<unsigned char>((value >> 0) & 0xFF);

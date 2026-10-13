@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 26.10.11
+Version: 26.10.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*.1.gz
 
 %changelog
+* Tue Oct 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.13-1.fmi
+- GrADS coordinates are rounded with std::lround, negative coordinates were truncated towards zero
+
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix
 - Floating point loops use integer counters, so rounding no longer drops or adds iterations
