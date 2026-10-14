@@ -36,6 +36,8 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 int domain(int argc, const char *argv[])
 {
   // Process the command line
@@ -65,9 +67,9 @@ int domain(int argc, const char *argv[])
   if (!in)
     throw runtime_error("Failed to open '" + gradsfile + "' for reading");
 
-  unsigned char record_type;
-  unsigned char record_level;
-  unsigned char record_points;
+  unsigned char record_type = 0;
+  unsigned char record_level = 0;
+  unsigned char record_points = 0;
 
   int counter = 0;
   while (in >> noskipws >> record_type >> record_level >> record_points)
@@ -86,7 +88,7 @@ int domain(int argc, const char *argv[])
     }
     else if (record_type == 2)
     {
-      unsigned char ch1, ch2, ch3, ch4;
+      unsigned char ch1 = 0, ch2 = 0, ch3 = 0, ch4 = 0;
       in >> noskipws >> ch1 >> ch2 >> ch3 >> ch4;
       int length = ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
       double lon1 = GradsTools::read_lon(in);
@@ -108,6 +110,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

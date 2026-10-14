@@ -32,6 +32,8 @@ using namespace Imagine;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 void usage()
 {
   cout << "Usage: etopo2shape [options] [shapename]" << endl
@@ -44,6 +46,7 @@ void usage()
        << "   -l [h1,h2,h3...]\tThe heights to extract" << endl
        << endl;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -61,7 +64,9 @@ struct GlobalsList
   NFmiDataMatrix<float> values;  // the data values
 };
 
-static GlobalsList globals;
+namespace
+{
+GlobalsList globals;
 
 // ----------------------------------------------------------------------
 /*!
@@ -210,8 +215,8 @@ void read_etopo2()
     if (j > 0)
       filter.ignore(2 * (columns - globals.values.NX()));
 
-    unsigned char ch1, ch2;
-    short height;
+    unsigned char ch1 = 0, ch2 = 0;
+    short height = 0;
     for (unsigned int i = 0; i < globals.values.NX(); i++)
     {
       filter >> noskipws >> ch1 >> ch2;
@@ -346,6 +351,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

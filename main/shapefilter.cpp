@@ -46,8 +46,10 @@ struct OptionsList
   bool filter_even_count;
 };
 
+namespace
+{
 //! Global instance of command line options
-static OptionsList options;
+OptionsList options;
 
 // ----------------------------------------------------------------------
 /*!
@@ -176,7 +178,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
         const auto* elem = static_cast<const NFmiEsriPolyLine*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
-          int i1, i2;
+          int i1 = 0, i2 = 0;
           i1 = elem->Parts()[part];  // start of part
           if (part + 1 == elem->NumParts())
             i2 = elem->NumPoints() - 1;  // end of part
@@ -207,7 +209,7 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
         const auto* elem = static_cast<const NFmiEsriPolygon*>(*it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
-          int i1, i2;
+          int i1 = 0, i2 = 0;
           i1 = elem->Parts()[part];  // start of part
           if (part + 1 == elem->NumParts())
             i2 = elem->NumPoints() - 1;  // end of part
@@ -528,6 +530,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

@@ -125,7 +125,7 @@ void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
 
 int read_int(istream &in)
 {
-  unsigned char ch1, ch2, ch3;
+  unsigned char ch1 = 0, ch2 = 0, ch3 = 0;
   in >> noskipws >> ch1 >> ch2 >> ch3;
   return ((ch1 << 16) | (ch2 << 8) | ch3);
 }
@@ -166,7 +166,7 @@ double read_lat(istream &in)
 
 unsigned int read_length(istream &in)
 {
-  unsigned char ch1, ch2, ch3, ch4;
+  unsigned char ch1 = 0, ch2 = 0, ch3 = 0, ch4 = 0;
   in >> noskipws >> ch1 >> ch2 >> ch3 >> ch4;
   return ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
 }

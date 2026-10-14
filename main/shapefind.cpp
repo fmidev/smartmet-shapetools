@@ -31,6 +31,7 @@
 #include <newbase/NFmiPreProcessor.h>
 #include <newbase/NFmiStringTools.h>
 #include <cassert>
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -52,12 +53,12 @@ struct Options
   string uniqueattribute;
   string projection;
   string coordinatefile;
-  float latitude;
-  float longitude;
-  float searchradius;
-  unsigned int maxcount;
+  float latitude{};
+  float longitude{};
+  float searchradius = 10;
+  unsigned int maxcount = 1;
   string delimiter;
-  bool verbose;
+  bool verbose = false;
 
   Options();
 };
@@ -69,19 +70,8 @@ struct Options
 // ----------------------------------------------------------------------
 
 Options::Options()
-    : shapefile(),
-      condition(),
-      attributes(),
-      uniqueattribute(),
-      projection("latlon"),
-      coordinatefile(),
-      latitude(),
-      longitude(),
-      searchradius(10)  // kilometers
-      ,
-      maxcount(1),
-      delimiter("\t"),
-      verbose(false)
+    : projection("latlon"),
+      delimiter("\t")
 {
 }
 
@@ -91,6 +81,8 @@ Options::Options()
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 Options options;
 
 // Search projection and the projected search coordinate
@@ -179,6 +171,7 @@ bool parse_options(int argc, char *argv[])
 
   return true;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -188,6 +181,8 @@ bool parse_options(int argc, char *argv[])
 
 using LocationList = map<string, NFmiPoint>;
 
+namespace
+{
 LocationList read_locationlist(const string &theFile)
 {
   // this code was copied from qdpoint.cpp
@@ -361,7 +356,7 @@ void establish_attribute(const NFmiEsriShape &theShape)
 {
   const NFmiEsriShape::attributes_type &attributes = theShape.Attributes();
 
-  if (attributes.size() == 0)
+  if (attributes.empty())
     throw runtime_error("shapefile does not contain any attributes");
 
   // If no attribute option was given, we accept it as long as
@@ -395,7 +390,7 @@ void establish_attribute(const NFmiEsriShape &theShape)
 
 NFmiEsriElementType establish_type(const NFmiEsriShape &theShape)
 {
-  if (theShape.Elements().size() == 0)
+  if (theShape.Elements().empty())
     throw runtime_error("The shape is empty!");
 
   NFmiEsriElementType type = kFmiEsriNull;
@@ -520,7 +515,7 @@ float isosegment_distance(
 
   // Isosegment midpoint
 
-  double xc, yc;
+  double xc = NAN, yc = NAN;
   isosegment_center(theX1, theY1, theX2, theY2, xc, yc);
 
   float m2 = NFmiGeoTools::GeoDistance(theX, theY, theX2, theY2);
@@ -757,7 +752,7 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
     const auto* elem = static_cast<const NFmiEsriPoint*>(elements[i]);
 
-    float dist;
+    float dist = NAN;
     if (options.projection == "latlon")
       dist = latlon_point_distance(elem->X(), elem->Y(), theLatLon.X(), theLatLon.Y());
     else
@@ -851,7 +846,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
     for (int part = 0; part < elem->NumParts(); part++)
     {
-      int i1, i2;
+      int i1 = 0, i2 = 0;
       i1 = elem->Parts()[part];  // start of part
       if (part + 1 == elem->NumParts())
         i2 = elem->NumPoints() - 1;  // end of part
@@ -862,7 +857,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
       {
         for (int ii = i1 + 1; ii <= i2; ii++)
         {
-          float dist;
+          float dist = NAN;
           if (options.projection == "latlon")
             dist = latlon_line_distance(theLatLon.X(),
                                         theLatLon.Y(),
@@ -930,7 +925,7 @@ bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
   for (int part = 0; part < thePoly.NumParts(); part++)
   {
     int i1 = thePoly.Parts()[part];  // start of part
-    int i2;
+    int i2 = 0;
     if (part + 1 == thePoly.NumParts())
       i2 = thePoly.NumPoints() - 1;  // end of part
     else
@@ -987,7 +982,7 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  NFmiEsriShape::elements_type::size_type i;
+  NFmiEsriShape::elements_type::size_type i = 0;
   for (i = 0; i < elements.size(); i++)
   {
     if (elements[i] == nullptr)  // null element?
@@ -1106,6 +1101,7 @@ int domain(int argc, char *argv[])
 
   return 1;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

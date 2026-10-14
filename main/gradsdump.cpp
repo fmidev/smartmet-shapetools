@@ -32,6 +32,8 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 int domain(int argc, const char *argv[])
 {
   // Process the command line
@@ -55,9 +57,9 @@ int domain(int argc, const char *argv[])
   if (!in)
     throw runtime_error("Failed to open '" + gradsfile + "' for reading");
 
-  unsigned char record_type;
-  unsigned char record_level;
-  unsigned char record_points;
+  unsigned char record_type = 0;
+  unsigned char record_level = 0;
+  unsigned char record_points = 0;
 
   while (in >> noskipws >> record_type >> record_level >> record_points)
   {
@@ -96,6 +98,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

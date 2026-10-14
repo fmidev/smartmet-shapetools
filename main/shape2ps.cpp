@@ -111,6 +111,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <cmath>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -164,9 +165,11 @@ struct BezierSettings
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 void replace(string &theString, const string &theMatch, const string &theReplacement)
 {
-  string::size_type pos;
+  string::size_type pos = 0;
 
   while ((pos = theString.find(theMatch)) != string::npos)
   {
@@ -282,13 +285,13 @@ string pathtostring(const Imagine::NFmiPath &thePath,
  */
 // ----------------------------------------------------------------------
 
-string pathtostring(const Imagine::NFmiPath &thePath,
-                    const NFmiArea &theArea,
+string pathtostring(const Imagine::NFmiPath& thePath,
+                    const NFmiArea& theArea,
                     double theClipMargin,
-                    const string &theMoveto,
-                    const string &theLineto,
-                    const string &theCurveto,
-                    const string &theClosepath)
+                    const string& theMoveto,
+                    const string& theLineto,
+                    const string& theCurveto,
+                    const string& /*theClosepath*/)
 {
   Imagine::NFmiPath path =
       thePath.Clip(theArea.Left(), theArea.Top(), theArea.Right(), theArea.Bottom(), theClipMargin);
@@ -502,7 +505,7 @@ int domain(int argc, const char *argv[])
       if (theArea.get())
         throw runtime_error("Area given twice");
 
-      unsigned long classID;
+      unsigned long classID = 0;
       string className;
       script >> classID >> className;
       theArea.reset(static_cast<NFmiArea *>(CreateSaveBase(classID)));
@@ -553,7 +556,7 @@ int domain(int argc, const char *argv[])
             "projectioncenter must be used after a projection "
             "has been specified");
 
-      float lon, lat, scale;
+      float lon = NAN, lat = NAN, scale = NAN;
       script >> lon >> lat >> scale;
 
       NFmiPoint center(lon, lat);
@@ -695,7 +698,7 @@ int domain(int argc, const char *argv[])
       if (!theArea.get())
         throw runtime_error("Using project before area");
 
-      double x, y;
+      double x = NAN, y = NAN;
       script >> x >> y;
       NFmiPoint pt = theArea->ToXY(NFmiPoint(x, y));
       buffer << static_cast<char *>(NFmiValueString(pt.X())) << ' '
@@ -849,7 +852,7 @@ int domain(int argc, const char *argv[])
       // Read the gshhs, project and get as path
       try
       {
-        double minlon, minlat, maxlon, maxlat;
+        double minlon = NAN, minlat = NAN, maxlon = NAN, maxlat = NAN;
         NFmiAreaTools::LatLonBoundingBox(*theArea, minlon, minlat, maxlon, maxlat);
 
         Imagine::NFmiPath path =
@@ -885,7 +888,7 @@ int domain(int argc, const char *argv[])
       string moveto, lineto;
       script >> moveto >> lineto;
 
-      double lon1, lon2, dx, lat1, lat2, dy;
+      double lon1 = NAN, lon2 = NAN, dx = NAN, lat1 = NAN, lat2 = NAN, dy = NAN;
       script >> lon1 >> lon2 >> dx >> lat1 >> lat2 >> dy;
 
       if (lon1 > lon2)
@@ -1056,7 +1059,7 @@ int domain(int argc, const char *argv[])
       if (!body)
         throw runtime_error(token + " command is not allowed in the header");
 
-      int dx, dy;
+      int dx = 0, dy = 0;
       script >> dx >> dy;
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
@@ -1179,7 +1182,7 @@ int domain(int argc, const char *argv[])
 
       cerr << "Time = " << t << endl;
 
-      float lolimit, hilimit;
+      float lolimit = NAN, hilimit = NAN;
       if (token == "contourline")
       {
         script >> lolimit;
@@ -1321,6 +1324,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 // Main program.

@@ -77,7 +77,7 @@ struct PointData
 class PointSelector::Pimple
 {
  public:
-  double itsMinDistance;
+  double itsMinDistance = 10;
   double itsX1;
   double itsY1;
   double itsX2;
@@ -87,7 +87,7 @@ class PointSelector::Pimple
   using Candidates = multimap<double, PointData, greater<double>>;
   const NFmiArea &itsArea;
   const bool itsNegateFlag;
-  mutable bool itsReduced;
+  mutable bool itsReduced = true;
   mutable Candidates itsCandidates;
   mutable IndexList itsResults;
   void reduce() const;
@@ -111,18 +111,13 @@ class PointSelector::Pimple
  */
 // ----------------------------------------------------------------------
 
-PointSelector::Pimple::Pimple(const NFmiArea &theArea, bool theNegateFlag)
-    : itsMinDistance(10),
-      itsX1(theArea.Left()),
+PointSelector::Pimple::Pimple(const NFmiArea& theArea, bool theNegateFlag)
+    : itsX1(theArea.Left()),
       itsY1(theArea.Top()),
       itsX2(theArea.Right()),
       itsY2(theArea.Bottom()),
       itsArea(theArea),
-      itsNegateFlag(theNegateFlag),
-      itsReduced(true)  // empty selector is in reduced state
-      ,
-      itsCandidates(),
-      itsResults()
+      itsNegateFlag(theNegateFlag)
 {
 }
 

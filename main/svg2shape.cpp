@@ -35,8 +35,10 @@ struct Options
   std::string fieldname;  // -f --field
 };
 
-Options::Options() : infiles(), shapename("out"), fieldname("NAME") {}
+Options::Options() : shapename("out"), fieldname("NAME") {}
 
+namespace
+{
 Options options;
 
 // ----------------------------------------------------------------------
@@ -214,6 +216,7 @@ int run(int argc, char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

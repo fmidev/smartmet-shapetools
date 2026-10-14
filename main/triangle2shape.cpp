@@ -21,11 +21,12 @@
 
 #include "Point.h"
 #include "Polygon.h"
-#include <macgyver/StringConversion.h>
 #include <imagine/NFmiEdgeTree.h>
 #include <imagine/NFmiEsriPolygon.h>
 #include <imagine/NFmiEsriShape.h>
+#include <macgyver/StringConversion.h>
 #include <fstream>
+#include <cmath>
 #include <string>
 
 using namespace std;
@@ -60,13 +61,13 @@ int main(int argc, char *argv[])
     // First row: number_of_nodes dimension number_of_attributes
     // number_of_boundary_markers
 
-    long number_of_nodes, dummy;
+    long number_of_nodes = 0, dummy = 0;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
     nodes.reserve(number_of_nodes);
     for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
     {
-      long node;
-      double x, y;
+      long node = 0;
+      double x = NAN, y = NAN;
       in >> node >> x >> y;
       nodes[i] = Point(x, y);
     }
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
     }
     // First row: number_of_nodes dimension number_of_attributes
     // number_of_boundary_markers
-    long number_of_nodes, dummy;
+    long number_of_nodes = 0, dummy = 0;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
     if (number_of_nodes != 0)
     {
@@ -99,11 +100,11 @@ int main(int argc, char *argv[])
       return 1;
     }
     // Second row: number_of_edges number_of_boundary_markers
-    long number_of_edges;
+    long number_of_edges = 0;
     in >> number_of_edges >> dummy;
     for (long i = 1; i <= number_of_edges && !in.fail(); i++)
     {
-      long edge, idx1, idx2;
+      long edge = 0, idx1 = 0, idx2 = 0;
       in >> edge >> idx1 >> idx2;
       cout << edge << '\t' << idx1 << '\t' << idx2 << endl;
 

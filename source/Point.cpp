@@ -7,6 +7,8 @@
 
 #include "Point.h"
 
+namespace
+{
 // Pirun g++-3.0.4 on buginen, min ei toimi
 // #include <algorithm>
 template <typename T>
@@ -16,6 +18,7 @@ inline const T &min(const T &a, const T &b)
     return b;
   return a;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

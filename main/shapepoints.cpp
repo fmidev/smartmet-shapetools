@@ -56,6 +56,8 @@ using namespace Imagine;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 void usage()
 {
   cout << "Usage: shapepoints [options] <inputshape> <outputshape>" << endl
@@ -78,6 +80,7 @@ void usage()
        << "\tshapepoints -p $AREA -d 20 -n ESRI/europe/places myplaces" << endl
        << endl;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -87,30 +90,26 @@ void usage()
 
 struct Options
 {
-  bool verbose;
-  bool negate;
-  double mindistance;
-  double minborderdistance;
+  bool verbose = false;
+  bool negate = false;
+  double mindistance = 10;
+  double minborderdistance = 0;
   string projection;
   string fieldname;
   string inputshape;
   string outputshape;
 
   Options()
-      : verbose(false),
-        negate(false),
-        mindistance(10),
-        minborderdistance(0),
-        projection(),
-        fieldname("TYPE"),
-        inputshape(),
-        outputshape()
+      :
+        fieldname("TYPE")
   {
   }
 };
 
 //! The sole instance of command line options
 
+namespace
+{
 Options options;
 
 // ----------------------------------------------------------------------
@@ -320,6 +319,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

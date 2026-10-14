@@ -35,6 +35,8 @@ const double maxlatitude = 75;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 void usage()
 {
   cout << "Usage: lights2shape [options] [shapename]" << endl
@@ -47,6 +49,7 @@ void usage()
        << "   -l [l1,l2,l3...]\tThe intensity levels to extract" << endl
        << endl;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -64,7 +67,9 @@ struct GlobalsList
   NFmiDataMatrix<float> values;  // the data values
 };
 
-static GlobalsList globals;
+namespace
+{
+GlobalsList globals;
 
 // ----------------------------------------------------------------------
 /*!
@@ -218,7 +223,7 @@ void read_lights()
     if (j > 0)
       filter.ignore(columns - globals.values.NX());
 
-    unsigned char ch;
+    unsigned char ch = 0;
     for (unsigned int i = 0; i < globals.values.NX(); i++)
     {
       filter >> noskipws >> ch;
@@ -346,6 +351,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

@@ -35,6 +35,8 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 int domain(int argc, const char *argv[])
 {
   // Process the command line
@@ -97,6 +99,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

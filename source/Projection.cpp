@@ -23,16 +23,13 @@ using namespace std;
 struct ProjectionPimple
 {
   ProjectionPimple()
-      : itsType(""),
-        itsCentralLatitude(kFloatMissing),
+      : itsCentralLatitude(kFloatMissing),
         itsCentralLongitude(kFloatMissing),
         itsTrueLatitude(kFloatMissing),
         itsBottomLeft(NFmiPoint(kFloatMissing, kFloatMissing)),
         itsTopRight(NFmiPoint(kFloatMissing, kFloatMissing)),
         itsCenter(NFmiPoint(kFloatMissing, kFloatMissing)),
         itsScale(kFloatMissing),
-        itsWidth(-1),
-        itsHeight(-1),
         itsOrigin(0, 0)
   {
   }
@@ -45,8 +42,8 @@ struct ProjectionPimple
   NFmiPoint itsTopRight;
   NFmiPoint itsCenter;
   float itsScale;
-  float itsWidth;
-  float itsHeight;
+  float itsWidth = -1;
+  float itsHeight = -1;
   NFmiPoint itsOrigin;
 };
 

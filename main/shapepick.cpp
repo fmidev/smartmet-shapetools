@@ -29,12 +29,14 @@
 struct Options
 {
   std::string infile;
-  double lon;
-  double lat;
+  double lon = -1;
+  double lat = -1;
 
-  Options() : infile(), lon(-1), lat(-1) {}
+  Options() {}
 };
 
+namespace
+{
 Options options;
 
 // ----------------------------------------------------------------------
@@ -119,6 +121,7 @@ int run(int argc, char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

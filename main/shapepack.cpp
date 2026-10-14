@@ -97,34 +97,21 @@ struct Options
   string packfile;
   string pngfile;
   string zonefile;
-  int width;
-  int height;
-  float lon1;
-  float lat1;
-  float lon2;
-  float lat2;
+  int width = -1;
+  int height = -1;
+  float lon1 = -180;
+  float lat1 = -90;
+  float lon2 = 180;
+  float lat2 = 90;
   string attribute;
-  bool verbose;
-  bool accurate;
+  bool verbose = false;
+  bool accurate = false;
 
-  Options()
-      : shapefile(),
-        packfile(),
-        pngfile(),
-        zonefile(),
-        width(-1),
-        height(-1),
-        lon1(-180),
-        lat1(-90),
-        lon2(180),
-        lat2(90),
-        attribute(),
-        verbose(false),
-        accurate(false)
-  {
-  }
+  Options() {}
 };
 
+namespace
+{
 Options options;
 
 // ----------------------------------------------------------------------
@@ -358,7 +345,7 @@ void polygon_to_fillmap(NFmiFillMap &theMap, const NFmiEsriElement *theElement)
       const auto* elem = static_cast<const NFmiEsriPolygon*>(theElement);
       for (int part = 0; part < elem->NumParts(); part++)
       {
-        int i1, i2;
+        int i1 = 0, i2 = 0;
         i1 = elem->Parts()[part];  // start of part
         if (part + 1 == elem->NumParts())
           i2 = elem->NumPoints() - 1;  // end of part
@@ -440,7 +427,7 @@ bool is_inside(const NFmiEsriPolygon &thePoly, double theX, double theY)
   for (int part = 0; part < thePoly.NumParts(); part++)
   {
     int i1 = thePoly.Parts()[part];  // start of part
-    int i2;
+    int i2 = 0;
     if (part + 1 == thePoly.NumParts())
       i2 = thePoly.NumPoints() - 1;  // end of part
     else
@@ -483,7 +470,7 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
 
   const NFmiEsriShape::elements_type &elements = theShape.Elements();
 
-  NFmiEsriShape::elements_type::size_type i;
+  NFmiEsriShape::elements_type::size_type i = 0;
   for (i = 0; i < elements.size(); i++)
   {
     if (elements[i] == nullptr)  // null element?
@@ -797,7 +784,7 @@ int domain(int argc, char *argv[])
 
   const NFmiEsriShape::attributes_type &attributes = shape.Attributes();
 
-  if (attributes.size() == 0)
+  if (attributes.empty())
     throw runtime_error("shapefile does not contain any attributes");
 
   // If no attribute option was given, we accept it as long as
@@ -872,6 +859,7 @@ int domain(int argc, char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

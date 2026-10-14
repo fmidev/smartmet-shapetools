@@ -20,7 +20,6 @@ class PointSelector
   using const_iterator = IndexList::const_iterator;
   using size_type = IndexList::size_type;
 
- public:
   ~PointSelector();
   PointSelector(const NFmiArea &theArea, bool theNegateFlag = false);
 

@@ -62,7 +62,7 @@ struct Options
   string inputfile;
   string outputfile;
 
-  Options() : inputprojection("latlon"), outputprojection("latlon"), inputfile(), outputfile() {}
+  Options() : inputprojection("latlon"), outputprojection("latlon") {}
 };
 
 // ----------------------------------------------------------------------
@@ -71,6 +71,8 @@ struct Options
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 Options options;
 
 // ----------------------------------------------------------------------
@@ -139,6 +141,7 @@ bool parse_command_line(int argc, const char *argv[])
 
   return true;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -191,6 +194,8 @@ class MyProjector : public NFmiEsriProjector
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 int domain(int argc, const char *argv[])
 {
   // Parse the command line options
@@ -216,6 +221,7 @@ int domain(int argc, const char *argv[])
 
   return 0;
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
