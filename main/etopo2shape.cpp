@@ -215,7 +215,8 @@ void read_etopo2()
     if (j > 0)
       filter.ignore(2 * (columns - globals.values.NX()));
 
-    unsigned char ch1 = 0, ch2 = 0;
+    unsigned char ch1 = 0;
+    unsigned char ch2 = 0;
     short height = 0;
     for (unsigned int i = 0; i < globals.values.NX(); i++)
     {

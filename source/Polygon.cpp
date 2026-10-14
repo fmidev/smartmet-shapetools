@@ -151,7 +151,10 @@ bool Polygon::isInside(const Point &pt) const
   const double y = pt.y();
 
   // Edellinen ja nykyinen piste
-  double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+  double x1 = 0;
+  double y1 = 0;
+  double x2 = 0;
+  double y2 = 0;
 
   bool inside = false;
 

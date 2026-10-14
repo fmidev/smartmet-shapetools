@@ -345,7 +345,8 @@ void polygon_to_fillmap(NFmiFillMap &theMap, const NFmiEsriElement *theElement)
       const auto* elem = static_cast<const NFmiEsriPolygon*>(theElement);
       for (int part = 0; part < elem->NumParts(); part++)
       {
-        int i1 = 0, i2 = 0;
+        int i1 = 0;
+        int i2 = 0;
         i1 = elem->Parts()[part];  // start of part
         if (part + 1 == elem->NumParts())
           i2 = elem->NumPoints() - 1;  // end of part
@@ -494,8 +495,7 @@ string find_enclosing_polygon(const NFmiEsriShape &theShape, float theLon, float
     const string value = get_attribute_value(*elem, **at);
     return value;
   }
-  else
-    return "";
+  return "";
 }
 
 // ----------------------------------------------------------------------

@@ -56,8 +56,7 @@ unsigned long Nodes::number(const Point &pt) const
   auto pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
-  else
-    return pos->second.first;
+  return pos->second.first;
 }
 
 // ----------------------------------------------------------------------
@@ -72,8 +71,7 @@ long Nodes::id(const Point &pt) const
   auto pos = itsData.find(pt);
   if (pos == itsData.end())
     return 0;
-  else
-    return pos->second.second;
+  return pos->second.second;
 }
 
 // ----------------------------------------------------------------------
@@ -86,8 +84,7 @@ Point Nodes::point(long ordinal) const
 {
   if (ordinal <= 0 || static_cast<unsigned long>(ordinal) > itsOrderedData.size())
     return Point(0, 0);
-  else
-    return itsOrderedData[ordinal - 1];
+  return itsOrderedData[ordinal - 1];
 }
 
 // ======================================================================

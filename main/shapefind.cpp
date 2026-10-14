@@ -55,7 +55,7 @@ struct Options
   string coordinatefile;
   float latitude{};
   float longitude{};
-  float searchradius = 10;
+  float searchradius = 10;  // kilometers
   unsigned int maxcount = 1;
   string delimiter;
   bool verbose = false;
@@ -283,7 +283,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
   {
     if (theComparison == "=" || theComparison == "==")
       return (theElement.GetString(theVariable) == theValue);
-    else if (theComparison == "<>")
+    if (theComparison == "<>")
       return (theElement.GetString(theVariable) != theValue);
     else if (theComparison == "<")
       return (theElement.GetString(theVariable) < theValue);
@@ -299,7 +299,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
     auto value = boost::lexical_cast<double>(theValue);
     if (theComparison == "=" || theComparison == "==")
       return (theElement.GetInteger(theVariable) == value);
-    else if (theComparison == "<>")
+    if (theComparison == "<>")
       return (theElement.GetInteger(theVariable) != value);
     else if (theComparison == "<")
       return (theElement.GetInteger(theVariable) < value);
@@ -315,7 +315,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
     auto value = boost::lexical_cast<double>(theValue);
     if (theComparison == "=" || theComparison == "==")
       return (theElement.GetDouble(theVariable) == value);
-    else if (theComparison == "<>")
+    if (theComparison == "<>")
       return (theElement.GetDouble(theVariable) != value);
     else if (theComparison == "<")
       return (theElement.GetDouble(theVariable) < value);
@@ -515,7 +515,8 @@ float isosegment_distance(
 
   // Isosegment midpoint
 
-  double xc = NAN, yc = NAN;
+  double xc = NAN;
+  double yc = NAN;
   isosegment_center(theX1, theY1, theX2, theY2, xc, yc);
 
   float m2 = NFmiGeoTools::GeoDistance(theX, theY, theX2, theY2);
@@ -738,7 +739,9 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
   // Search conditions
 
-  string cond_variable, cond_comparison, cond_value;
+  string cond_variable;
+  string cond_comparison;
+  string cond_value;
   parse_condition(cond_variable, cond_comparison, cond_value);
 
   // Sort nearest elements
@@ -828,7 +831,9 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
   // Search conditions
 
-  string cond_variable, cond_comparison, cond_value;
+  string cond_variable;
+  string cond_comparison;
+  string cond_value;
   parse_condition(cond_variable, cond_comparison, cond_value);
 
   // Sort nearest elements
@@ -846,7 +851,8 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
     for (int part = 0; part < elem->NumParts(); part++)
     {
-      int i1 = 0, i2 = 0;
+      int i1 = 0;
+      int i2 = 0;
       i1 = elem->Parts()[part];  // start of part
       if (part + 1 == elem->NumParts())
         i2 = elem->NumPoints() - 1;  // end of part
@@ -975,7 +981,9 @@ void find_enclosing_polygons(const NFmiEsriShape &theShape,
 
   // Search conditions
 
-  string cond_variable, cond_comparison, cond_value;
+  string cond_variable;
+  string cond_comparison;
+  string cond_value;
   parse_condition(cond_variable, cond_comparison, cond_value);
 
   // Find the first match

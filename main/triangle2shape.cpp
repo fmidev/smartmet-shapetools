@@ -61,13 +61,15 @@ int main(int argc, char *argv[])
     // First row: number_of_nodes dimension number_of_attributes
     // number_of_boundary_markers
 
-    long number_of_nodes = 0, dummy = 0;
+    long number_of_nodes = 0;
+    long dummy = 0;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
     nodes.reserve(number_of_nodes);
     for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
     {
       long node = 0;
-      double x = NAN, y = NAN;
+      double x = NAN;
+      double y = NAN;
       in >> node >> x >> y;
       nodes[i] = Point(x, y);
     }
@@ -92,7 +94,8 @@ int main(int argc, char *argv[])
     }
     // First row: number_of_nodes dimension number_of_attributes
     // number_of_boundary_markers
-    long number_of_nodes = 0, dummy = 0;
+    long number_of_nodes = 0;
+    long dummy = 0;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
     if (number_of_nodes != 0)
     {
@@ -104,7 +107,9 @@ int main(int argc, char *argv[])
     in >> number_of_edges >> dummy;
     for (long i = 1; i <= number_of_edges && !in.fail(); i++)
     {
-      long edge = 0, idx1 = 0, idx2 = 0;
+      long edge = 0;
+      long idx1 = 0;
+      long idx2 = 0;
       in >> edge >> idx1 >> idx2;
       cout << edge << '\t' << idx1 << '\t' << idx2 << endl;
 

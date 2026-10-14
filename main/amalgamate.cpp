@@ -73,7 +73,9 @@ int main(int argc, char *argv[])
     }
     // First row: #nodes dimension #attributes #boundary_markers
 
-    long number_of_nodes = 0, number_of_attributes = 0, dummy = 0;
+    long number_of_nodes = 0;
+    long number_of_attributes = 0;
+    long dummy = 0;
     in >> number_of_nodes >> dummy >> number_of_attributes >> dummy;
     if (number_of_attributes != 1)
     {
@@ -84,8 +86,10 @@ int main(int argc, char *argv[])
     cout << "Reading " << number_of_nodes << " nodes from " << filename << endl;
     for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
     {
-      long node = 0, id = 0;
-      double x = NAN, y = NAN;
+      long node = 0;
+      long id = 0;
+      double x = NAN;
+      double y = NAN;
       in >> node >> x >> y >> id;
       static_cast<void>(inodes.add(Point(x, y), id));
     }
@@ -110,7 +114,8 @@ int main(int argc, char *argv[])
     }
     // First row: number_of_nodes dimension number_of_attributes
     // number_of_boundary_markers
-    long number_of_nodes = 0, dummy = 0;
+    long number_of_nodes = 0;
+    long dummy = 0;
     in >> number_of_nodes >> dummy >> dummy >> dummy;
     if (number_of_nodes != 0)
     {
@@ -123,7 +128,9 @@ int main(int argc, char *argv[])
     cout << "Reading " << number_of_edges << " edges from " << filename << endl;
     for (long i = 1; i <= number_of_edges && !in.fail(); i++)
     {
-      long edge = 0, idx1 = 0, idx2 = 0;
+      long edge = 0;
+      long idx1 = 0;
+      long idx2 = 0;
       in >> edge >> idx1 >> idx2;
       if (edge != i)
       {
@@ -156,7 +163,9 @@ int main(int argc, char *argv[])
     }
     // First row: #triangles #points #attributes
 
-    long number_of_triangles = 0, number_of_points = 0, dummy = 0;
+    long number_of_triangles = 0;
+    long number_of_points = 0;
+    long dummy = 0;
     in >> number_of_triangles >> number_of_points >> dummy;
     if (number_of_points != 3)
     {
@@ -170,7 +179,11 @@ int main(int argc, char *argv[])
 
     for (long i = 1; i <= number_of_triangles && !in.fail(); i++)
     {
-      long edge = 0, idx1 = 0, idx2 = 0, idx3 = 0, region = 0;
+      long edge = 0;
+      long idx1 = 0;
+      long idx2 = 0;
+      long idx3 = 0;
+      long region = 0;
       in >> edge >> idx1 >> idx2 >> idx3 >> region;
 
       bool triangle_ok = true;

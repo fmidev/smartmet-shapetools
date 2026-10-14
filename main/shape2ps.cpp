@@ -556,7 +556,9 @@ int domain(int argc, const char *argv[])
             "projectioncenter must be used after a projection "
             "has been specified");
 
-      float lon = NAN, lat = NAN, scale = NAN;
+      float lon = NAN;
+      float lat = NAN;
+      float scale = NAN;
       script >> lon >> lat >> scale;
 
       NFmiPoint center(lon, lat);
@@ -698,7 +700,8 @@ int domain(int argc, const char *argv[])
       if (!theArea.get())
         throw runtime_error("Using project before area");
 
-      double x = NAN, y = NAN;
+      double x = NAN;
+      double y = NAN;
       script >> x >> y;
       NFmiPoint pt = theArea->ToXY(NFmiPoint(x, y));
       buffer << static_cast<char *>(NFmiValueString(pt.X())) << ' '
@@ -751,11 +754,14 @@ int domain(int argc, const char *argv[])
       if (!body)
         throw runtime_error("Cannot have " + token + " command in header");
 
-      string moveto, lineto, closepath;
+      string moveto;
+      string lineto;
+      string closepath;
       if (token == "shape" || token == "subshape")
         script >> moveto >> lineto >> closepath;
 
-      string shapefile, condition;
+      string shapefile;
+      string condition;
 
       if (token == "subshape")
         script >> condition;
@@ -841,7 +847,9 @@ int domain(int argc, const char *argv[])
       if (!body)
         throw runtime_error("Cannot have " + token + " command in header");
 
-      string moveto, lineto, closepath;
+      string moveto;
+      string lineto;
+      string closepath;
       script >> moveto >> lineto >> closepath;
 
       string gshhsfile;
@@ -852,7 +860,10 @@ int domain(int argc, const char *argv[])
       // Read the gshhs, project and get as path
       try
       {
-        double minlon = NAN, minlat = NAN, maxlon = NAN, maxlat = NAN;
+        double minlon = NAN;
+        double minlat = NAN;
+        double maxlon = NAN;
+        double maxlat = NAN;
         NFmiAreaTools::LatLonBoundingBox(*theArea, minlon, minlat, maxlon, maxlat);
 
         Imagine::NFmiPath path =
@@ -885,10 +896,16 @@ int domain(int argc, const char *argv[])
       if (!body)
         throw runtime_error("Cannot have " + token + " command in header");
 
-      string moveto, lineto;
+      string moveto;
+      string lineto;
       script >> moveto >> lineto;
 
-      double lon1 = NAN, lon2 = NAN, dx = NAN, lat1 = NAN, lat2 = NAN, dy = NAN;
+      double lon1 = NAN;
+      double lon2 = NAN;
+      double dx = NAN;
+      double lat1 = NAN;
+      double lat2 = NAN;
+      double dy = NAN;
       script >> lon1 >> lon2 >> dx >> lat1 >> lat2 >> dy;
 
       if (lon1 > lon2)
@@ -1059,7 +1076,8 @@ int domain(int argc, const char *argv[])
       if (!body)
         throw runtime_error(token + " command is not allowed in the header");
 
-      int dx = 0, dy = 0;
+      int dx = 0;
+      int dy = 0;
       script >> dx >> dy;
 
       NFmiFastQueryInfo *q = theQueryData.QueryInfoIter();
@@ -1182,7 +1200,8 @@ int domain(int argc, const char *argv[])
 
       cerr << "Time = " << t << endl;
 
-      float lolimit = NAN, hilimit = NAN;
+      float lolimit = NAN;
+      float hilimit = NAN;
       if (token == "contourline")
       {
         script >> lolimit;

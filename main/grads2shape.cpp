@@ -88,7 +88,10 @@ int domain(int argc, const char *argv[])
     }
     else if (record_type == 2)
     {
-      unsigned char ch1 = 0, ch2 = 0, ch3 = 0, ch4 = 0;
+      unsigned char ch1 = 0;
+      unsigned char ch2 = 0;
+      unsigned char ch3 = 0;
+      unsigned char ch4 = 0;
       in >> noskipws >> ch1 >> ch2 >> ch3 >> ch4;
       int length = ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
       double lon1 = GradsTools::read_lon(in);

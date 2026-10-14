@@ -167,7 +167,8 @@ int run(int argc, const char *argv[])
         const auto* elem = static_cast<const Imagine::NFmiEsriPolyLine*>(it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
-          int i1 = 0, i2 = 0;
+          int i1 = 0;
+          int i2 = 0;
           i1 = elem->Parts()[part];  // start of part
           if (part + 1 == elem->NumParts())
             i2 = elem->NumPoints() - 1;  // end of part
@@ -190,7 +191,8 @@ int run(int argc, const char *argv[])
         const auto* elem = static_cast<const Imagine::NFmiEsriPolygon*>(it);
         for (int part = 0; part < elem->NumParts(); part++)
         {
-          int i1 = 0, i2 = 0;
+          int i1 = 0;
+          int i2 = 0;
           i1 = elem->Parts()[part];  // start of part
           if (part + 1 == elem->NumParts())
             i2 = elem->NumPoints() - 1;  // end of part

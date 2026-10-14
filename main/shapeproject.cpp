@@ -169,7 +169,7 @@ class MyProjector : public NFmiEsriProjector
       const NFmiPoint q = itsOutputArea.LatLonToWorldXY(p);
       return NFmiEsriPoint(q.X(), q.Y());
     }
-    else if (options.outputprojection == "latlon")
+    if (options.outputprojection == "latlon")
     {
       const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
       return NFmiEsriPoint(latlon.X(), latlon.Y());

@@ -87,7 +87,7 @@ class PointSelector::Pimple
   using Candidates = multimap<double, PointData, greater<double>>;
   const NFmiArea &itsArea;
   const bool itsNegateFlag;
-  mutable bool itsReduced = true;
+  mutable bool itsReduced = true;  // empty selector is in reduced state
   mutable Candidates itsCandidates;
   mutable IndexList itsResults;
   void reduce() const;
