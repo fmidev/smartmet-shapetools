@@ -175,10 +175,9 @@ class MyProjector : public NFmiEsriProjector
       return NFmiEsriPoint(latlon.X(), latlon.Y());
     }
 
-          const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
-      const NFmiPoint q = itsOutputArea.LatLonToWorldXY(latlon);
-      return NFmiEsriPoint(q.X(), q.Y());
-
+    const NFmiPoint latlon = itsInputArea.WorldXYToLatLon(p);
+    const NFmiPoint q = itsOutputArea.LatLonToWorldXY(latlon);
+    return NFmiEsriPoint(q.X(), q.Y());
   }
 
   void SetBox(const NFmiEsriBox& theBox) const override
