@@ -58,10 +58,10 @@ class Nodes
 
  private:
   //! Copy constructor is disabled
-  Nodes(const Nodes &theNodes);
+  Nodes(const Nodes& theNodes) = delete;
 
   //! Assignment is disabled
-  Nodes &operator=(const Nodes &theNodes);
+  Nodes& operator=(const Nodes& theNodes) = delete;
 
   //! The actual data
   DataType itsData;

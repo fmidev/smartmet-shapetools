@@ -126,8 +126,8 @@ const double clamp_limit = 10000;
 
 struct BezierSettings
 {
-  BezierSettings(const string &theName,
-                 const string theMode,
+  BezierSettings(const string& theName,
+                 const string& theMode,
                  double theSmoothness,
                  double theMaxError)
       : name(theName), mode(theMode), smoothness(theSmoothness), maxerror(theMaxError)

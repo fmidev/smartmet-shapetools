@@ -240,9 +240,9 @@ void read_lights()
  */
 // ----------------------------------------------------------------------
 
-void path_to_shape(const NFmiPath &thePath,
-                   NFmiEsriShape &theShape,
-                   const NFmiEsriAttribute theAttribute)
+void path_to_shape(const NFmiPath& thePath,
+                   NFmiEsriShape& theShape,
+                   const NFmiEsriAttribute& theAttribute)
 {
   const auto begin = thePath.Elements().begin();
   const auto end = thePath.Elements().end();

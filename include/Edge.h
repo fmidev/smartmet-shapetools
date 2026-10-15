@@ -45,7 +45,7 @@ class Edge
 
  private:
   //! Default constructor is disabled
-  Edge();
+  Edge() = delete;
 
   //! The smaller of the indices
   long itsIndex1;

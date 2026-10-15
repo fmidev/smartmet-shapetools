@@ -285,7 +285,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
       return (theElement.GetString(theVariable) == theValue);
     if (theComparison == "<>")
       return (theElement.GetString(theVariable) != theValue);
-    else if (theComparison == "<")
+    if (theComparison == "<")
       return (theElement.GetString(theVariable) < theValue);
     else if (theComparison == ">")
       return (theElement.GetString(theVariable) > theValue);
@@ -301,7 +301,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
       return (theElement.GetInteger(theVariable) == value);
     if (theComparison == "<>")
       return (theElement.GetInteger(theVariable) != value);
-    else if (theComparison == "<")
+    if (theComparison == "<")
       return (theElement.GetInteger(theVariable) < value);
     else if (theComparison == ">")
       return (theElement.GetInteger(theVariable) > value);
@@ -317,7 +317,7 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
       return (theElement.GetDouble(theVariable) == value);
     if (theComparison == "<>")
       return (theElement.GetDouble(theVariable) != value);
-    else if (theComparison == "<")
+    if (theComparison == "<")
       return (theElement.GetDouble(theVariable) < value);
     else if (theComparison == ">")
       return (theElement.GetDouble(theVariable) > value);

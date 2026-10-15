@@ -38,9 +38,9 @@ class PointSelector
   class Pimple;
   std::shared_ptr<Pimple> itsPimple;
 
-  PointSelector();
-  PointSelector(const PointSelector &theSelector);
-  PointSelector &operator=(const PointSelector &theSelector);
+  PointSelector() = delete;
+  PointSelector(const PointSelector& theSelector) = delete;
+  PointSelector& operator=(const PointSelector& theSelector) = delete;
 
 };  // class PointSelector
 
