@@ -78,7 +78,7 @@ int domain(int argc, const char *argv[])
         line = new Imagine::NFmiEsriPolyLine;
         if (line == nullptr)
           throw runtime_error("Failed to allocate a new NFmiEsriPolyLine");
-      // fall through
+      [[fallthrough]];
       case Imagine::kFmiLineTo:
         if (line == nullptr)
           throw runtime_error("Internal error - a lineto before a moveto");

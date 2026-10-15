@@ -83,7 +83,7 @@ int domain(int argc, const char *argv[])
       case Imagine::kFmiMoveTo:
         GradsTools::print_line(cout, level, buffer);
         buffer.clear();
-      // fallthrough
+      [[fallthrough]];
       case Imagine::kFmiLineTo:
         buffer.emplace_back(it.X(), it.Y());
         break;
