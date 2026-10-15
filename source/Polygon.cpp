@@ -115,10 +115,13 @@ double Polygon::geoarea() const
     double x2 = x1;
     double y2 = sin(y1 < 0 ? -k90 : k90);
     sum += (x1 + dx1) * y2 - (x2 + dx2) * y1;
-    x1 = x2, y1 = y2, dx1 = dx2;
+    x1 = x2;
+    y1 = y2;
+    dx1 = dx2;
     x2 = kpi * itsData[0].x();
     sum += (x1 + dx1) * y2 - x2 * y1;
-    x1 = x2, y1 = y2;
+    x1 = x2;
+    y1 = y2;
     y2 = sin(kpi * itsData[0].y());
     sum += x1 * y2 - x2 * y1;
   }
