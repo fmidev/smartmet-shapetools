@@ -27,6 +27,8 @@ class Edge
       : itsIndex1(idx1 < idx2 ? idx1 : idx2), itsIndex2(idx1 > idx2 ? idx1 : idx2)
   {
   }
+  Edge(const Edge&) = default;
+  Edge& operator=(const Edge&) = default;
 
   //! Equality comparison
   bool operator==(const Edge &edge) const

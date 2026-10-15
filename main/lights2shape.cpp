@@ -59,9 +59,9 @@ void usage()
 
 struct GlobalsList
 {
-  bool verbose;           // verbose mode flag
+  bool verbose = false;           // verbose mode flag
   string shapename;       // output shape
-  double x1, y1, x2, y2;  // the bounding box
+  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;  // the bounding box
   set<int> levels;        // the desired levels
 
   NFmiDataMatrix<float> values;  // the data values
@@ -97,6 +97,7 @@ void parse_command_line(int argc, const char *argv[])
   if (cmdline.isOption('h'))
   {
     usage();
+    // NOLINTNEXTLINE(concurrency-mt-unsafe): single-threaded command line tool
     exit(0);
   }
 

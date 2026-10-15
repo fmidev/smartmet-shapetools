@@ -41,9 +41,9 @@ struct OptionsList
   string output_shape;
   string filter_field;
   string filter_boundingbox;
-  bool verbose;
-  bool filter_odd_count;
-  bool filter_even_count;
+  bool verbose = false;
+  bool filter_odd_count = false;
+  bool filter_even_count = false;
 };
 
 namespace
@@ -97,6 +97,7 @@ void parse_command_line(int argc, const char *argv[])
   if (cmdline.isOption('h'))
   {
     usage();
+    // NOLINTNEXTLINE(concurrency-mt-unsafe): single-threaded command line tool
     exit(0);
   }
 

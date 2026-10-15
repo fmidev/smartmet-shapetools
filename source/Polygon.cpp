@@ -227,6 +227,7 @@ Point Polygon::someInsidePoint() const
       if (++iterations > max_iterations)
       {
         cerr << "Error: Could not find a point inside polygon" << endl;
+        // NOLINTNEXTLINE(concurrency-mt-unsafe): single-threaded command line tool
         exit(1);
       }
 

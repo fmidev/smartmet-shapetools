@@ -204,7 +204,7 @@ string ContourName(unsigned long theIndex)
 
 NFmiTime toutctime(const NFmiTime &theLocalTime)
 {
-  ::tm tlocal;
+  ::tm tlocal{};
   tlocal.tm_sec = theLocalTime.GetSec();
   tlocal.tm_min = theLocalTime.GetMin();
   tlocal.tm_hour = theLocalTime.GetHour();
@@ -217,7 +217,8 @@ NFmiTime toutctime(const NFmiTime &theLocalTime)
 
   ::time_t tsec = mktime(&tlocal);
 
-  ::tm *tutc = ::gmtime(&tsec);
+  struct ::tm tutcBuffer{};  // gmtime_r is thread safe
+  ::tm *tutc = ::gmtime_r(&tsec, &tutcBuffer);
 
   NFmiTime out(tutc->tm_year + 1900,
                tutc->tm_mon + 1,
@@ -1104,6 +1105,7 @@ int domain(int argc, const char *argv[])
       }
       if (theTimeOrigin == "origintime")
       {
+        // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
         t = q->OriginTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
@@ -1111,6 +1113,7 @@ int domain(int argc, const char *argv[])
       else if (theTimeOrigin == "firsttime")
       {
         q->FirstTime();
+        // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
         t = q->ValidTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
@@ -1183,6 +1186,7 @@ int domain(int argc, const char *argv[])
       }
       if (theTimeOrigin == "origintime")
       {
+        // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
         t = q->OriginTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);
@@ -1190,6 +1194,7 @@ int domain(int argc, const char *argv[])
       else if (theTimeOrigin == "firsttime")
       {
         q->FirstTime();
+        // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
         t = q->ValidTime();
         t.ChangeByDays(theDay);
         t.ChangeByHours(theHour);

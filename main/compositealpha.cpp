@@ -65,12 +65,12 @@ int main(int argc, const char *argv[])
   for (unsigned int j = 0; j < ny; j++)
     for (unsigned int i = 0; i < nx; i++)
     {
-      Imagine::NFmiColorTools::Color c = inputimage(i, j);
       unsigned int intensity = Imagine::NFmiColorTools::Intensity(maskimage(i, j));
       unsigned int alpha =
           intensity * Imagine::NFmiColorTools::MaxAlpha / Imagine::NFmiColorTools::MaxRGB;
 
-      c = Imagine::NFmiColorTools::ReplaceAlpha(inputimage(i, j), alpha);
+      Imagine::NFmiColorTools::Color c =
+          Imagine::NFmiColorTools::ReplaceAlpha(inputimage(i, j), alpha);
       c = Imagine::NFmiColorTools::Simplify(c, -1, false);
       outputimage(i, j) = c;
     }
