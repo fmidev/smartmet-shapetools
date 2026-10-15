@@ -1121,7 +1121,7 @@ int domain(int argc, const char *argv[])
 
       // Get the data to be contoured
 
-      if (coords.get() == nullptr)
+      if (coords == nullptr)
         coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
 
       values.reset(new NFmiDataMatrix<float>(q->Values(t)));
@@ -1223,12 +1223,12 @@ int domain(int argc, const char *argv[])
 
       // Get the data to be contoured
 
-      if (coords.get() == nullptr)
+      if (coords == nullptr)
       {
         coords.reset(new Fmi::CoordinateMatrix(q->LocationsXY(*theArea)));
       }
 
-      if (values.get() == nullptr)
+      if (values == nullptr)
       {
         values.reset(new NFmiDataMatrix<float>(q->Values(t)));
         if (values->NX() == 0 || values->NY() == 0)
@@ -1328,7 +1328,7 @@ int domain(int argc, const char *argv[])
       auto it = outpaths.begin();
       for (; nit != names.end() && it != outpaths.end(); ++nit, ++it)
       {
-        const string name = *nit;
+        const string& name = *nit;
         const string path = pathtostring(*it,
                                          *theArea,
                                          theClipMargin,

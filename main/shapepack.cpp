@@ -210,7 +210,7 @@ bool parse_options(int argc, char *argv[])
 
 string get_attribute_value(const NFmiEsriElement &theElement, const NFmiEsriAttributeName &theName)
 {
-  string name = theName.Name();
+  const string& name = theName.Name();
   switch (theName.Type())
   {
     case kFmiEsriString:
@@ -742,7 +742,7 @@ void render_shapepack(NFmiImage &img,
     {
       try
       {
-        std::string tz = zones.zone_name(lonpixel(i), latpixel(j));
+        const std::string& tz = zones.zone_name(lonpixel(i), latpixel(j));
         auto it = attmap.find(tz);
         if (it == attmap.end())
         {
