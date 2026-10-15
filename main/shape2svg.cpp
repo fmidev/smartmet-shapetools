@@ -102,11 +102,8 @@ int run(int argc, const char *argv[])
   using Paths = std::map<std::string, Imagine::NFmiPath>;
   Paths paths;
 
-  int shapenumber = -1;
   for (auto* it : shape.Elements())
   {
-    ++shapenumber;
-
     if (it == nullptr)
       continue;
 
