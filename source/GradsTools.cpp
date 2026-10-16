@@ -113,8 +113,6 @@ void print_line(ostream &out, int theLevel, const vector<NFmiPoint> &thePoints)
     else
       pos1++;
   }
-
-  return;
 }
 
 // ----------------------------------------------------------------------
