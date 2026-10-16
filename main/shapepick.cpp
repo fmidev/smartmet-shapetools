@@ -32,7 +32,7 @@ struct Options
   double lon = -1;
   double lat = -1;
 
-  Options() {}
+  Options() = default;
 };
 
 namespace

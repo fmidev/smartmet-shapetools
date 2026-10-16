@@ -20,7 +20,7 @@ class Edge
 {
  public:
   //! Destructor
-  ~Edge() {}
+  ~Edge() = default;
 
   //! Constructor from the given indices
   Edge(long idx1, long idx2)

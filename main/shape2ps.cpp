@@ -117,6 +117,7 @@
 #include <string>
 
 #include <boost/lexical_cast.hpp>
+#include <utility>
 
 using namespace boost;
 using namespace std;
@@ -126,11 +127,11 @@ const double clamp_limit = 10000;
 
 struct BezierSettings
 {
-  BezierSettings(const string& theName,
-                 const string& theMode,
-                 double theSmoothness,
-                 double theMaxError)
-      : name(theName), mode(theMode), smoothness(theSmoothness), maxerror(theMaxError)
+  BezierSettings(string theName, string theMode, double theSmoothness, double theMaxError)
+                 : name(std::move(theName)),
+                 mode(std::move(theMode)),
+                 smoothness(theSmoothness),
+      maxerror(theMaxError)
   {
   }
 

@@ -107,7 +107,7 @@ struct Options
   bool verbose = false;
   bool accurate = false;
 
-  Options() {}
+  Options() = default;
 };
 
 namespace
