@@ -37,7 +37,6 @@
 // ======================================================================
 
 #include "PointSelector.h"
-#include <memory>
 #include <imagine/NFmiEsriPoint.h>
 #include <imagine/NFmiEsriShape.h>
 #include <newbase/NFmiArea.h>
