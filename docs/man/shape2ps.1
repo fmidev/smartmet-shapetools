@@ -3,6 +3,7 @@
 shape2ps \- render shapefiles and querydata contours as PostScript
 .SH SYNOPSIS
 .B shape2ps
+.RB [ \-v ]
 .I controlfile
 .SH DESCRIPTION
 .B shape2ps
@@ -19,6 +20,8 @@ projection facilities of the SmartMet stack. They include
 .B body
 (end of header / start of body),
 .BR boundingbox ,
+.B clipmargin
+(clip margin for the rendered paths),
 .B shape
 and
 .B subshape
@@ -45,8 +48,22 @@ and
 .B contourline
 and
 .B contourfill
-(produce isoline / isoband paths) and
-.BR bezier .
+(produce isoline / isoband paths),
+.B bezier
+and
+.B windarrows
+(emit a
+.B windarrow
+procedure call for grid points of the WindDirection parameter).
+.B system
+runs the rest of the line as a shell command and inserts its output.
+The keywords
+.B area
+and
+.B projectioncenter
+are deprecated and print a warning; use
+.B projection
+instead.
 A typical control file therefore looks like
 .PP
 .RS 4
@@ -69,10 +86,14 @@ convert map.ps map.png
 .PP
 The full set of keywords and their arguments is documented in the
 prose document
-.IR docs/shape2ps.md
-in the source distribution; see also the projection description
+.I docs/shape2ps.md
+of smartmet\-qdtools; see also the projection description
 reference for the syntax accepted by
 .BR projection .
+.SH OPTIONS
+.TP
+.B \-v
+Verbose mode: print the projection settings to standard error.
 .SH ARGUMENTS
 .TP
 .I controlfile

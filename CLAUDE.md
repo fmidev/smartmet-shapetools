@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 make                # Build all tools (produces executables in project root)
 make clean          # Remove build artifacts
 make format         # Run clang-format on all source
-make test           # Run tests (currently no test suite)
+make test           # No test suite exists (there is no test/ directory)
 make rpm            # Build RPM package
 make install        # Install binaries to $PREFIX/bin (default /usr)
 ```
@@ -34,10 +34,11 @@ This is a flat tools project, not a library. Each `.cpp` in `main/` compiles to 
 
 - **Inspection**: `shapedump` (coordinates), `shape2xml` (attributes + paths), `gradsdump` (GrADS binary)
 - **Rendering**: `shape2ps` (PostScript with embedded DSL for projections, contours, querydata), `shape2svg`
-- **Filtering/selection**: `shapefilter` (by attribute/bbox), `shapepick` (by record), `shapefind` (by attribute query), `shapepoints` (distance-based thinning)
+- **Filtering/selection**: `shapefilter` (by attribute/bbox/edge parity), `shapefind` (elements nearest to a coordinate, optionally filtered by an attribute condition), `shapepoints` (distance-based thinning)
 - **Format conversion**: `shape2grads`/`grads2shape`, `gshhs2grads`/`gshhs2shape`, `svg2shape`, `etopo2shape`, `lights2shape`
 - **Amalgamation pipeline**: `shape2triangle` → external `triangle` → `amalgamate` → `triangle2shape` (combines nearby polygons via constrained Delaunay triangulation)
-- **Other**: `shapeproject` (coordinate reprojection), `shapepack` (polygon simplification), `compositealpha` (image alpha compositing)
+- **Lookup tables**: `shapepack` (packs a polygonal shapefile into a fast 2D lookup table), `shapepick` (looks up the value at a coordinate in a shapepack)
+- **Other**: `shapeproject` (coordinate reprojection), `compositealpha` (image alpha compositing)
 
 `shape2ps` is the most complex tool — it implements a mini PostScript DSL that can load shapefiles, set projections, render querydata contours, and produce full weather map output.
 
