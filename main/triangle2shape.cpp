@@ -50,7 +50,7 @@ bool read_nodes(const string& inname, vector<Point>& nodes)
   long number_of_nodes = 0;
   long dummy = 0;
   in >> number_of_nodes >> dummy >> dummy >> dummy;
-  nodes.reserve(number_of_nodes);
+  nodes.resize(number_of_nodes + 1);  // nodes are numbered starting from 1
   for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
   {
     long node = 0;
