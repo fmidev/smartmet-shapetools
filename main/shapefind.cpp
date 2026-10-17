@@ -265,6 +265,35 @@ void parse_condition(string &theVariable, string &theComparison, string &theValu
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Compare two values, sets known=false for an unknown comparison
+ */
+// ----------------------------------------------------------------------
+
+template <typename T, typename U>
+bool compare_values(const T& theLeft,
+                    const std::string& theComparison,
+                    const U& theRight,
+                    bool& known)
+{
+  known = true;
+  if (theComparison == "=" || theComparison == "==")
+    return (theLeft == theRight);
+  if (theComparison == "<>")
+    return (theLeft != theRight);
+  if (theComparison == "<")
+    return (theLeft < theRight);
+  if (theComparison == ">")
+    return (theLeft > theRight);
+  if (theComparison == "<=")
+    return (theLeft <= theRight);
+  if (theComparison == ">=")
+    return (theLeft >= theRight);
+  known = false;
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Test the search condition
  */
 // ----------------------------------------------------------------------
@@ -279,53 +308,26 @@ bool condition_satisfied(const NFmiEsriElement &theElement,
 
   NFmiEsriAttributeType atype = theElement.GetType(theVariable);
 
+  bool known = false;
+  bool result = true;
+
   if (atype == kFmiEsriString)
   {
-    if (theComparison == "=" || theComparison == "==")
-      return (theElement.GetString(theVariable) == theValue);
-    if (theComparison == "<>")
-      return (theElement.GetString(theVariable) != theValue);
-    if (theComparison == "<")
-      return (theElement.GetString(theVariable) < theValue);
-    else if (theComparison == ">")
-      return (theElement.GetString(theVariable) > theValue);
-    else if (theComparison == "<=")
-      return (theElement.GetString(theVariable) <= theValue);
-    else if (theComparison == ">=")
-      return (theElement.GetString(theVariable) >= theValue);
+    result = compare_values(theElement.GetString(theVariable), theComparison, theValue, known);
   }
   else if (atype == kFmiEsriInteger)
   {
     auto value = boost::lexical_cast<double>(theValue);
-    if (theComparison == "=" || theComparison == "==")
-      return (theElement.GetInteger(theVariable) == value);
-    if (theComparison == "<>")
-      return (theElement.GetInteger(theVariable) != value);
-    if (theComparison == "<")
-      return (theElement.GetInteger(theVariable) < value);
-    else if (theComparison == ">")
-      return (theElement.GetInteger(theVariable) > value);
-    else if (theComparison == "<=")
-      return (theElement.GetInteger(theVariable) <= value);
-    else if (theComparison == ">=")
-      return (theElement.GetInteger(theVariable) >= value);
+    result = compare_values(theElement.GetInteger(theVariable), theComparison, value, known);
   }
   else if (atype == kFmiEsriDouble)
   {
     auto value = boost::lexical_cast<double>(theValue);
-    if (theComparison == "=" || theComparison == "==")
-      return (theElement.GetDouble(theVariable) == value);
-    if (theComparison == "<>")
-      return (theElement.GetDouble(theVariable) != value);
-    if (theComparison == "<")
-      return (theElement.GetDouble(theVariable) < value);
-    else if (theComparison == ">")
-      return (theElement.GetDouble(theVariable) > value);
-    else if (theComparison == "<=")
-      return (theElement.GetDouble(theVariable) <= value);
-    else if (theComparison == ">=")
-      return (theElement.GetDouble(theVariable) >= value);
+    result = compare_values(theElement.GetDouble(theVariable), theComparison, value, known);
   }
+
+  if (known)
+    return result;
 
   // Should never reach this point
   assert(false);
@@ -809,6 +811,59 @@ void find_nearest_points(const NFmiEsriShape &theShape,
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Minimum distance from the point to the polyline, -1 if there are no segments
+ */
+// ----------------------------------------------------------------------
+
+float polyline_min_distance(const NFmiEsriPolyLine& theLine,
+                            const NFmiPoint& theLatLon,
+                            const NFmiPoint& theWorldXY)
+{
+  const auto* elem = &theLine;
+  const auto& worldxy = theWorldXY;
+
+  float mindist = -1;
+
+  for (int part = 0; part < elem->NumParts(); part++)
+  {
+    int i1 = 0;
+    int i2 = 0;
+    i1 = elem->Parts()[part];  // start of part
+    if (part + 1 == elem->NumParts())
+      i2 = elem->NumPoints() - 1;  // end of part
+    else
+      i2 = elem->Parts()[part + 1] - 1;  // end of part
+
+    if (i2 >= i1)
+    {
+      for (int ii = i1 + 1; ii <= i2; ii++)
+      {
+        float dist = NAN;
+        if (options.projection == "latlon")
+          dist = latlon_line_distance(theLatLon.X(),
+                                      theLatLon.Y(),
+                                      elem->Points()[ii - 1].X(),
+                                      elem->Points()[ii - 1].Y(),
+                                      elem->Points()[ii].X(),
+                                      elem->Points()[ii].Y());
+        else
+          dist = world_line_distance(worldxy.X(),
+                                     worldxy.Y(),
+                                     elem->Points()[ii - 1].X(),
+                                     elem->Points()[ii - 1].Y(),
+                                     elem->Points()[ii].X(),
+                                     elem->Points()[ii].Y());
+        if (mindist < 0 || dist < mindist)
+          mindist = dist;
+      }
+    }
+  }
+
+  return mindist;
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Find nearest lines from polyline shapefile
  */
 // ----------------------------------------------------------------------
@@ -847,42 +902,7 @@ void find_nearest_lines(const NFmiEsriShape &theShape,
 
     const auto* elem = static_cast<const NFmiEsriPolyLine*>(elements[i]);
 
-    float mindist = -1;
-
-    for (int part = 0; part < elem->NumParts(); part++)
-    {
-      int i1 = 0;
-      int i2 = 0;
-      i1 = elem->Parts()[part];  // start of part
-      if (part + 1 == elem->NumParts())
-        i2 = elem->NumPoints() - 1;  // end of part
-      else
-        i2 = elem->Parts()[part + 1] - 1;  // end of part
-
-      if (i2 >= i1)
-      {
-        for (int ii = i1 + 1; ii <= i2; ii++)
-        {
-          float dist = NAN;
-          if (options.projection == "latlon")
-            dist = latlon_line_distance(theLatLon.X(),
-                                        theLatLon.Y(),
-                                        elem->Points()[ii - 1].X(),
-                                        elem->Points()[ii - 1].Y(),
-                                        elem->Points()[ii].X(),
-                                        elem->Points()[ii].Y());
-          else
-            dist = world_line_distance(worldxy.X(),
-                                       worldxy.Y(),
-                                       elem->Points()[ii - 1].X(),
-                                       elem->Points()[ii - 1].Y(),
-                                       elem->Points()[ii].X(),
-                                       elem->Points()[ii].Y());
-          if (mindist < 0 || dist < mindist)
-            mindist = dist;
-        }
-      }
-    }
+    float mindist = polyline_min_distance(*elem, theLatLon, worldxy);
 
     if (mindist <= options.searchradius)
     {
