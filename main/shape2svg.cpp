@@ -66,6 +66,114 @@ void usage()
        << endl;
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Get the name of the element from the configured attribute
+ */
+// ----------------------------------------------------------------------
+
+string element_name(const Imagine::NFmiEsriElement& theElement,
+                    const Imagine::NFmiEsriShape::attributes_type& attributes)
+{
+  string name;
+  for (auto ait = attributes.begin(); ait != attributes.end() && name.empty(); ++ait)
+  {
+    if ((*ait)->Name() != options.fieldname)
+      continue;
+
+    switch ((*ait)->Type())
+    {
+      case Imagine::kFmiEsriString:
+        name = theElement.GetString((*ait)->Name());
+        break;
+      default:
+        throw runtime_error("Attribute " + options.fieldname + " must be of type string");
+    }
+  }
+  return name;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Add the parts of a polyline or polygon to the path
+ */
+// ----------------------------------------------------------------------
+
+template <typename T>
+void add_parts_to_path(const T& theElement, Imagine::NFmiPath& path)
+{
+  const auto* elem = &theElement;
+  for (int part = 0; part < elem->NumParts(); part++)
+  {
+    int i1 = 0;
+    int i2 = 0;
+    i1 = elem->Parts()[part];  // start of part
+    if (part + 1 == elem->NumParts())
+      i2 = elem->NumPoints() - 1;  // end of part
+    else
+      i2 = elem->Parts()[part + 1] - 1;  // end of part
+
+    if (i2 >= i1)
+    {
+      path.MoveTo(elem->Points()[i1].X(), elem->Points()[i1].Y());
+      for (int i = i1 + 1; i <= i2; i++)
+        path.LineTo(elem->Points()[i].X(), elem->Points()[i].Y());
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Add the element to the path
+ */
+// ----------------------------------------------------------------------
+
+void add_element_to_path(const Imagine::NFmiEsriElement& theElement, Imagine::NFmiPath& path)
+{
+  switch (theElement.Type())
+  {
+    case Imagine::kFmiEsriNull:
+    case Imagine::kFmiEsriMultiPatch:
+      break;
+    case Imagine::kFmiEsriPoint:
+    case Imagine::kFmiEsriPointM:
+    case Imagine::kFmiEsriPointZ:
+    {
+      const float x = theElement.X();
+      const float y = theElement.Y();
+      path.MoveTo(x, y);
+      break;
+    }
+    case Imagine::kFmiEsriMultiPoint:
+    case Imagine::kFmiEsriMultiPointM:
+    case Imagine::kFmiEsriMultiPointZ:
+    {
+      const auto* elem = static_cast<const Imagine::NFmiEsriMultiPoint*>(&theElement);
+      for (int i = 0; i < elem->NumPoints(); i++)
+      {
+        const float x = elem->Points()[i].X();
+        const float y = elem->Points()[i].Y();
+        path.MoveTo(x, y);
+      }
+      break;
+    }
+    case Imagine::kFmiEsriPolyLine:
+    case Imagine::kFmiEsriPolyLineM:
+    case Imagine::kFmiEsriPolyLineZ:
+    {
+      add_parts_to_path(*static_cast<const Imagine::NFmiEsriPolyLine*>(&theElement), path);
+      break;
+    }
+    case Imagine::kFmiEsriPolygon:
+    case Imagine::kFmiEsriPolygonM:
+    case Imagine::kFmiEsriPolygonZ:
+    {
+      add_parts_to_path(*static_cast<const Imagine::NFmiEsriPolygon*>(&theElement), path);
+      break;
+    }
+  }
+}
+
 int run(int argc, const char *argv[])
 {
   // Parse command line
@@ -107,21 +215,7 @@ int run(int argc, const char *argv[])
     if (it == nullptr)
       continue;
 
-    string name;
-    for (auto ait = attributes.begin(); ait != attributes.end() && name.empty(); ++ait)
-    {
-      if ((*ait)->Name() != options.fieldname)
-        continue;
-
-      switch ((*ait)->Type())
-      {
-        case Imagine::kFmiEsriString:
-          name = it->GetString((*ait)->Name());
-          break;
-        default:
-          throw runtime_error("Attribute " + options.fieldname + " must be of type string");
-      }
-    }
+    string name = element_name(*it, attributes);
 
     if (name.empty())
       throw runtime_error("The shape does not contain a field named " + options.fieldname);
@@ -130,82 +224,7 @@ int run(int argc, const char *argv[])
 
     Imagine::NFmiPath &path = paths[outfile];
 
-    switch (it->Type())
-    {
-      case Imagine::kFmiEsriNull:
-      case Imagine::kFmiEsriMultiPatch:
-        break;
-      case Imagine::kFmiEsriPoint:
-      case Imagine::kFmiEsriPointM:
-      case Imagine::kFmiEsriPointZ:
-      {
-        const float x = it->X();
-        const float y = it->Y();
-        path.MoveTo(x, y);
-        break;
-      }
-      case Imagine::kFmiEsriMultiPoint:
-      case Imagine::kFmiEsriMultiPointM:
-      case Imagine::kFmiEsriMultiPointZ:
-      {
-        const auto* elem = static_cast<const Imagine::NFmiEsriMultiPoint*>(it);
-        for (int i = 0; i < elem->NumPoints(); i++)
-        {
-          const float x = elem->Points()[i].X();
-          const float y = elem->Points()[i].Y();
-          path.MoveTo(x, y);
-        }
-        break;
-      }
-      case Imagine::kFmiEsriPolyLine:
-      case Imagine::kFmiEsriPolyLineM:
-      case Imagine::kFmiEsriPolyLineZ:
-      {
-        const auto* elem = static_cast<const Imagine::NFmiEsriPolyLine*>(it);
-        for (int part = 0; part < elem->NumParts(); part++)
-        {
-          int i1 = 0;
-          int i2 = 0;
-          i1 = elem->Parts()[part];  // start of part
-          if (part + 1 == elem->NumParts())
-            i2 = elem->NumPoints() - 1;  // end of part
-          else
-            i2 = elem->Parts()[part + 1] - 1;  // end of part
-
-          if (i2 >= i1)
-          {
-            path.MoveTo(elem->Points()[i1].X(), elem->Points()[i1].Y());
-            for (int i = i1 + 1; i <= i2; i++)
-              path.LineTo(elem->Points()[i].X(), elem->Points()[i].Y());
-          }
-        }
-        break;
-      }
-      case Imagine::kFmiEsriPolygon:
-      case Imagine::kFmiEsriPolygonM:
-      case Imagine::kFmiEsriPolygonZ:
-      {
-        const auto* elem = static_cast<const Imagine::NFmiEsriPolygon*>(it);
-        for (int part = 0; part < elem->NumParts(); part++)
-        {
-          int i1 = 0;
-          int i2 = 0;
-          i1 = elem->Parts()[part];  // start of part
-          if (part + 1 == elem->NumParts())
-            i2 = elem->NumPoints() - 1;  // end of part
-          else
-            i2 = elem->Parts()[part + 1] - 1;  // end of part
-
-          if (i2 >= i1)
-          {
-            path.MoveTo(elem->Points()[i1].X(), elem->Points()[i1].Y());
-            for (int i = i1 + 1; i <= i2; i++)
-              path.LineTo(elem->Points()[i].X(), elem->Points()[i].Y());
-          }
-        }
-        break;
-      }
-    }
+    add_element_to_path(*it, path);
   }
 
   for (const Paths::value_type &ob : paths)
