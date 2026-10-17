@@ -145,6 +145,43 @@ void parse_command_line(int argc, const char *argv[])
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Count the edges of a polyline or a polygon
+ */
+// ----------------------------------------------------------------------
+
+template <typename T>
+void count_element_edges(const T& theElement, NFmiCounter<NFmiEdge>& theCounts)
+{
+  const auto* elem = &theElement;
+  for (int part = 0; part < elem->NumParts(); part++)
+  {
+    int i1 = 0;
+    int i2 = 0;
+    i1 = elem->Parts()[part];  // start of part
+    if (part + 1 == elem->NumParts())
+      i2 = elem->NumPoints() - 1;  // end of part
+    else
+      i2 = elem->Parts()[part + 1] - 1;  // end of part
+
+    if (i2 >= i1)
+    {
+      double x1 = elem->Points()[i1].X();
+      double y1 = elem->Points()[i1].Y();
+
+      for (int i = i1 + 1; i <= i2; i++)
+      {
+        double x2 = elem->Points()[i].X();
+        double y2 = elem->Points()[i].Y();
+        theCounts.Add(NFmiEdge(x1, y1, x2, y2, true, false));
+        x1 = x2;
+        y1 = y2;
+      }
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Count the edges in the given shape
  */
 // ----------------------------------------------------------------------
@@ -176,67 +213,68 @@ void count_edges(const NFmiEsriShape &theShape, NFmiCounter<NFmiEdge> &theCounts
       case kFmiEsriPolyLineM:
       case kFmiEsriPolyLineZ:
       {
-        const auto* elem = static_cast<const NFmiEsriPolyLine*>(*it);
-        for (int part = 0; part < elem->NumParts(); part++)
-        {
-          int i1 = 0;
-          int i2 = 0;
-          i1 = elem->Parts()[part];  // start of part
-          if (part + 1 == elem->NumParts())
-            i2 = elem->NumPoints() - 1;  // end of part
-          else
-            i2 = elem->Parts()[part + 1] - 1;  // end of part
-
-          if (i2 >= i1)
-          {
-            double x1 = elem->Points()[i1].X();
-            double y1 = elem->Points()[i1].Y();
-
-            for (int i = i1 + 1; i <= i2; i++)
-            {
-              double x2 = elem->Points()[i].X();
-              double y2 = elem->Points()[i].Y();
-              theCounts.Add(NFmiEdge(x1, y1, x2, y2, true, false));
-              x1 = x2;
-              y1 = y2;
-            }
-          }
-        }
+        count_element_edges(*static_cast<const NFmiEsriPolyLine*>(*it), theCounts);
         break;
       }
       case kFmiEsriPolygon:
       case kFmiEsriPolygonM:
       case kFmiEsriPolygonZ:
       {
-        const auto* elem = static_cast<const NFmiEsriPolygon*>(*it);
-        for (int part = 0; part < elem->NumParts(); part++)
-        {
-          int i1 = 0;
-          int i2 = 0;
-          i1 = elem->Parts()[part];  // start of part
-          if (part + 1 == elem->NumParts())
-            i2 = elem->NumPoints() - 1;  // end of part
-          else
-            i2 = elem->Parts()[part + 1] - 1;  // end of part
-
-          if (i2 >= i1)
-          {
-            double x1 = elem->Points()[i1].X();
-            double y1 = elem->Points()[i1].Y();
-
-            for (int i = i1 + 1; i <= i2; i++)
-            {
-              double x2 = elem->Points()[i].X();
-              double y2 = elem->Points()[i].Y();
-              theCounts.Add(NFmiEdge(x1, y1, x2, y2, true, false));
-              x1 = x2;
-              y1 = y2;
-            }
-          }
-        }
+        count_element_edges(*static_cast<const NFmiEsriPolygon*>(*it), theCounts);
         break;
       }
     }
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Add a point to the polygon or polyline being built, creating it if necessary
+ */
+// ----------------------------------------------------------------------
+
+void add_path_point(NFmiEsriElementType etype,
+                    NFmiEsriPolygon*& polygon,
+                    NFmiEsriPolyLine*& polyline,
+                    double x,
+                    double y)
+{
+  if (etype == kFmiEsriPolygon)
+  {
+    if (polygon == nullptr)
+      polygon = new NFmiEsriPolygon;
+    polygon->Add(NFmiEsriPoint(x, y));
+  }
+  else
+  {
+    if (polyline == nullptr)
+      polyline = new NFmiEsriPolyLine;
+    polyline->Add(NFmiEsriPoint(x, y));
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Add the polygon or polyline being built to the shape and start a new one
+ */
+// ----------------------------------------------------------------------
+
+void flush_path_element(NFmiEsriElementType etype,
+                        NFmiEsriShape& theShape,
+                        NFmiEsriPolygon*& polygon,
+                        NFmiEsriPolyLine*& polyline)
+{
+  if (etype == kFmiEsriPolygon)
+  {
+    if (polygon != nullptr)
+      theShape.Add(polygon);
+    polygon = new NFmiEsriPolygon;
+  }
+  else
+  {
+    if (polyline != nullptr)
+      theShape.Add(polyline);
+    polyline = new NFmiEsriPolyLine;
   }
 }
 
@@ -268,38 +306,14 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
     else if (++it == end)
     {
       --it;
-      if (etype == kFmiEsriPolygon)
-      {
-        if (polygon == nullptr)
-          polygon = new NFmiEsriPolygon;
-        polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
-      }
-      else
-      {
-        if (polyline == nullptr)
-          polyline = new NFmiEsriPolyLine;
-        polyline->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
-      }
+      add_path_point(etype, polygon, polyline, (*it).X(), (*it).Y());
       doflush = true;
     }
     else
       --it;
 
     if (doflush)
-    {
-      if (etype == kFmiEsriPolygon)
-      {
-        if (polygon != nullptr)
-          theShape.Add(polygon);
-        polygon = new NFmiEsriPolygon;
-      }
-      else
-      {
-        if (polyline != nullptr)
-          theShape.Add(polyline);
-        polyline = new NFmiEsriPolyLine;
-      }
-    }
+      flush_path_element(etype, theShape, polygon, polyline);
 
     if (etype == kFmiEsriPolygon)
       polygon->Add(NFmiEsriPoint((*it).X(), (*it).Y()));
