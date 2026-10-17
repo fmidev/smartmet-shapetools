@@ -904,7 +904,7 @@ void Shape2PS::handleShape()
   catch (std::exception& e)
   {
     if (token != "shape")
-      throw e;
+      throw;
     string msg = "Failed at command shape ";
     msg += moveto + ' ';
     msg += lineto + ' ';
@@ -996,7 +996,7 @@ void Shape2PS::handleGshhs()
     msg += gshhsfile;
     msg += " due to ";
     msg += e.what();
-    throw runtime_error(e.what());
+    throw runtime_error(msg);
   }
 }
 
