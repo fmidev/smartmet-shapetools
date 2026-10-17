@@ -32,6 +32,119 @@
 using namespace std;
 
 // ----------------------------------------------------------------------
+// Read in the nodes
+// ----------------------------------------------------------------------
+
+bool read_nodes(const string& inname, vector<Point>& nodes)
+{
+  string filename = inname + ".node";
+  ifstream in(filename.c_str());
+  if (!in)
+  {
+    cerr << "Error: Could not open " << filename << " for reading" << endl;
+    return false;
+  }
+  // First row: number_of_nodes dimension number_of_attributes
+  // number_of_boundary_markers
+
+  long number_of_nodes = 0;
+  long dummy = 0;
+  in >> number_of_nodes >> dummy >> dummy >> dummy;
+  nodes.reserve(number_of_nodes);
+  for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
+  {
+    long node = 0;
+    double x = NAN;
+    double y = NAN;
+    in >> node >> x >> y;
+    nodes[i] = Point(x, y);
+  }
+  if (in.fail())
+  {
+    cerr << "Error: Error reading " << filename << endl;
+    return false;
+  }
+  in.close();
+  return true;
+}
+
+// ----------------------------------------------------------------------
+// Read the edges
+// ----------------------------------------------------------------------
+
+bool read_edges(const string& inname, const vector<Point>& nodes, Imagine::NFmiEdgeTree& edges)
+{
+  string filename = inname + ".poly";
+  ifstream in(filename.c_str());
+  if (!in)
+  {
+    cerr << "Error: Could not open " << filename << " for reading" << endl;
+    return false;
+  }
+  // First row: number_of_nodes dimension number_of_attributes
+  // number_of_boundary_markers
+  long number_of_nodes = 0;
+  long dummy = 0;
+  in >> number_of_nodes >> dummy >> dummy >> dummy;
+  if (number_of_nodes != 0)
+  {
+    cerr << "Error: .poly file also containing nodes is not supported" << endl;
+    return false;
+  }
+  // Second row: number_of_edges number_of_boundary_markers
+  long number_of_edges = 0;
+  in >> number_of_edges >> dummy;
+  for (long i = 1; i <= number_of_edges && !in.fail(); i++)
+  {
+    long edge = 0;
+    long idx1 = 0;
+    long idx2 = 0;
+    in >> edge >> idx1 >> idx2;
+    cout << edge << '\t' << idx1 << '\t' << idx2 << endl;
+
+    if (edge != i)
+    {
+      cerr << "Error: Edges must be numbered sequentially starting from 1 in "
+              "file "
+           << filename << endl;
+      return false;
+    }
+    Imagine::NFmiEdge tmp(
+        nodes[idx1].x(), nodes[idx1].y(), nodes[idx2].x(), nodes[idx2].y(), true, false);
+    if (edge == 85)
+      cout << "Edge 85!" << endl;
+    edges.Add(tmp);
+  }
+
+  if (in.fail())
+  {
+    cerr << "Error: Error reading " << filename << endl;
+    return false;
+  }
+  in.close();
+  return true;
+}
+
+// ----------------------------------------------------------------------
+// Add the polygon to the shape if it is large enough
+// ----------------------------------------------------------------------
+
+void add_polygon(Imagine::NFmiEsriShape& shape, const Polygon& poly, double arealimit)
+{
+  if (arealimit <= 0 || poly.geoarea() >= arealimit)
+  {
+    // Convert to NFmiEsriPolygon
+    auto* p = new Imagine::NFmiEsriPolygon();
+    auto b = poly.data().begin();
+    auto e = poly.data().end();
+    for (auto it = b; it != e; ++it)
+      p->Add(Imagine::NFmiEsriPoint(it->x(), it->y()));
+    // And add to output
+    shape.Add(p);
+  }
+}
+
+// ----------------------------------------------------------------------
 // The main program
 // ----------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -50,90 +163,14 @@ int main(int argc, char *argv[])
   // Read in the nodes
 
   vector<Point> nodes;
-  {
-    string filename = inname + ".node";
-    ifstream in(filename.c_str());
-    if (!in)
-    {
-      cerr << "Error: Could not open " << filename << " for reading" << endl;
-      return 1;
-    }
-    // First row: number_of_nodes dimension number_of_attributes
-    // number_of_boundary_markers
-
-    long number_of_nodes = 0;
-    long dummy = 0;
-    in >> number_of_nodes >> dummy >> dummy >> dummy;
-    nodes.reserve(number_of_nodes);
-    for (long i = 1; i <= number_of_nodes && !in.fail(); i++)
-    {
-      long node = 0;
-      double x = NAN;
-      double y = NAN;
-      in >> node >> x >> y;
-      nodes[i] = Point(x, y);
-    }
-    if (in.fail())
-    {
-      cerr << "Error: Error reading " << filename << endl;
-      return 1;
-    }
-    in.close();
-  }
+  if (!read_nodes(inname, nodes))
+    return 1;
 
   // Read the edges
 
   Imagine::NFmiEdgeTree edges;
-  {
-    string filename = inname + ".poly";
-    ifstream in(filename.c_str());
-    if (!in)
-    {
-      cerr << "Error: Could not open " << filename << " for reading" << endl;
-      return 1;
-    }
-    // First row: number_of_nodes dimension number_of_attributes
-    // number_of_boundary_markers
-    long number_of_nodes = 0;
-    long dummy = 0;
-    in >> number_of_nodes >> dummy >> dummy >> dummy;
-    if (number_of_nodes != 0)
-    {
-      cerr << "Error: .poly file also containing nodes is not supported" << endl;
-      return 1;
-    }
-    // Second row: number_of_edges number_of_boundary_markers
-    long number_of_edges = 0;
-    in >> number_of_edges >> dummy;
-    for (long i = 1; i <= number_of_edges && !in.fail(); i++)
-    {
-      long edge = 0;
-      long idx1 = 0;
-      long idx2 = 0;
-      in >> edge >> idx1 >> idx2;
-      cout << edge << '\t' << idx1 << '\t' << idx2 << endl;
-
-      if (edge != i)
-      {
-        cerr << "Error: Edges must be numbered sequentially starting from 1 in "
-                "file "
-             << filename << endl;
-        return 1;
-      }
-      Imagine::NFmiEdge tmp(
-          nodes[idx1].x(), nodes[idx1].y(), nodes[idx2].x(), nodes[idx2].y(), true, false);
-      if (edge == 85)
-        cout << "Edge 85!" << endl;
-      edges.Add(tmp);
-    }
-
-    if (in.fail())
-    {
-      cerr << "Error: Error reading " << filename << endl;
-      return 1;
-    }
-    in.close();
-  }
+  if (!read_edges(inname, nodes, edges))
+    return 1;
 
   // Build a path from the edges
 
@@ -167,17 +204,7 @@ int main(int argc, char *argv[])
 
       if (doflush && !poly.empty())
       {
-        if (arealimit <= 0 || poly.geoarea() >= arealimit)
-        {
-          // Convert to NFmiEsriPolygon
-          auto* p = new Imagine::NFmiEsriPolygon();
-          auto b = poly.data().begin();
-          auto e = poly.data().end();
-          for (auto it = b; it != e; ++it)
-            p->Add(Imagine::NFmiEsriPoint(it->x(), it->y()));
-          // And add to output
-          shape.Add(p);
-        }
+        add_polygon(shape, poly, arealimit);
         poly.clear();
       }
 
