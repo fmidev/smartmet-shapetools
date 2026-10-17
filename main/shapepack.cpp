@@ -552,6 +552,53 @@ inline int find_nearest_zone(const NFmiImage &theImage, int i, int j)
 
 // ----------------------------------------------------------------------
 /*!
+ * \brief Validate a single pixel
+ */
+// ----------------------------------------------------------------------
+
+void refine_pixel(NFmiImage& theImage,
+                  const NFmiEsriShape& theShape,
+                  const map<string, int>& theValues,
+                  int i,
+                  int j,
+                  int& checks,
+                  int& changes)
+{
+  if (theImage(i, j) < 0 || is_boundary_pixel(theImage, i, j))
+  {
+    ++checks;
+
+    string tz = find_enclosing_polygon(theShape, lonpixel(i), latpixel(j));
+
+    if (!tz.empty())
+    {
+      int idx = theValues.find(tz)->second;
+      if (theImage(i, j) != idx)
+      {
+        if (options.verbose)
+          cout << "Changed " << i << "," << j << " value from " << theImage(i, j) << " to " << idx
+               << " (" << tz << ")" << endl;
+        ++changes;
+        theImage(i, j) = idx;
+      }
+    }
+  }
+
+  if (theImage(i, j) < 0)
+  {
+    auto idx = find_nearest_zone(theImage, i, j);
+    if (idx > 0)
+    {
+      theImage(i, j) = idx;
+      ++changes;
+      if (options.verbose)
+        cout << "Changed " << i << "," << j << " value from -1 to " << idx << endl;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
  * \brief Check accuracy of image near borders
  */
 // ----------------------------------------------------------------------
@@ -582,37 +629,7 @@ void refine_image(NFmiImage &theImage,
           cout << "\t" << percentage << "%" << endl;
       }
 
-      if (theImage(i, j) < 0 || is_boundary_pixel(theImage, i, j))
-      {
-        ++checks;
-
-        string tz = find_enclosing_polygon(theShape, lonpixel(i), latpixel(j));
-
-        if (!tz.empty())
-        {
-          int idx = theValues.find(tz)->second;
-          if (theImage(i, j) != idx)
-          {
-            if (options.verbose)
-              cout << "Changed " << i << "," << j << " value from " << theImage(i, j) << " to "
-                   << idx << " (" << tz << ")" << endl;
-            ++changes;
-            theImage(i, j) = idx;
-          }
-        }
-      }
-
-      if (theImage(i, j) < 0)
-      {
-        auto idx = find_nearest_zone(theImage, i, j);
-        if (idx > 0)
-        {
-          theImage(i, j) = idx;
-          ++changes;
-          if (options.verbose)
-            cout << "Changed " << i << "," << j << " value from -1 to " << idx << endl;
-        }
-      }
+      refine_pixel(theImage, theShape, theValues, i, j, checks, changes);
     }
 
   if (options.verbose)
