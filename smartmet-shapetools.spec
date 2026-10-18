@@ -115,6 +115,7 @@ rm -rf $RPM_BUILD_ROOT
 - triangle2shape: resize the node vector instead of reserving before indexing
 - shape2ps: rethrow the original subshape/exec exception and report the gshhs failure message
 - Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
+- shape2ps windarrows: draw only the arrows inside the map area
 
 * Fri Oct 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.16-1.fmi
 - Fixed compiler warnings and clang-tidy findings (unused code, unreachable code, empty statements, member initialization, parameter passing, noexcept), no functional changes
