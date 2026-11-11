@@ -7,7 +7,7 @@
 /*!
  * \page triangle2shape triangle2shape
  *
- * triangle2shape takes as input a name indentifying a set of PSLG files
+ * triangle2shape takes as input a name identifying a set of PSLG files
  * (.node and .poly) and builds closed polygons from them, which are
  * then output as ESRI shapefiles.
  *

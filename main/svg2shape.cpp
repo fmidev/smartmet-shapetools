@@ -125,7 +125,7 @@ std::map<std::string, NFmiSvgPath> read_files()
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Estabish max name length
+ * \brief Establish max name length
  */
 // ----------------------------------------------------------------------
 

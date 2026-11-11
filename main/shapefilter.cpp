@@ -63,7 +63,7 @@ void usage()
        << endl
        << "Available options are:" << endl
        << "   -e\tKeep only even numbered edges (national borders etc)" << endl
-       << "   -o\tKeep only odd numbered egdes (coastlines etc)" << endl
+       << "   -o\tKeep only odd numbered edges (coastlines etc)" << endl
        << "   -f [name=value]\tKeep only elements with required field value" << endl
        << "   -b [x1,y1,x2,y2]\tBounding box for elements to be kept" << endl
        << endl;
@@ -325,7 +325,7 @@ void path_to_shape(const NFmiPath &thePath, NFmiEsriShape &theShape)
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Filter the shape based on even occurrance count
+ * \brief Filter the shape based on even occurrence count
  */
 // ----------------------------------------------------------------------
 
@@ -362,7 +362,7 @@ const NFmiEsriShape *filter_even_count(const NFmiEsriShape &theShape)
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Filter the shape based on odd occurrance count
+ * \brief Filter the shape based on odd occurrence count
  */
 // ----------------------------------------------------------------------
 

@@ -59,7 +59,7 @@ class Point
   {
     return (itsX != pt.itsX ? itsX < pt.itsX : itsY < pt.itsY);
   }
-  //! Euclidian distance between two points
+  //! Euclidean distance between two points
   double distance(const Point &pt) const
   {
     return sqrt((x() - pt.x()) * (x() - pt.x()) + (y() - pt.y()) * (y() - pt.y()));

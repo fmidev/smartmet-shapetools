@@ -7,7 +7,7 @@
 /*!
  * \class Edge
  *
- * An egde is a pair of indices which uniquely identify some point.
+ * An edge is a pair of indices which uniquely identify some point.
  * The direction of the edge is immaterial.
  */
 // ======================================================================

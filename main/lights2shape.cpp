@@ -141,7 +141,7 @@ void parse_command_line(int argc, const char *argv[])
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Read lights data withing bounding box
+ * \brief Read lights data within bounding box
  */
 // ----------------------------------------------------------------------
 

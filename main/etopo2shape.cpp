@@ -131,7 +131,7 @@ void parse_command_line(int argc, const char *argv[])
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Read ETOPO2 data withing bounding box
+ * \brief Read ETOPO2 data within bounding box
  */
 // ----------------------------------------------------------------------
 

@@ -17,7 +17,7 @@ namespace GradsTools
 {
 // ----------------------------------------------------------------------
 /*!
- * \brief Print coodinate as 3-byte integer
+ * \brief Print coordinate as 3-byte integer
  */
 // ----------------------------------------------------------------------
 

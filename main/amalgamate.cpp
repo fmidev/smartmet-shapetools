@@ -7,7 +7,7 @@
 /*!
  * \page amalgamate amalgamate
  *
- * triangle2shape takes as input a name indentifying a set of PSLG files
+ * triangle2shape takes as input a name identifying a set of PSLG files
  * (.node .poly and .ele), a limiting distance for the edges of the
  * triangles, and outputs a new set of PSLG files.
  *

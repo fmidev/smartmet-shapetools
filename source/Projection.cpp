@@ -259,7 +259,7 @@ void Projection::origin(float theLon, float theLat)
 NFmiArea *Projection::createArea() const
 {
   if (itsPimple->itsWidth < 0 && itsPimple->itsHeight < 0)
-    throw std::runtime_error("Must specify atleast one of width/height");
+    throw std::runtime_error("Must specify at least one of width/height");
 
   // Create the required projection
 

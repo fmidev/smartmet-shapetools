@@ -513,7 +513,7 @@ inline bool same_color(const NFmiImage &theImage, int i, int j, NFmiColorTools::
 
 // ----------------------------------------------------------------------
 /*!
- * \brief Check if pixel is surrounded by indentical pixels or not
+ * \brief Check if pixel is surrounded by identical pixels or not
  */
 // ----------------------------------------------------------------------
 
@@ -826,7 +826,7 @@ int domain(int argc, char *argv[])
     options.attribute = (*attributes.begin())->Name();
   }
 
-  // Help informatio
+  // Help information
 
   std::shared_ptr<Fmi::WorldTimeZones> zones;
   if (!options.zonefile.empty())

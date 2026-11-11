@@ -26,7 +26,7 @@
  * gshhs moveto lineto closepath gshhs_f.c stroke
  * \endcode
  *
- * Atleast one of coordinate ranges given in the projection is expected to
+ * At least one of coordinate ranges given in the projection is expected to
  * differ from 0-1. If only one differs, the other is calculated to be 0-X,
  * where X is calculated so that aspect ratio is preserved in the set
  * projection.
@@ -457,7 +457,7 @@ class Shape2PS
   int theSmootherFactor = 5;
 
   // The calculated contours before Bezier fitting, and set of all
-  // different combinatins of Bezier parameters used in the script
+  // different combinations of Bezier parameters used in the script
 
   using Contours = list<pair<BezierSettings, Imagine::NFmiPath>>;
   Contours theContours;
