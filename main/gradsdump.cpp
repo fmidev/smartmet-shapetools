@@ -19,8 +19,11 @@
 
 #include "GradsTools.h"
 #include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiStatus.h>
+#include <newbase/NFmiString.h>
 #include <newbase/NFmiStringTools.h>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 

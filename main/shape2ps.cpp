@@ -85,40 +85,60 @@
 // ======================================================================
 
 #include "Polyline.h"
+#include <boost/lexical_cast.hpp>
 #include <gis/CoordinateMatrix.h>
 #include <imagine/NFmiApproximateBezierFit.h>
+#include <imagine/NFmiBezierTools.h>
 #include <imagine/NFmiCardinalBezierFit.h>
 #include <imagine/NFmiContourTree.h>
 #include <imagine/NFmiGeoShape.h>
 #include <imagine/NFmiGshhsTools.h>
 #include <imagine/NFmiPath.h>
+#include <imagine/NFmiPathElement.h>
 #include <imagine/NFmiTightBezierFit.h>
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiAreaTools.h>
 #include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiEnumConverter.h>
+#include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiFileSystem.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiLevel.h>
 #include <newbase/NFmiLocationFinder.h>
+#include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiPreProcessor.h>
+#include <newbase/NFmiRect.h>
 #include <newbase/NFmiSaveBaseFactory.h>
 #include <newbase/NFmiSettings.h>
 #include <newbase/NFmiSmoother.h>
+#include <newbase/NFmiStaticTime.h>
+#include <newbase/NFmiStatus.h>
 #include <newbase/NFmiStreamQueryData.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <newbase/NFmiTime.h>
 #include <newbase/NFmiValueString.h>
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <deque>
+#include <exception>
 #include <iomanip>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <sstream>
+#include <stdexcept>
 #include <string>
-
-#include <boost/lexical_cast.hpp>
 #include <utility>
+#include <vector>
 
 using namespace boost;
 using namespace std;

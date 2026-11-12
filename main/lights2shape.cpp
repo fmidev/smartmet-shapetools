@@ -10,18 +10,38 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <imagine/NFmiContourTree.h>
 #include <imagine/NFmiDataHints.h>
+#include <imagine/NFmiEsriAttribute.h>
+#include <imagine/NFmiEsriAttributeName.h>
+#include <imagine/NFmiEsriElement.h>
+#include <imagine/NFmiEsriPoint.h>
 #include <imagine/NFmiEsriPolygon.h>
 #include <imagine/NFmiEsriShape.h>
 #include <imagine/NFmiPath.h>
+#include <imagine/NFmiPathElement.h>
+#include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaTools.h>
 #include <newbase/NFmiCmdLine.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiFileString.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiRect.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiStatus.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <deque>
+#include <exception>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <set>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace std;
 using namespace Imagine;
