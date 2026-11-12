@@ -31,6 +31,7 @@
 #include <imagine/NFmiGeoShape.h>
 #include <imagine/NFmiPath.h>
 #include <newbase/NFmiCmdLine.h>
+#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiStringTools.h>
 #include <iostream>
 #include <stdexcept>
