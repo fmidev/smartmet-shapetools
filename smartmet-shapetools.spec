@@ -2,7 +2,7 @@
 %define RPMNAME smartmet-%{BINNAME}
 Summary: Command line tools for handling ESRI shapefiles
 Name: %{RPMNAME}
-Version: 26.11.11
+Version: 26.11.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Tools
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*.1.gz
 
 %changelog
+* Fri Nov 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.13-1.fmi
+- Added includes no longer provided indirectly by SmartMet library headers
+
 * Wed Nov 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.11-1.fmi
 - Fixed typos in messages and comments
 
